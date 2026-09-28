@@ -1,3 +1,4 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>ตารางท่าเทียบเรือ PAT</title>
 <style>
 :root{
@@ -164,7 +165,7 @@ body{
 .sw-now{background:var(--now);width:2px;height:11px;border-radius:0;}
 
 /* ---------- timeline ---------- */
-.timeline-scroll{overflow-x:auto;overflow-y:visible;padding-top:22px;}
+.timeline-scroll{overflow-x:auto;}
 .timeline{
   min-width:960px;
   display:grid;
@@ -291,7 +292,7 @@ body{
   z-index:5;
 }
 .now-tag{
-  position:absolute;top:-18px;
+  position:absolute;top:-22px;
   transform:translateX(-50%);
   background:var(--now);color:#fff;
   font-size:10px;font-weight:700;
@@ -441,7 +442,6 @@ body{
     html += '<div class="day-col'+(d.today?' today':'')+'"><span class="dname">'+d.d+'</span> <span class="wd">'+d.wd+'</span>'
       + '<div class="hrs"><span>06</span><span>12</span><span>18</span></div></div>';
   });
-  html += '<div class="now-tag" style="left:'+pct(NOW_H)+'">NOW '+fmt(NOW_H)+'</div>';
   html += '</div></div>';
 
   berths.forEach(b=>{
@@ -473,7 +473,7 @@ body{
       });
     }
 
-    html += '<div class="now-line" style="left:'+pct(NOW_H)+'"></div>';
+    html += '<div class="now-line" style="left:'+pct(NOW_H)+'"><span class="now-tag">NOW '+fmt(NOW_H)+'</span></div>';
 
     html += '</div></div>';
   });
@@ -481,3 +481,5 @@ body{
   document.getElementById("tl").innerHTML = html;
 })();
 </script>
+
+</body></html>
