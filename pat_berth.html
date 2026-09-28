@@ -1,0 +1,468 @@
+<title>PAT Berth Window</title>
+<style>
+:root{
+  --ink:#1c2b3a;
+  --ink-soft:#4c5f70;
+  --line:#dbe3ea;
+  --line-soft:#eaeff3;
+  --bg:#f6f8fa;
+  --panel:#ffffff;
+  --accent:#2f6690;
+  --accent-soft:#e4edf4;
+  --anchor:#8fa3b3;
+  --sailed:#c3cdd6;
+  --marked:#d98a2b;
+  --marked-soft:#fbf1e2;
+  --now:#c0392b;
+  --now-soft:#fbeae7;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ink:#e8edf2;
+    --ink-soft:#a8b7c4;
+    --line:#2c3a48;
+    --line-soft:#233039;
+    --bg:#131c24;
+    --panel:#182430;
+    --accent:#6ea8d4;
+    --accent-soft:#1f3346;
+    --anchor:#6d8494;
+    --sailed:#37444f;
+    --marked:#e3a14f;
+    --marked-soft:#3a2c17;
+    --now:#e6685a;
+    --now-soft:#3a1e1a;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --ink:#e8edf2;
+  --ink-soft:#a8b7c4;
+  --line:#2c3a48;
+  --line-soft:#233039;
+  --bg:#131c24;
+  --panel:#182430;
+  --accent:#6ea8d4;
+  --accent-soft:#1f3346;
+  --anchor:#6d8494;
+  --sailed:#37444f;
+  --marked:#e3a14f;
+  --marked-soft:#3a2c17;
+  --now:#e6685a;
+  --now-soft:#3a1e1a;
+  color-scheme: dark;
+}
+
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  padding:24px 16px 48px;
+}
+.sheet{
+  max-width:1180px;
+  margin:0 auto;
+  display:flex;
+  flex-direction:column;
+  gap:20px;
+}
+.masthead{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:space-between;
+  gap:16px;
+  align-items:flex-end;
+  border-bottom:2px solid var(--ink);
+  padding-bottom:14px;
+}
+.masthead .eyebrow{
+  font-size:11px;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--ink-soft);
+  margin:0 0 6px;
+  font-weight:600;
+}
+.masthead h1{
+  font-family:"Fraunces","IBM Plex Serif",Georgia,serif;
+  font-size:clamp(26px,4vw,34px);
+  font-weight:600;
+  margin:0;
+  letter-spacing:-.01em;
+}
+.masthead .meta{
+  text-align:right;
+  font-size:12.5px;
+  color:var(--ink-soft);
+  line-height:1.6;
+}
+.masthead .meta b{color:var(--ink);font-weight:600;}
+
+.stat-row{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:12px;
+}
+.stat{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:14px 16px;
+}
+.stat .label{
+  font-size:10.5px;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  color:var(--ink-soft);
+  font-weight:600;
+  margin:0 0 8px;
+}
+.stat .value{
+  font-family:"Fraunces","IBM Plex Serif",Georgia,serif;
+  font-size:26px;
+  font-weight:600;
+  line-height:1;
+  margin:0 0 6px;
+  font-variant-numeric:tabular-nums;
+}
+.stat .sub{font-size:12.5px;color:var(--ink-soft);}
+
+.panel{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:18px 18px 20px;
+}
+.panel-head{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px 20px;
+  margin-bottom:14px;
+}
+.panel-head h2{
+  font-family:"Fraunces","IBM Plex Serif",Georgia,serif;
+  font-size:17px;
+  font-weight:600;
+  margin:0;
+}
+.legend{
+  display:flex;
+  flex-wrap:wrap;
+  gap:14px;
+  font-size:11.5px;
+  color:var(--ink-soft);
+}
+.legend span{display:inline-flex;align-items:center;gap:5px;}
+.swatch{width:16px;height:8px;border-radius:2px;display:inline-block;}
+.sw-anchor{background:none;border-top:2px dashed var(--anchor);height:0;width:16px;}
+.sw-along{background:var(--accent);}
+.sw-sailed{background:var(--sailed);}
+.sw-marked{background:var(--accent);outline:2px solid var(--marked);outline-offset:1px;}
+.sw-now{background:var(--now);width:2px;height:12px;border-radius:0;}
+
+.timeline-scroll{overflow-x:auto;}
+.timeline{
+  min-width:920px;
+  display:grid;
+  grid-template-columns:150px 1fr;
+}
+.tl-head{display:contents;}
+.tl-head .corner{border-bottom:1px solid var(--line);}
+.tl-head .days{
+  position:relative;
+  display:grid;
+  border-bottom:1px solid var(--line);
+  padding-bottom:6px;
+}
+.day-col{
+  position:relative;
+  font-size:11px;
+  color:var(--ink-soft);
+}
+.day-col .dname{font-weight:600;color:var(--ink);}
+.day-col .hrs{
+  position:absolute;
+  top:16px;left:0;right:0;
+  display:flex;
+  justify-content:space-between;
+  font-size:9.5px;
+  color:var(--ink-soft);
+  opacity:.75;
+}
+.grid-lines{position:relative;grid-column:2;}
+.row{
+  display:grid;
+  grid-template-columns:150px 1fr;
+  border-top:1px solid var(--line-soft);
+  min-height:56px;
+}
+.row:last-child{border-bottom:1px solid var(--line-soft);}
+.berth-label{
+  padding:9px 10px 9px 2px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  gap:2px;
+}
+.berth-label .bname{font-weight:700;font-size:13.5px;}
+.berth-label .gate{font-size:10.5px;color:var(--ink-soft);}
+.track{position:relative;}
+.gridcell{
+  position:absolute;
+  top:0;bottom:0;
+  border-left:1px solid var(--line-soft);
+}
+.empty-note{
+  position:absolute;
+  left:8px;top:50%;
+  transform:translateY(-50%);
+  font-size:11.5px;
+  font-style:italic;
+  color:var(--ink-soft);
+}
+.closed-note{
+  position:absolute;
+  left:6px;right:6px;top:50%;
+  transform:translateY(-50%);
+  font-size:11.5px;
+  color:var(--ink-soft);
+  background:repeating-linear-gradient(45deg,var(--line-soft),var(--line-soft) 6px,transparent 6px,transparent 12px);
+  padding:8px 10px;
+  border-radius:6px;
+}
+.wait{
+  position:absolute;
+  top:50%;
+  height:0;
+  border-top:2px dashed var(--anchor);
+}
+.wait::before{
+  content:"";
+  position:absolute;left:-3px;top:-3px;
+  width:6px;height:6px;border-radius:50%;
+  background:var(--anchor);
+}
+.bar{
+  position:absolute;
+  top:8px;
+  height:38px;
+  background:var(--accent);
+  border-radius:6px;
+  color:#fff;
+  font-size:11px;
+  padding:5px 8px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  gap:2px;
+  overflow:hidden;
+  box-shadow:0 1px 2px rgba(0,0,0,.12);
+}
+.bar.marked{outline:2px solid var(--marked);outline-offset:1px;}
+.bar .vname{font-weight:700;font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.bar .vtime{font-size:10px;opacity:.92;font-variant-numeric:tabular-nums;white-space:nowrap;}
+.bar .vflag{
+  position:absolute;top:3px;right:6px;
+  font-size:9px;font-weight:700;
+  background:rgba(255,255,255,.22);
+  padding:1px 5px;border-radius:999px;
+}
+.now-line{
+  position:absolute;top:-4px;bottom:-4px;
+  width:2px;background:var(--now);
+  z-index:5;
+}
+.now-tag{
+  position:absolute;top:-22px;
+  transform:translateX(-50%);
+  background:var(--now);color:#fff;
+  font-size:10px;font-weight:700;
+  padding:2px 7px;border-radius:4px;
+  white-space:nowrap;
+  font-variant-numeric:tabular-nums;
+}
+
+.foot{
+  font-size:11px;
+  color:var(--ink-soft);
+  border-top:1px solid var(--line);
+  padding-top:12px;
+  display:flex;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:8px;
+}
+</style>
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+
+<div class="sheet">
+
+  <div class="masthead">
+    <div>
+      <p class="eyebrow">Port Authority of Thailand · Bangkok Port (THBKK)</p>
+      <h1>PAT Berth Window</h1>
+    </div>
+    <div class="meta">
+      Sheet dated <b>28/09/2026</b><br>
+      Window <b>27 Sep – 02 Oct 2026</b> · times local (UTC+7)
+    </div>
+  </div>
+
+  <div class="stat-row">
+    <div class="stat">
+      <p class="label">Alongside now</p>
+      <p class="value">5</p>
+      <p class="sub">20AB · 20B · 20D · 20E · 20F</p>
+    </div>
+    <div class="stat">
+      <p class="label">At anchorage</p>
+      <p class="value">1</p>
+      <p class="sub">MILLENNIUM BRIGHT</p>
+    </div>
+    <div class="stat">
+      <p class="label">Next berthing</p>
+      <p class="value">29/05</p>
+      <p class="sub">MILLENNIUM BRIGHT → 20B</p>
+    </div>
+    <div class="stat">
+      <p class="label">Next sailing</p>
+      <p class="value">29/04</p>
+      <p class="sub">JARU BHUM · 20F</p>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-head">
+      <h2>Berth timeline</h2>
+      <div class="legend">
+        <span><i class="swatch sw-anchor"></i>Anchorage wait (ETA → P.B)</span>
+        <span><i class="swatch sw-along"></i>Alongside (P.B → ETD)</span>
+        <span><i class="swatch sw-sailed"></i>Sailed</span>
+        <span><i class="swatch sw-marked"></i>Marked on sheet</span>
+        <span><i class="swatch sw-now"></i>Now</span>
+      </div>
+    </div>
+
+    <div class="timeline-scroll">
+      <div class="timeline" id="tl"></div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <span>Source: SHIP'S MOVEMENT ON 28 SEPTEMBER 2026 — Berthing Section</span>
+    <span>Tel. 02-269-3476, 02-269-3478 · birthing2020@gmail.com</span>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  // window: Sep 27 00:00 -> Oct 3 00:00 = 144h
+  const TOTAL_H = 144;
+  const DAY_LABELS = [
+    {d:"27 Sep",wd:"Sun"},{d:"28 Sep",wd:"Mon"},{d:"29 Sep",wd:"Tue"},
+    {d:"30 Sep",wd:"Wed"},{d:"01 Oct",wd:"Thu"},{d:"02 Oct",wd:"Fri"}
+  ];
+  const NOW_H = 36; // 28 Sep 12:00
+
+  function fmt(h){
+    // h -> DD/HH  (day offset from 27 Sep)
+    const dayIdx = Math.floor(h/24); // 0=27Sep
+    const dayNums = [27,28,29,30,1,2];
+    const day = dayNums[dayIdx] ?? dayNums[dayNums.length-1];
+    const hour = Math.round(h - dayIdx*24);
+    return String(day).padStart(2,"0")+"/"+String(hour).padStart(2,"0");
+  }
+
+  const berths = [
+    {name:"20AB",gate:"Gate 29, 30",kind:"rows",items:[
+      {type:"bar",name:"INFINITY",start:31.17,end:63,label:"28/07→29/15"},
+      {type:"wait",start:59,end:64},
+      {type:"bar",name:"SKY CHALLENGE",start:64,end:100,label:"29/16→01/04"},
+      {type:"wait",start:93,end:102},
+      {type:"bar",name:"CAPE FAWLEY",start:102,end:126,label:"01/06→02/06"}
+    ]},
+    {name:"20B",gate:"Gate 27, 28",kind:"rows",items:[
+      {type:"bar",name:"KMTC GWANGYANG",start:19.25,end:53,label:"27/19→29/05"},
+      {type:"wait",start:35,end:53},
+      {type:"bar",name:"MILLENNIUM BRIGHT",start:53,end:76,label:"29/05→30/04"},
+      {type:"wait",start:76,end:77},
+      {type:"bar",name:"M. ODYSSEY",start:77,end:113,label:"30/05→01/17",flag:"4A",marked:true}
+    ]},
+    {name:"20C",gate:"Gate 21, 22",kind:"closed",note:"Not in use · wharf to be utilised from 30 Sep 2026 (per sheet)"},
+    {name:"20D",gate:"Gate 23, 24",kind:"rows",items:[
+      {type:"bar",name:"BANGKOK",start:16.67,end:62,label:"27/15→29/14",marked:true}
+    ]},
+    {name:"20E",gate:"Gate 25, 26",kind:"rows",items:[
+      {type:"bar",name:"TS CHIBA",start:31.5,end:52,label:"28/05→29/04"},
+      {type:"bar",name:"HOPE C",start:65,end:88,label:"29/17→30/16",flag:"4A",marked:true}
+    ]},
+    {name:"20F",gate:"Gate 33, 34",kind:"rows",items:[
+      {type:"bar",name:"JARU BHUM",start:32.42,end:47,label:"28/05→28/23",flag:"7B",marked:true},
+      {type:"bar",name:"MITRA BHUM",start:77,end:90,label:"30/05→30/18"}
+    ]},
+    {name:"22A",gate:"",kind:"empty"},
+    {name:"22B",gate:"",kind:"empty"},
+    {name:"22D",gate:"",kind:"empty"},
+    {name:"22E",gate:"",kind:"empty"}
+  ];
+
+  const pct = h => (h/TOTAL_H*100).toFixed(3)+"%";
+
+  let html = "";
+
+  // header row
+  html += '<div class="tl-head">';
+  html += '<div class="corner"><div class="berth-label" style="padding-top:0"><span style="font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);font-weight:600;">Berth / Gate</span></div></div>';
+  html += '<div class="days" style="grid-template-columns:repeat('+DAY_LABELS.length+',1fr)">';
+  DAY_LABELS.forEach(d=>{
+    html += '<div class="day-col"><span class="dname">'+d.d+'</span><br><span>'+d.wd+'</span>'
+      + '<div class="hrs"><span>06</span><span>12</span><span>18</span></div></div>';
+  });
+  html += '</div></div>';
+
+  // rows
+  berths.forEach(b=>{
+    html += '<div class="row">';
+    html += '<div class="berth-label"><span class="bname">'+b.name+'</span>'
+      + (b.gate?'<span class="gate">'+b.gate+'</span>':'')+'</div>';
+    html += '<div class="track">';
+
+    // day gridlines
+    for(let i=1;i<DAY_LABELS.length;i++){
+      html += '<div class="gridcell" style="left:'+pct(i*24)+'"></div>';
+    }
+
+    if(b.kind==="closed"){
+      html += '<div class="closed-note">'+b.note+'</div>';
+    } else if(b.kind==="empty"){
+      html += '<div class="empty-note">No vessel scheduled</div>';
+    } else {
+      b.items.forEach(it=>{
+        if(it.type==="wait"){
+          html += '<div class="wait" style="left:'+pct(it.start)+';width:'+pct(it.end-it.start)+'"></div>';
+        } else {
+          html += '<div class="bar'+(it.marked?' marked':'')+'" style="left:'+pct(it.start)+';width:'+pct(it.end-it.start)+'">'
+            + (it.flag?'<span class="vflag">'+it.flag+'</span>':'')
+            + '<span class="vname">'+it.name+'</span>'
+            + '<span class="vtime">'+it.label+(it.flag?' · '+it.flag:'')+'</span>'
+            + '</div>';
+        }
+      });
+    }
+
+    // now line
+    html += '<div class="now-line" style="left:'+pct(NOW_H)+'"><span class="now-tag">NOW '+fmt(NOW_H)+'</span></div>';
+
+    html += '</div></div>';
+  });
+
+  document.getElementById("tl").innerHTML = html;
+})();
+</script>
