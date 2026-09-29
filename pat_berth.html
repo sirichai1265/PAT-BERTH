@@ -1,4 +1,4 @@
-<title>ตารางท่าเทียบเรือ PAT</title>
+<title>PAT Berth Window</title>
 <style>
 :root{
   --ink:#16222d;
@@ -53,7 +53,7 @@ body{
   margin:0;
   background:var(--bg);
   color:var(--ink);
-  font-family:"IBM Plex Sans Thai","IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-family:"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
   padding:24px 16px 48px;
   -webkit-font-smoothing:antialiased;
 }
@@ -84,7 +84,7 @@ body{
   font-weight:600;
 }
 .masthead h1{
-  font-family:"Fraunces","IBM Plex Sans Thai",Georgia,serif;
+  font-family:"Fraunces","IBM Plex Sans",Georgia,serif;
   font-size:clamp(24px,3.6vw,30px);
   font-weight:600;
   margin:0;
@@ -119,7 +119,7 @@ body{
   margin:0 0 7px;
 }
 .stat .value{
-  font-family:"Fraunces","IBM Plex Sans Thai",Georgia,serif;
+  font-family:"Fraunces","IBM Plex Sans",Georgia,serif;
   font-size:24px;
   font-weight:600;
   line-height:1.1;
@@ -144,7 +144,7 @@ body{
   margin-bottom:12px;
 }
 .panel-head h2{
-  font-family:"Fraunces","IBM Plex Sans Thai",Georgia,serif;
+  font-family:"Fraunces","IBM Plex Sans",Georgia,serif;
   font-size:16px;
   font-weight:600;
   margin:0;
@@ -328,39 +328,39 @@ body{
 </style>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600&family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
 
 <div class="sheet">
 
   <div class="masthead">
     <div>
-      <p class="eyebrow">การท่าเรือแห่งประเทศไทย · ท่าเรือกรุงเทพ (THBKK)</p>
-      <h1>ตารางท่าเทียบเรือ PAT</h1>
+      <p class="eyebrow">Port Authority of Thailand · Bangkok Port (THBKK)</p>
+      <h1>PAT Berth Window</h1>
     </div>
     <div class="meta">
-      ข้อมูล ณ วันที่ <b>29/09/2026</b><br>
-      ช่วงเวลา <b>27 ก.ย. – 02 ต.ค. 2026</b> · เวลาท้องถิ่น (UTC+7)
+      Sheet dated <b>29/09/2026</b><br>
+      Window <b>27 Sep – 02 Oct 2026</b> · times local (UTC+7)
     </div>
   </div>
 
   <div class="stat-row">
     <div class="stat">
-      <p class="label">เทียบท่าอยู่ขณะนี้</p>
+      <p class="label">Alongside now</p>
       <p class="value">3</p>
       <p class="sub">20AB · 20B · 20D</p>
     </div>
     <div class="stat">
-      <p class="label">รอที่ทุ่นจอด</p>
+      <p class="label">At anchorage</p>
       <p class="value">1</p>
       <p class="sub">SKY CHALLENGE · 20AB</p>
     </div>
     <div class="stat">
-      <p class="label">เทียบท่าถัดไป</p>
+      <p class="label">Next berthing</p>
       <p class="value">29/16</p>
       <p class="sub">SKY CHALLENGE → 20AB</p>
     </div>
     <div class="stat">
-      <p class="label">ออกเรือถัดไป</p>
+      <p class="label">Next sailing</p>
       <p class="value">29/14</p>
       <p class="sub">BANGKOK · 20D</p>
     </div>
@@ -368,13 +368,13 @@ body{
 
   <div class="panel">
     <div class="panel-head">
-      <h2>ผังเวลาการใช้ท่าเทียบเรือ</h2>
+      <h2>Berth timeline</h2>
       <div class="legend">
-        <span><i class="swatch sw-anchor"></i>รอทุ่นจอด (ETA → P.B)</span>
-        <span><i class="swatch"></i>เทียบท่าอยู่ (P.B → ETD)</span>
-        <span><i class="swatch sw-marked"></i>มีเครื่องหมายพิเศษ</span>
-        <span><i class="swatch sw-today"></i>วันนี้</span>
-        <span><i class="swatch sw-now"></i>เวลาปัจจุบัน</span>
+        <span><i class="swatch sw-anchor"></i>Anchorage wait (ETA → P.B)</span>
+        <span><i class="swatch"></i>Alongside (P.B → ETD)</span>
+        <span><i class="swatch sw-marked"></i>Marked on sheet</span>
+        <span><i class="swatch sw-today"></i>Today</span>
+        <span><i class="swatch sw-now"></i>Now</span>
       </div>
     </div>
 
@@ -384,8 +384,8 @@ body{
   </div>
 
   <div class="foot">
-    <span>ที่มา: SHIP'S MOVEMENT ON 29 SEPTEMBER 2026 — แผนกท่า</span>
-    <span>โทร. 02-269-3476, 02-269-3478 · birthing2020@gmail.com</span>
+    <span>Source: SHIP'S MOVEMENT ON 29 SEPTEMBER 2026 — Berthing Section</span>
+    <span>Tel. 02-269-3476, 02-269-3478 · birthing2020@gmail.com</span>
   </div>
 
 </div>
@@ -395,12 +395,12 @@ body{
   // window: 27 Sep 00:00 -> 03 Oct 00:00 = 144h
   const TOTAL_H = 144;
   const DAY_LABELS = [
-    {d:"27 ก.ย.",wd:"อา",today:false},
-    {d:"28 ก.ย.",wd:"จ",today:false},
-    {d:"29 ก.ย.",wd:"อ",today:true},
-    {d:"30 ก.ย.",wd:"พ",today:false},
-    {d:"01 ต.ค.",wd:"พฤ",today:false},
-    {d:"02 ต.ค.",wd:"ศ",today:false}
+    {d:"27 Sep",wd:"Sun",today:false},
+    {d:"28 Sep",wd:"Mon",today:false},
+    {d:"29 Sep",wd:"Tue",today:true},
+    {d:"30 Sep",wd:"Wed",today:false},
+    {d:"01 Oct",wd:"Thu",today:false},
+    {d:"02 Oct",wd:"Fri",today:false}
   ];
   const NOW_H = 60; // 29 Sep 12:00
 
@@ -413,34 +413,34 @@ body{
   }
 
   const berths = [
-    {name:"20AB",gate:"ประตู 29, 30",note:"G.29 หยุดซ่อม spreader 29-30 ก.ย.",kind:"rows",items:[
+    {name:"20AB",gate:"Gate 29, 30",note:"G.29 stop working 29-30 Sep to repair spreader",kind:"rows",items:[
       {type:"wait",start:18,end:29},
       {type:"bar",name:"INFINITY",start:29,end:63,label:"28/05→29/15"},
       {type:"wait",start:56,end:64},
       {type:"bar",name:"SKY CHALLENGE",start:64,end:100,label:"29/16→01/04"},
       {type:"bar",name:"KHARIS HERITAGE",start:103,end:126,label:"01/07→02/06"}
     ]},
-    {name:"20B",gate:"ประตู 27, 28",kind:"rows",items:[
+    {name:"20B",gate:"Gate 27, 28",kind:"rows",items:[
       {type:"wait",start:35,end:53},
       {type:"bar",name:"MILLENNIUM BRIGHT",start:53,end:76,label:"29/05→30/04"},
       {type:"wait",start:76,end:77},
       {type:"bar",name:"M. ODYSSEY",start:77,end:101,label:"30/05→01/05",flag:"4A",marked:true}
     ]},
-    {name:"20C",gate:"ประตู 21, 22",kind:"rows",items:[
-      {type:"closedseg",start:0,end:93,label:"ปิดใช้งาน · เปิดใช้ท่า 1 ต.ค. 2026"},
+    {name:"20C",gate:"Gate 21, 22",kind:"rows",items:[
+      {type:"closedseg",start:0,end:93,label:"Not in use · wharf to be utilised 1 Oct 2026"},
       {type:"wait",start:93,end:102},
       {type:"bar",name:"CAPE FAWLEY",start:102,end:126,label:"01/06→02/06"}
     ]},
-    {name:"20D",gate:"ประตู 23, 24",kind:"rows",items:[
+    {name:"20D",gate:"Gate 23, 24",kind:"rows",items:[
       {type:"wait",start:13,end:15},
       {type:"bar",name:"BANGKOK",start:15,end:62,label:"27/15→29/14"},
-      {type:"closedseg",start:96,end:144,label:"ปิดซ่อมระบบไฟฟ้า 1-21 ต.ค. 2026"}
+      {type:"closedseg",start:96,end:144,label:"Closed 1-21 Oct 2026 to renovate electric channel"}
     ]},
-    {name:"20E",gate:"ประตู 25, 26",note:"G.25 หยุดซ่อมราง 1-15 ต.ค.",kind:"rows",items:[
+    {name:"20E",gate:"Gate 25, 26",note:"G.25 stop working 1-15 Oct to change trolley rail",kind:"rows",items:[
       {type:"wait",start:75,end:77},
       {type:"bar",name:"MITRA BHUM",start:77,end:90,label:"30/05→30/18"}
     ]},
-    {name:"20F",gate:"ประตู 33, 34",kind:"rows",items:[
+    {name:"20F",gate:"Gate 33, 34",kind:"rows",items:[
       {type:"bar",name:"HOPE C",start:65,end:88,label:"29/17→30/16"},
       {type:"wait",start:109,end:113},
       {type:"bar",name:"ALS SUMIRE",start:113,end:137,label:"01/17→02/17",flag:"1C",marked:true}
@@ -456,7 +456,7 @@ body{
   let html = "";
 
   html += '<div class="tl-head">';
-  html += '<div class="corner"><span>ท่า / ประตู</span></div>';
+  html += '<div class="corner"><span>Berth / Gate</span></div>';
   html += '<div class="days" style="grid-template-columns:repeat('+DAY_LABELS.length+',1fr)">';
   DAY_LABELS.forEach(d=>{
     html += '<div class="day-col'+(d.today?' today':'')+'"><span class="dname">'+d.d+'</span> <span class="wd">'+d.wd+'</span>'
@@ -479,7 +479,7 @@ body{
     if(b.kind==="closed"){
       html += '<div class="closed-note">'+b.note+'</div>';
     } else if(b.kind==="empty"){
-      html += '<div class="empty-note">ไม่มีเรือกำหนดเข้าเทียบท่า</div>';
+      html += '<div class="empty-note">No vessel scheduled</div>';
     } else {
       b.items.forEach(it=>{
         if(it.type==="wait"){
