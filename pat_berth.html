@@ -223,6 +223,7 @@ body{
 }
 .berth-label .bname{font-weight:700;font-size:13.5px;}
 .berth-label .gate{font-size:10.5px;color:var(--ink-faint);}
+.berth-label .note{font-size:9.5px;color:var(--marked);font-style:italic;line-height:1.3;margin-top:1px;}
 .track{position:relative;}
 .gridcell{
   position:absolute;
@@ -247,6 +248,20 @@ body{
   background:repeating-linear-gradient(45deg,var(--line-soft),var(--line-soft) 6px,transparent 6px,transparent 12px);
   padding:8px 10px;
   border-radius:6px;
+}
+.closed-seg{
+  position:absolute;
+  top:10px;bottom:10px;
+  font-size:10.5px;
+  color:var(--ink-soft);
+  background:repeating-linear-gradient(45deg,var(--line-soft),var(--line-soft) 6px,transparent 6px,transparent 12px);
+  border:1px dashed var(--line);
+  border-radius:6px;
+  display:flex;
+  align-items:center;
+  padding:0 10px;
+  overflow:hidden;
+  white-space:nowrap;
 }
 .wait{
   position:absolute;
@@ -323,7 +338,7 @@ body{
       <h1>ตารางท่าเทียบเรือ PAT</h1>
     </div>
     <div class="meta">
-      ข้อมูล ณ วันที่ <b>28/09/2026</b><br>
+      ข้อมูล ณ วันที่ <b>29/09/2026</b><br>
       ช่วงเวลา <b>27 ก.ย. – 02 ต.ค. 2026</b> · เวลาท้องถิ่น (UTC+7)
     </div>
   </div>
@@ -331,23 +346,23 @@ body{
   <div class="stat-row">
     <div class="stat">
       <p class="label">เทียบท่าอยู่ขณะนี้</p>
-      <p class="value">5</p>
-      <p class="sub">20AB · 20B · 20D · 20E · 20F</p>
+      <p class="value">3</p>
+      <p class="sub">20AB · 20B · 20D</p>
     </div>
     <div class="stat">
       <p class="label">รอที่ทุ่นจอด</p>
       <p class="value">1</p>
-      <p class="sub">MILLENNIUM BRIGHT</p>
+      <p class="sub">SKY CHALLENGE · 20AB</p>
     </div>
     <div class="stat">
       <p class="label">เทียบท่าถัดไป</p>
-      <p class="value">29/05</p>
-      <p class="sub">MILLENNIUM BRIGHT → 20B</p>
+      <p class="value">29/16</p>
+      <p class="sub">SKY CHALLENGE → 20AB</p>
     </div>
     <div class="stat">
       <p class="label">ออกเรือถัดไป</p>
-      <p class="value">29/04</p>
-      <p class="sub">JARU BHUM · 20F</p>
+      <p class="value">29/14</p>
+      <p class="sub">BANGKOK · 20D</p>
     </div>
   </div>
 
@@ -369,7 +384,7 @@ body{
   </div>
 
   <div class="foot">
-    <span>ที่มา: SHIP'S MOVEMENT ON 28 SEPTEMBER 2026 — แผนกท่า</span>
+    <span>ที่มา: SHIP'S MOVEMENT ON 29 SEPTEMBER 2026 — แผนกท่า</span>
     <span>โทร. 02-269-3476, 02-269-3478 · birthing2020@gmail.com</span>
   </div>
 
@@ -381,13 +396,13 @@ body{
   const TOTAL_H = 144;
   const DAY_LABELS = [
     {d:"27 ก.ย.",wd:"อา",today:false},
-    {d:"28 ก.ย.",wd:"จ",today:true},
-    {d:"29 ก.ย.",wd:"อ",today:false},
+    {d:"28 ก.ย.",wd:"จ",today:false},
+    {d:"29 ก.ย.",wd:"อ",today:true},
     {d:"30 ก.ย.",wd:"พ",today:false},
     {d:"01 ต.ค.",wd:"พฤ",today:false},
     {d:"02 ต.ค.",wd:"ศ",today:false}
   ];
-  const NOW_H = 36; // 28 Sep 12:00
+  const NOW_H = 60; // 29 Sep 12:00
 
   function fmt(h){
     const dayIdx = Math.floor(h/24);
@@ -398,36 +413,42 @@ body{
   }
 
   const berths = [
-    {name:"20AB",gate:"ประตู 29, 30",kind:"rows",items:[
-      {type:"bar",name:"INFINITY",start:31.17,end:63,label:"28/07→29/15"},
-      {type:"wait",start:59,end:64},
+    {name:"20AB",gate:"ประตู 29, 30",note:"G.29 หยุดซ่อม spreader 29-30 ก.ย.",kind:"rows",items:[
+      {type:"wait",start:18,end:29},
+      {type:"bar",name:"INFINITY",start:29,end:63,label:"28/05→29/15"},
+      {type:"wait",start:56,end:64},
       {type:"bar",name:"SKY CHALLENGE",start:64,end:100,label:"29/16→01/04"},
-      {type:"wait",start:93,end:102},
-      {type:"bar",name:"CAPE FAWLEY",start:102,end:126,label:"01/06→02/06"}
+      {type:"bar",name:"KHARIS HERITAGE",start:103,end:126,label:"01/07→02/06"}
     ]},
     {name:"20B",gate:"ประตู 27, 28",kind:"rows",items:[
-      {type:"bar",name:"KMTC GWANGYANG",start:19.25,end:53,label:"27/19→29/05"},
       {type:"wait",start:35,end:53},
       {type:"bar",name:"MILLENNIUM BRIGHT",start:53,end:76,label:"29/05→30/04"},
       {type:"wait",start:76,end:77},
-      {type:"bar",name:"M. ODYSSEY",start:77,end:113,label:"30/05→01/17",flag:"4A",marked:true}
+      {type:"bar",name:"M. ODYSSEY",start:77,end:101,label:"30/05→01/05",flag:"4A",marked:true}
     ]},
-    {name:"20C",gate:"ประตู 21, 22",kind:"closed",note:"ปิดใช้งาน · เปิดใช้ท่าอีกครั้ง 30 ก.ย. 2026 (ตามตารางต้นฉบับ)"},
+    {name:"20C",gate:"ประตู 21, 22",kind:"rows",items:[
+      {type:"closedseg",start:0,end:93,label:"ปิดใช้งาน · เปิดใช้ท่า 1 ต.ค. 2026"},
+      {type:"wait",start:93,end:102},
+      {type:"bar",name:"CAPE FAWLEY",start:102,end:126,label:"01/06→02/06"}
+    ]},
     {name:"20D",gate:"ประตู 23, 24",kind:"rows",items:[
-      {type:"bar",name:"BANGKOK",start:16.67,end:62,label:"27/15→29/14",marked:true}
+      {type:"wait",start:13,end:15},
+      {type:"bar",name:"BANGKOK",start:15,end:62,label:"27/15→29/14"},
+      {type:"closedseg",start:96,end:144,label:"ปิดซ่อมระบบไฟฟ้า 1-21 ต.ค. 2026"}
     ]},
-    {name:"20E",gate:"ประตู 25, 26",kind:"rows",items:[
-      {type:"bar",name:"TS CHIBA",start:31.5,end:52,label:"28/05→29/04"},
-      {type:"bar",name:"HOPE C",start:65,end:88,label:"29/17→30/16",flag:"4A",marked:true}
+    {name:"20E",gate:"ประตู 25, 26",note:"G.25 หยุดซ่อมราง 1-15 ต.ค.",kind:"rows",items:[
+      {type:"wait",start:75,end:77},
+      {type:"bar",name:"MITRA BHUM",start:77,end:90,label:"30/05→30/18"}
     ]},
     {name:"20F",gate:"ประตู 33, 34",kind:"rows",items:[
-      {type:"bar",name:"JARU BHUM",start:32.42,end:47,label:"28/05→28/23",flag:"7B",marked:true},
-      {type:"bar",name:"MITRA BHUM",start:77,end:90,label:"30/05→30/18"}
+      {type:"bar",name:"HOPE C",start:65,end:88,label:"29/17→30/16"},
+      {type:"wait",start:109,end:113},
+      {type:"bar",name:"ALS SUMIRE",start:113,end:137,label:"01/17→02/17",flag:"1C",marked:true}
     ]},
     {name:"22A",gate:"",kind:"empty"},
     {name:"22B",gate:"",kind:"empty"},
-    {name:"22D",gate:"",kind:"empty"},
-    {name:"22E",gate:"",kind:"empty"}
+    {name:"22C",gate:"",kind:"empty"},
+    {name:"22D",gate:"",kind:"empty"}
   ];
 
   const pct = h => (h/TOTAL_H*100).toFixed(3)+"%";
@@ -447,7 +468,8 @@ body{
   berths.forEach(b=>{
     html += '<div class="row">';
     html += '<div class="berth-label"><span class="bname">'+b.name+'</span>'
-      + (b.gate?'<span class="gate">'+b.gate+'</span>':'')+'</div>';
+      + (b.gate?'<span class="gate">'+b.gate+'</span>':'')
+      + (b.note?'<span class="note">'+b.note+'</span>':'')+'</div>';
     html += '<div class="track">';
 
     DAY_LABELS.forEach((d,i)=>{
@@ -462,6 +484,8 @@ body{
       b.items.forEach(it=>{
         if(it.type==="wait"){
           html += '<div class="wait" style="left:'+pct(it.start)+';width:'+pct(it.end-it.start)+'"></div>';
+        } else if(it.type==="closedseg"){
+          html += '<div class="closed-seg" style="left:'+pct(it.start)+';width:'+pct(it.end-it.start)+'">'+it.label+'</div>';
         } else {
           const title = it.name+' · '+it.label+(it.flag?' · '+it.flag:'');
           html += '<div class="bar'+(it.marked?' marked':'')+'" title="'+title+'" style="left:'+pct(it.start)+';width:'+pct(it.end-it.start)+'">'
