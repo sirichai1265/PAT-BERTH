@@ -1,507 +1,277 @@
-<title>ตารางท่าเทียบเรือ PAT</title>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>*,*::before,*::after{box-sizing:border-box}body{margin:0}</style>
+<title>PAT Berth Window</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
-:root{
-  --ink:#16222d;
-  --ink-soft:#5c6b78;
-  --ink-faint:#8c98a3;
-  --line:#dfe5ea;
-  --line-soft:#eef1f4;
-  --bg:#f4f6f8;
-  --panel:#ffffff;
-  --accent:#2f6690;
-  --anchor:#8ea0ae;
-  --marked:#c9782a;
-  --now:#b8432f;
-  --now-soft:#fbebe8;
-  color-scheme: light;
-}
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){
-    --ink:#e8edf1;
-    --ink-soft:#a4b2bd;
-    --ink-faint:#71808b;
-    --line:#2b3944;
-    --line-soft:#202b34;
-    --bg:#121a21;
-    --panel:#17212a;
-    --accent:#6ea3c4;
-    --anchor:#66808f;
-    --marked:#dd9c56;
-    --now:#e07362;
-    --now-soft:#3a231f;
-    color-scheme: dark;
+  :root{
+    --bg:#F5F8FB; --panel:#FFFFFF; --ink:#16324F; --ink-2:#4F6479; --ink-3:#8697A8;
+    --line:#E1E8EF; --line-2:#EEF3F7;
+    --berth:#2A6F97; --berth-done:#A9BFCF; --wait:#9CC3DD;
+    --mark:#F28C28; --mark-soft:#FFF1E2; --now:#D64545;
+    --ok:#1E8A5A; --ok-soft:#E3F4EC; --warn:#B7791F; --warn-soft:#FBF1DE; --idle:#EEF2F6;
+    --display:"Barlow Semi Condensed","Arial Narrow",Arial,sans-serif;
+    --body:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
+    --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
   }
-}
-:root[data-theme="dark"]{
-  --ink:#e8edf1;
-  --ink-soft:#a4b2bd;
-  --ink-faint:#71808b;
-  --line:#2b3944;
-  --line-soft:#202b34;
-  --bg:#121a21;
-  --panel:#17212a;
-  --accent:#6ea3c4;
-  --anchor:#66808f;
-  --marked:#dd9c56;
-  --now:#e07362;
-  --now-soft:#3a231f;
-  color-scheme: dark;
-}
+  body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.45}
+  .wrap{max-width:1240px;margin:0 auto;padding-inline:20px;padding-block:28px 48px;display:flex;flex-direction:column;gap:22px}
+  header{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:12px 24px}
+  .eyebrow{font-family:var(--display);font-weight:600;letter-spacing:.12em;text-transform:uppercase;font-size:12px;color:var(--ink-3)}
+  h1{font-family:var(--display);font-weight:700;font-size:clamp(26px,4vw,36px);line-height:1.05;margin:4px 0 0;text-wrap:balance}
+  .meta{font-family:var(--mono);font-size:12.5px;color:var(--ink-2);text-align:right;display:flex;flex-direction:column;gap:2px}
+  .meta b{color:var(--ink);font-weight:500}
 
-*{box-sizing:border-box;}
-body{
-  margin:0;
-  background:var(--bg);
-  color:var(--ink);
-  font-family:"IBM Plex Sans Thai","IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-  padding:24px 16px 48px;
-  -webkit-font-smoothing:antialiased;
-}
-.sheet{
-  max-width:1180px;
-  margin:0 auto;
-  display:flex;
-  flex-direction:column;
-  gap:16px;
-}
+  .summary{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+  .tile{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px 14px;display:flex;flex-direction:column;gap:4px}
+  .tile .k{font-family:var(--display);font-weight:600;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
+  .tile .v{font-family:var(--display);font-weight:700;font-size:28px;line-height:1}
+  .tile .s{font-size:13px;color:var(--ink-2);min-height:1.4em}
+  @media (max-width:900px){.summary{grid-template-columns:repeat(3,1fr)}}@media (max-width:560px){.summary{grid-template-columns:repeat(2,1fr)}}
 
-/* ---------- masthead ---------- */
-.masthead{
-  display:flex;
-  flex-wrap:wrap;
-  justify-content:space-between;
-  gap:14px;
-  align-items:flex-end;
-  border-bottom:2px solid var(--ink);
-  padding-bottom:12px;
-}
-.masthead .eyebrow{
-  font-size:11px;
-  letter-spacing:.12em;
-  text-transform:uppercase;
-  color:var(--ink-soft);
-  margin:0 0 5px;
-  font-weight:600;
-}
-.masthead h1{
-  font-family:"Fraunces","IBM Plex Sans Thai",Georgia,serif;
-  font-size:clamp(24px,3.6vw,30px);
-  font-weight:600;
-  margin:0;
-  letter-spacing:-.01em;
-}
-.masthead .meta{
-  text-align:right;
-  font-size:12.5px;
-  color:var(--ink-soft);
-  line-height:1.6;
-}
-.masthead .meta b{color:var(--ink);font-weight:600;}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:10px}
+  .panel-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px 20px;padding:14px 16px;border-bottom:1px solid var(--line)}
+  .panel-head h2{font-family:var(--display);font-weight:700;font-size:19px;margin:0}
+  .legend{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:13px;color:var(--ink-2)}
+  .legend span{display:inline-flex;align-items:center;gap:6px}
+  .sw{display:inline-block;width:22px;height:10px;border-radius:2px}
+  .sw.b{background:var(--berth)} .sw.d{background:var(--berth-done)}
+  .sw.w{height:0;border-top:3px dashed var(--wait)}
+  .sw.m{background:var(--berth);outline:2px solid var(--mark);outline-offset:1px}
+  .sw.x{background:repeating-linear-gradient(135deg,rgba(214,69,69,.1) 0 3px,rgba(214,69,69,.35) 3px 6px);border-left:2px solid var(--now)}
+  .sw.g{background:var(--warn-soft);border-top:2px solid var(--warn);height:8px}
+  .sw.n{width:2px;height:14px;background:var(--now)}
 
-/* ---------- stat cards ---------- */
-.stat-row{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-  gap:10px;
-}
-.stat{
-  background:var(--panel);
-  border:1px solid var(--line);
-  border-radius:8px;
-  padding:13px 15px;
-}
-.stat .label{
-  font-size:10.5px;
-  letter-spacing:.08em;
-  text-transform:uppercase;
-  color:var(--ink-soft);
-  font-weight:600;
-  margin:0 0 7px;
-}
-.stat .value{
-  font-family:"Fraunces","IBM Plex Sans Thai",Georgia,serif;
-  font-size:24px;
-  font-weight:600;
-  line-height:1.1;
-  margin:0 0 5px;
-  font-variant-numeric:tabular-nums;
-}
-.stat .sub{font-size:12px;color:var(--ink-soft);}
+  .scroll{overflow-x:auto}
+  .gantt{min-width:980px;position:relative}
+  .g-row{display:grid;grid-template-columns:150px 1fr;border-bottom:1px solid var(--line-2)}
+  .g-row:last-child{border-bottom:0}
+  .g-label{padding:10px 12px 10px 16px;display:flex;flex-direction:column;justify-content:center;gap:1px;border-right:1px solid var(--line);background:var(--panel);position:sticky;left:0;z-index:3}
+  .g-label .bn{font-family:var(--display);font-weight:700;font-size:18px;line-height:1.1}
+  .g-label .gt{font-family:var(--mono);font-size:11.5px;color:var(--ink-3)}
+  .g-track{position:relative;height:84px}
+  .g-row.empty .g-track{height:40px}
+  .g-row.axis .g-track{height:46px}
+  .g-row.axis .g-label{justify-content:flex-end}
+  .day{position:absolute;top:0;bottom:0;border-left:1px solid var(--line)}
+  .day.alt{background:#FAFCFD}
+  .dlab{position:absolute;top:6px;left:8px;font-family:var(--display);font-weight:600;font-size:14px;white-space:nowrap}
+  .dlab small{display:block;font-family:var(--body);font-weight:500;font-size:11.5px;color:var(--ink-3);letter-spacing:.04em}
+  .hr{position:absolute;bottom:4px;font-family:var(--mono);font-size:10px;color:var(--ink-3);transform:translateX(-50%)}
+  .tick{position:absolute;top:0;bottom:0;border-left:1px dashed var(--line-2)}
+  .nowline{position:absolute;top:0;bottom:0;width:0;border-left:2px solid var(--now);z-index:4;pointer-events:none}
+  .nowtag{position:absolute;top:26px;transform:translateX(-50%);background:var(--now);color:#fff;font-family:var(--mono);font-size:10.5px;padding:1px 6px;border-radius:3px;white-space:nowrap;z-index:5}
 
-/* ---------- panel ---------- */
-.panel{
-  background:var(--panel);
-  border:1px solid var(--line);
-  border-radius:10px;
-  padding:16px 16px 18px;
-}
-.panel-head{
-  display:flex;
-  flex-wrap:wrap;
-  justify-content:space-between;
-  align-items:center;
-  gap:8px 18px;
-  margin-bottom:12px;
-}
-.panel-head h2{
-  font-family:"Fraunces","IBM Plex Sans Thai",Georgia,serif;
-  font-size:16px;
-  font-weight:600;
-  margin:0;
-}
-.legend{
-  display:flex;
-  flex-wrap:wrap;
-  gap:14px;
-  font-size:11px;
-  color:var(--ink-soft);
-}
-.legend span{display:inline-flex;align-items:center;gap:5px;white-space:nowrap;}
-.swatch{width:15px;height:8px;border-radius:2px;display:inline-block;background:var(--accent);}
-.sw-anchor{background:none;border-top:2px dashed var(--anchor);height:0;width:15px;}
-.sw-marked{outline:2px solid var(--marked);outline-offset:1px;}
-.sw-today{background:var(--line-soft);border:1px solid var(--line);width:15px;height:11px;}
-.sw-now{background:var(--now);width:2px;height:11px;border-radius:0;}
+  .wait{position:absolute;top:12px;height:0;border-top:3px dashed var(--wait);z-index:1}
+  .wait::before{content:"";position:absolute;left:-4px;top:-6.5px;width:8px;height:8px;border-radius:50%;background:var(--wait)}
+  .bar{position:absolute;top:22px;height:40px;border-radius:5px;background:var(--berth);color:#fff;padding:3px 7px;border-left:3px solid #0F4C70;overflow:hidden;z-index:2;display:flex;flex-direction:column;justify-content:center;cursor:default}
+  .bar.done{background:var(--berth-done);color:var(--ink)}
+  .bar.marked{box-shadow:0 0 0 2px var(--panel),0 0 0 4px var(--mark)}
+  .bar .nm{font-family:var(--display);font-weight:700;font-size:13.5px;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .bar .tm{font-family:var(--mono);font-size:10.5px;opacity:.9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .bar:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+  .note{position:absolute;inset:8px 12px;display:flex;align-items:center;font-size:13px;color:var(--ink-3);font-style:italic}
+  .rs{position:absolute;z-index:1;overflow:hidden}
+  .rs span{position:absolute;font-size:11.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:calc(100% - 12px)}
+  .rs.closed{top:0;bottom:0;background:repeating-linear-gradient(135deg,rgba(214,69,69,.07) 0 7px,rgba(214,69,69,.15) 7px 14px);border-left:2px solid var(--now)}
+  .rs.closed span{top:4px;left:8px;color:var(--now)}
+  .rs.partial{bottom:0;height:13px;background:var(--warn-soft);border-top:2px solid var(--warn)}
+  .rs.partial span{top:-1px;left:6px;font-size:10.5px;color:var(--warn)}
+  .note.closed{inset:10px 12px;border-radius:5px;background:repeating-linear-gradient(135deg,#F1F4F7 0 8px,#E8EDF2 8px 16px);color:var(--ink-2);font-style:normal;padding-inline:12px;font-weight:500}
 
-/* ---------- timeline ---------- */
-.timeline-scroll{overflow-x:auto;overflow-y:visible;padding-top:22px;}
-.timeline{
-  min-width:960px;
-  display:grid;
-  grid-template-columns:148px 1fr;
-}
-.tl-head{display:contents;}
-.tl-head .corner{
-  position:sticky; left:0; z-index:3;
-  background:var(--panel);
-  border-bottom:1px solid var(--line);
-}
-.tl-head .corner span{
-  font-size:10px;letter-spacing:.07em;text-transform:uppercase;
-  color:var(--ink-faint);font-weight:600;
-}
-.tl-head .days{
-  position:relative;
-  display:grid;
-  border-bottom:1px solid var(--line);
-  padding-bottom:6px;
-}
-.day-col{
-  position:relative;
-  font-size:11px;
-  color:var(--ink-soft);
-  padding-left:2px;
-}
-.day-col.today .dname{color:var(--accent);}
-.day-col .dname{font-weight:600;color:var(--ink);}
-.day-col .wd{color:var(--ink-faint);}
-.day-col .hrs{
-  margin-top:15px;
-  display:flex;
-  justify-content:space-between;
-  font-size:9px;
-  color:var(--ink-faint);
-  padding-right:4px;
-}
-
-.row{
-  grid-column:1 / -1;
-  display:grid;
-  grid-template-columns:148px 1fr;
-  border-top:1px solid var(--line-soft);
-  min-height:60px;
-}
-.row:last-child{border-bottom:1px solid var(--line-soft);}
-.berth-label{
-  position:sticky; left:0; z-index:2;
-  background:var(--panel);
-  padding:8px 10px 8px 2px;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  gap:2px;
-}
-.berth-label .bname{font-weight:700;font-size:13.5px;}
-.berth-label .gate{font-size:10.5px;color:var(--ink-faint);}
-.berth-label .note{font-size:9.5px;color:var(--marked);font-style:italic;line-height:1.3;margin-top:1px;}
-.track{position:relative;}
-.gridcell{
-  position:absolute;
-  top:0;bottom:0;
-  border-left:1px solid var(--line-soft);
-}
-.gridcell.today{background:var(--line-soft);}
-.empty-note{
-  position:absolute;
-  left:8px;top:50%;
-  transform:translateY(-50%);
-  font-size:11.5px;
-  font-style:italic;
-  color:var(--ink-faint);
-}
-.closed-note{
-  position:absolute;
-  left:6px;right:6px;top:50%;
-  transform:translateY(-50%);
-  font-size:11.5px;
-  color:var(--ink-soft);
-  background:repeating-linear-gradient(45deg,var(--line-soft),var(--line-soft) 6px,transparent 6px,transparent 12px);
-  padding:8px 10px;
-  border-radius:6px;
-}
-.closed-seg{
-  position:absolute;
-  top:10px;bottom:10px;
-  font-size:10.5px;
-  color:var(--ink-soft);
-  background:repeating-linear-gradient(45deg,var(--line-soft),var(--line-soft) 6px,transparent 6px,transparent 12px);
-  border:1px dashed var(--line);
-  border-radius:6px;
-  display:flex;
-  align-items:center;
-  padding:0 10px;
-  overflow:hidden;
-  white-space:nowrap;
-}
-.wait{
-  position:absolute;
-  top:50%;
-  height:0;
-  border-top:2px dashed var(--anchor);
-}
-.wait::before{
-  content:"";
-  position:absolute;left:-3px;top:-3px;
-  width:6px;height:6px;border-radius:50%;
-  background:var(--anchor);
-}
-.bar{
-  position:absolute;
-  top:6px;
-  height:44px;
-  background:var(--accent);
-  border-radius:6px;
-  color:#fff;
-  font-size:11px;
-  padding:6px 8px;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  gap:3px;
-  overflow:hidden;
-  box-shadow:0 1px 2px rgba(0,0,0,.12);
-}
-.bar.marked{outline:2px solid var(--marked);outline-offset:1px;}
-.bar .vname{font-weight:700;font-size:11.5px;line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.bar .vtime{font-size:10px;line-height:1.35;opacity:.92;font-variant-numeric:tabular-nums;white-space:nowrap;}
-.bar .vflag{
-  position:absolute;top:3px;right:6px;
-  font-size:9px;font-weight:700;
-  background:rgba(255,255,255,.22);
-  padding:1px 5px;border-radius:999px;
-}
-.now-line{
-  position:absolute;top:-4px;bottom:-4px;
-  width:2px;background:var(--now);
-  z-index:5;
-}
-.now-tag{
-  position:absolute;top:-18px;
-  transform:translateX(-50%);
-  background:var(--now);color:#fff;
-  font-size:10px;font-weight:700;
-  padding:2px 7px;border-radius:4px;
-  white-space:nowrap;
-  font-variant-numeric:tabular-nums;
-}
-
-.foot{
-  font-size:11px;
-  color:var(--ink-faint);
-  border-top:1px solid var(--line);
-  padding-top:12px;
-  display:flex;
-  justify-content:space-between;
-  flex-wrap:wrap;
-  gap:8px;
-}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th{font-family:var(--display);font-weight:600;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+  td{padding:9px 12px;border-bottom:1px solid var(--line-2);white-space:nowrap;vertical-align:middle}
+  tr:last-child td{border-bottom:0}
+  td.num,.mono{font-family:var(--mono);font-size:13px;font-variant-numeric:tabular-nums}
+  td.vs{font-family:var(--display);font-weight:700;font-size:15px}
+  tr.grp td{background:var(--line-2);font-family:var(--display);font-weight:700;font-size:14px;padding:6px 12px}
+  tr.grp td span{font-family:var(--mono);font-weight:400;font-size:11.5px;color:var(--ink-3);margin-left:8px}
+  tr.marked td{background:var(--mark-soft)}
+  .pill{display:inline-block;font-family:var(--display);font-weight:600;font-size:12px;letter-spacing:.03em;padding:2px 9px;border-radius:999px}
+  .p-along{background:var(--ok-soft);color:var(--ok)}
+  .p-anch{background:var(--warn-soft);color:var(--warn)}
+  .p-exp{background:#E6EFF6;color:var(--berth)}
+  .p-closed{background:#FBE6E6;color:var(--now)}
+  .p-done{background:var(--idle);color:var(--ink-3)}
+  .flag{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--mark);margin-left:6px;vertical-align:middle}
+  .foot{font-size:12.5px;color:var(--ink-3);display:flex;flex-direction:column;gap:4px}
 </style>
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600&family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
-
-<div class="sheet">
-
-  <div class="masthead">
+</head>
+<body>
+<div class="wrap">
+  <header>
     <div>
-      <p class="eyebrow">การท่าเรือแห่งประเทศไทย · ท่าเรือกรุงเทพ (THBKK)</p>
-      <h1>ตารางท่าเทียบเรือ PAT</h1>
+      <div class="eyebrow">Port Authority of Thailand · Bangkok Port (THBKK)</div>
+      <h1>PAT Berth Window</h1>
     </div>
     <div class="meta">
-      ข้อมูล ณ วันที่ <b>29/09/2026</b><br>
-      ช่วงเวลา <b>27 ก.ย. – 02 ต.ค. 2026</b> · เวลาท้องถิ่น (UTC+7)
+      <span>Sheet dated <b>29/09/2026</b></span>
+      <span>Window <b>27 Sep – 02 Oct 2026</b> · times local (UTC+7)</span>
     </div>
-  </div>
+  </header>
 
-  <div class="stat-row">
-    <div class="stat">
-      <p class="label">เทียบท่าอยู่ขณะนี้</p>
-      <p class="value">3</p>
-      <p class="sub">20AB · 20B · 20D</p>
-    </div>
-    <div class="stat">
-      <p class="label">รอที่ทุ่นจอด</p>
-      <p class="value">1</p>
-      <p class="sub">SKY CHALLENGE · 20AB</p>
-    </div>
-    <div class="stat">
-      <p class="label">เทียบท่าถัดไป</p>
-      <p class="value">29/16</p>
-      <p class="sub">SKY CHALLENGE → 20AB</p>
-    </div>
-    <div class="stat">
-      <p class="label">ออกเรือถัดไป</p>
-      <p class="value">29/14</p>
-      <p class="sub">BANGKOK · 20D</p>
-    </div>
-  </div>
+  <section class="summary" id="summary"></section>
 
-  <div class="panel">
+  <section class="panel">
     <div class="panel-head">
-      <h2>ผังเวลาการใช้ท่าเทียบเรือ</h2>
+      <h2>Berth timeline</h2>
       <div class="legend">
-        <span><i class="swatch sw-anchor"></i>รอทุ่นจอด (ETA → P.B)</span>
-        <span><i class="swatch"></i>เทียบท่าอยู่ (P.B → ETD)</span>
-        <span><i class="swatch sw-marked"></i>มีเครื่องหมายพิเศษ</span>
-        <span><i class="swatch sw-today"></i>วันนี้</span>
-        <span><i class="swatch sw-now"></i>เวลาปัจจุบัน</span>
+        <span><i class="sw w"></i>Anchorage wait (ETA → P.B)</span>
+        <span><i class="sw b"></i>Alongside (P.B → ETD)</span>
+        <span><i class="sw d"></i>Sailed</span>
+        <span><i class="sw x"></i>Berth closed</span>
+        <span><i class="sw g"></i>Gate out of service</span>
+        <span><i class="sw n"></i>Now</span>
       </div>
     </div>
+    <div class="scroll"><div class="gantt" id="gantt"></div></div>
+  </section>
 
-    <div class="timeline-scroll">
-      <div class="timeline" id="tl"></div>
+  <section class="panel">
+    <div class="panel-head"><h2>Berth &amp; gate notices</h2></div>
+    <div class="scroll"><table><thead><tr><th>Berth</th><th>Type</th><th>Period</th><th>Notice</th></tr></thead><tbody id="notices"></tbody></table></div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head"><h2>Vessel list by berth</h2></div>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Vessel</th><th>LOA (m)</th><th>ETA</th><th>P.B</th><th>ETD</th><th>Hours alongside</th><th>Shift</th><th>Status</th></tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
     </div>
-  </div>
+  </section>
 
   <div class="foot">
-    <span>ที่มา: SHIP'S MOVEMENT ON 29 SEPTEMBER 2026 — แผนกท่า</span>
-    <span>โทร. 02-269-3476, 02-269-3478 · birthing2020@gmail.com</span>
+    <span>P.B = pilot boarding / berthing time. Times on the sheet are written DD/HH; dates 27–30 are September, 01–02 are October.</span>
+    <span>Gate stoppages (G.29, G.25) reduce crane/gate capacity at the berth but do not close it. Closures beyond 02 Oct continue past the right edge of the timeline.</span>
   </div>
-
 </div>
 
 <script>
-(function(){
-  // window: 27 Sep 00:00 -> 03 Oct 00:00 = 144h
-  const TOTAL_H = 144;
-  const DAY_LABELS = [
-    {d:"27 ก.ย.",wd:"อา",today:false},
-    {d:"28 ก.ย.",wd:"จ",today:false},
-    {d:"29 ก.ย.",wd:"อ",today:true},
-    {d:"30 ก.ย.",wd:"พ",today:false},
-    {d:"01 ต.ค.",wd:"พฤ",today:false},
-    {d:"02 ต.ค.",wd:"ศ",today:false}
-  ];
-  const NOW_H = 60; // 29 Sep 12:00
+const BERTHS = [
+  {id:"20AB", gates:"Gate 29, 30", vessels:[
+    {n:"INFINITY", loa:565, eta:"27/18", pb:"28/05", etd:"29/15"},
+    {n:"SKY CHALLENGE", loa:565, eta:"29/08", pb:"29/16", etd:"01/04"},
+    {n:"KHARIS HERITAGE", loa:482, eta:"01/07", pb:"01/07", etd:"02/06"}],
+    restrict:[{kind:"partial", from:"29/00", to:"30/24", label:"G.29 stopped · spreader repair", text:"G.29 stops working 29–30 Sep 2026 to repair spreader"}]},
+  {id:"20B", gates:"Gate 27, 28", vessels:[
+    {n:"MILLENNIUM BRIGHT", loa:564, eta:"28/11", pb:"29/05", etd:"30/04"},
+    {n:"M ODYSSEY", loa:449, eta:"30/04", pb:"30/05", etd:"01/05", shift:"4A"}]},
+  {id:"20C", gates:"Gate 21, 22", vessels:[
+    {n:"CAPE FAWLEY", loa:558, eta:"30/21", pb:"01/06", etd:"02/06"}],
+    restrict:[{kind:"closed", from:"27/00", to:"01/00", label:"Not in use · opens 1 Oct", text:"Wharf to be utilised from 1 Oct 2026"}]},
+  {id:"20D", gates:"Gate 23, 24", vessels:[
+    {n:"BANGKOK", loa:551, eta:"27/13", pb:"27/15", etd:"29/14"}],
+    restrict:[{kind:"closed", from:"01/00", to:"21/24", label:"Closed 1–21 Oct · electric channel renovation", text:"Berth closed 1–21 Oct 2026 to renovate electric channel"}]},
+  {id:"20E", gates:"Gate 25, 26", vessels:[
+    {n:"MITRA BHUM", loa:485, eta:"30/03", pb:"30/05", etd:"30/18"}],
+    restrict:[{kind:"partial", from:"01/00", to:"15/24", label:"G.25 stopped · trolley rail change (to 15 Oct)", text:"G.25 stops working 1–15 Oct 2026 to change trolley rail"}]},
+  {id:"20F", gates:"Gate 33, 34", vessels:[
+    {n:"HOPE C", loa:481, eta:"29/17", pb:"29/17", etd:"30/16"},
+    {n:"ALS SUMIRE", loa:537, eta:"01/13", pb:"01/17", etd:"02/17", shift:"1C"}]},
+  {id:"22A", gates:"", vessels:[]},
+  {id:"22B", gates:"", vessels:[]},
+  {id:"22C", gates:"", vessels:[]},
+  {id:"22D", gates:"", vessels:[]},
+];
 
-  function fmt(h){
-    const dayIdx = Math.floor(h/24);
-    const dayNums = [27,28,29,30,1,2];
-    const day = dayNums[dayIdx] ?? dayNums[dayNums.length-1];
-    const hour = Math.round(h - dayIdx*24);
-    return String(day).padStart(2,"0")+"/"+String(hour).padStart(2,"0");
-  }
+const H = 3600e3;
+// DD/HH -> ms. Days 27-30 = September, 01-26 = October 2026. Local UTC+7.
+function t(s){const [d,h]=s.split("/").map(Number);const m=d>=27?8:9;return Date.UTC(2026,m,d,h-7);}
+const START=Date.UTC(2026,8,27,-7), DAYS=6, END=START+DAYS*24*H;
+const pct=ms=>((ms-START)/(END-START)*100);
+const fmt=ms=>{const d=new Date(ms+7*H);const dd=String(d.getUTCDate()).padStart(2,"0");const mo=d.getUTCMonth()===8?"Sep":"Oct";return `${dd} ${mo} ${String(d.getUTCHours()).padStart(2,"0")}:00`;};
+const DOW=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 
-  const berths = [
-    {name:"20AB",gate:"ประตู 29, 30",note:"G.29 หยุดซ่อม spreader 29-30 ก.ย.",kind:"rows",items:[
-      {type:"wait",start:18,end:29},
-      {type:"bar",name:"INFINITY",start:29,end:63,label:"28/05→29/15"},
-      {type:"wait",start:56,end:64},
-      {type:"bar",name:"SKY CHALLENGE",start:64,end:100,label:"29/16→01/04"},
-      {type:"bar",name:"KHARIS HERITAGE",start:103,end:126,label:"01/07→02/06"}
-    ]},
-    {name:"20B",gate:"ประตู 27, 28",kind:"rows",items:[
-      {type:"wait",start:35,end:53},
-      {type:"bar",name:"MILLENNIUM BRIGHT",start:53,end:76,label:"29/05→30/04"},
-      {type:"wait",start:76,end:77},
-      {type:"bar",name:"M. ODYSSEY",start:77,end:101,label:"30/05→01/05",flag:"4A",marked:true}
-    ]},
-    {name:"20C",gate:"ประตู 21, 22",kind:"rows",items:[
-      {type:"closedseg",start:0,end:93,label:"ปิดใช้งาน · เปิดใช้ท่า 1 ต.ค. 2026"},
-      {type:"wait",start:93,end:102},
-      {type:"bar",name:"CAPE FAWLEY",start:102,end:126,label:"01/06→02/06"}
-    ]},
-    {name:"20D",gate:"ประตู 23, 24",kind:"rows",items:[
-      {type:"wait",start:13,end:15},
-      {type:"bar",name:"BANGKOK",start:15,end:62,label:"27/15→29/14"},
-      {type:"closedseg",start:96,end:144,label:"ปิดซ่อมระบบไฟฟ้า 1-21 ต.ค. 2026"}
-    ]},
-    {name:"20E",gate:"ประตู 25, 26",note:"G.25 หยุดซ่อมราง 1-15 ต.ค.",kind:"rows",items:[
-      {type:"wait",start:75,end:77},
-      {type:"bar",name:"MITRA BHUM",start:77,end:90,label:"30/05→30/18"}
-    ]},
-    {name:"20F",gate:"ประตู 33, 34",kind:"rows",items:[
-      {type:"bar",name:"HOPE C",start:65,end:88,label:"29/17→30/16"},
-      {type:"wait",start:109,end:113},
-      {type:"bar",name:"ALS SUMIRE",start:113,end:137,label:"01/17→02/17",flag:"1C",marked:true}
-    ]},
-    {name:"22A",gate:"",kind:"empty"},
-    {name:"22B",gate:"",kind:"empty"},
-    {name:"22C",gate:"",kind:"empty"},
-    {name:"22D",gate:"",kind:"empty"}
-  ];
+let now=Date.now();
+const SHEET_NOW=Date.UTC(2026,8,29,10-7,42);
+if(now<START||now>END) now=SHEET_NOW;
 
-  const pct = h => (h/TOTAL_H*100).toFixed(3)+"%";
+function status(v){
+  const a=t(v.eta),p=t(v.pb),e=t(v.etd);
+  if(now>=e) return ["done","Sailed","p-done"];
+  if(now>=p) return ["along","Alongside","p-along"];
+  if(now>=a) return ["anch","At anchorage","p-anch"];
+  return ["exp","Expected","p-exp"];
+}
 
-  let html = "";
-
-  html += '<div class="tl-head">';
-  html += '<div class="corner"><span>ท่า / ประตู</span></div>';
-  html += '<div class="days" style="grid-template-columns:repeat('+DAY_LABELS.length+',1fr)">';
-  DAY_LABELS.forEach(d=>{
-    html += '<div class="day-col'+(d.today?' today':'')+'"><span class="dname">'+d.d+'</span> <span class="wd">'+d.wd+'</span>'
-      + '<div class="hrs"><span>06</span><span>12</span><span>18</span></div></div>';
+// Gantt
+const g=document.getElementById("gantt");
+let html=`<div class="g-row axis"><div class="g-label"><span class="gt">Berth / Gate</span></div><div class="g-track">`;
+for(let i=0;i<DAYS;i++){
+  const ms=START+i*24*H, d=new Date(ms+7*H);
+  html+=`<div class="day${i%2?" alt":""}" style="left:${i/DAYS*100}%;width:${100/DAYS}%"><div class="dlab">${String(d.getUTCDate()).padStart(2,"0")} ${d.getUTCMonth()===8?"Sep":"Oct"}<small>${DOW[d.getUTCDay()]}</small></div></div>`;
+  [6,12,18].forEach(h=>html+=`<span class="hr" style="left:${(i*24+h)/(DAYS*24)*100}%">${String(h).padStart(2,"0")}</span>`);
+}
+html+=`</div></div>`;
+const grid=()=>{let s="";for(let i=0;i<DAYS;i++){s+=`<div class="day${i%2?" alt":""}" style="left:${i/DAYS*100}%;width:${100/DAYS}%"></div>`;[6,12,18].forEach(h=>s+=`<div class="tick" style="left:${(i*24+h)/(DAYS*24)*100}%"></div>`);}return s;};
+BERTHS.forEach(b=>{
+  const empty=!b.vessels.length;
+  html+=`<div class="g-row${empty?" empty":""}"><div class="g-label"><span class="bn">${b.id}</span>${b.gates?`<span class="gt">${b.gates}</span>`:""}</div><div class="g-track">${grid()}`;
+  (b.restrict||[]).forEach(r=>{
+    const l=Math.max(0,pct(t(r.from))), rr=Math.min(100,pct(t(r.to)));
+    html+=`<div class="rs ${r.kind}" style="left:${l}%;width:${rr-l}%" title="${r.text}"><span>${r.label}</span></div>`;
   });
-  html += '<div class="now-tag" style="left:'+pct(NOW_H)+'">NOW '+fmt(NOW_H)+'</div>';
-  html += '</div></div>';
-
-  berths.forEach(b=>{
-    html += '<div class="row">';
-    html += '<div class="berth-label"><span class="bname">'+b.name+'</span>'
-      + (b.gate?'<span class="gate">'+b.gate+'</span>':'')
-      + (b.note?'<span class="note">'+b.note+'</span>':'')+'</div>';
-    html += '<div class="track">';
-
-    DAY_LABELS.forEach((d,i)=>{
-      html += '<div class="gridcell'+(d.today?' today':'')+'" style="left:'+pct(i*24)+';width:'+pct(24)+'"></div>';
-    });
-
-    if(b.kind==="closed"){
-      html += '<div class="closed-note">'+b.note+'</div>';
-    } else if(b.kind==="empty"){
-      html += '<div class="empty-note">ไม่มีเรือกำหนดเข้าเทียบท่า</div>';
-    } else {
-      b.items.forEach(it=>{
-        if(it.type==="wait"){
-          html += '<div class="wait" style="left:'+pct(it.start)+';width:'+pct(it.end-it.start)+'"></div>';
-        } else if(it.type==="closedseg"){
-          html += '<div class="closed-seg" style="left:'+pct(it.start)+';width:'+pct(it.end-it.start)+'">'+it.label+'</div>';
-        } else {
-          const title = it.name+' · '+it.label+(it.flag?' · '+it.flag:'');
-          html += '<div class="bar'+(it.marked?' marked':'')+'" title="'+title+'" style="left:'+pct(it.start)+';width:'+pct(it.end-it.start)+'">'
-            + (it.flag?'<span class="vflag">'+it.flag+'</span>':'')
-            + '<span class="vname">'+it.name+'</span>'
-            + '<span class="vtime">'+it.label+'</span>'
-            + '</div>';
-        }
-      });
-    }
-
-    html += '<div class="now-line" style="left:'+pct(NOW_H)+'"></div>';
-
-    html += '</div></div>';
+  if(empty) html+=`<div class="note">No vessel scheduled</div>`;
+  b.vessels.forEach(v=>{
+    const a=t(v.eta),p=t(v.pb),e=t(v.etd),[st]=status(v);
+    if(p>a) html+=`<div class="wait" style="left:${pct(a)}%;width:${pct(p)-pct(a)}%" title="${v.n} waiting ${(p-a)/H} h"></div>`;
+    const tip=`${v.n} · LOA ${v.loa} m\nETA ${fmt(a)}\nP.B ${fmt(p)}\nETD ${fmt(e)}${v.shift?"\nShift "+v.shift:""}`;
+    html+=`<div class="bar${st==="done"?" done":""}${v.mark?" marked":""}" tabindex="0" style="left:${pct(p)}%;width:calc(${pct(e)-pct(p)}% - 4px);margin-left:2px" title="${tip}"><span class="nm">${v.n}</span><span class="tm">${v.pb}→${v.etd}${v.shift?" · "+v.shift:""}</span></div>`;
   });
+  html+=`</div></div>`;
+});
+g.innerHTML=html;
+// now line spanning all rows (placed within track area)
+const nl=document.createElement("div");
+nl.className="nowline";
+nl.style.left=`calc(150px + (100% - 150px) * ${pct(now)/100})`;
+g.appendChild(nl);
+const tag=document.createElement("div");
+tag.className="nowtag";tag.style.left=nl.style.left;
+const nd=new Date(now+7*H);
+tag.textContent=`NOW ${String(nd.getUTCDate()).padStart(2,"0")}/${String(nd.getUTCHours()).padStart(2,"0")}:${String(nd.getUTCMinutes()).padStart(2,"0")}`;
+g.appendChild(tag);
 
-  document.getElementById("tl").innerHTML = html;
-})();
+// Table
+let tb="";
+BERTHS.forEach(b=>{
+  if(!b.vessels.length) return;
+  tb+=`<tr class="grp"><td colspan="8">Berth ${b.id}<span>${b.gates}</span></td></tr>`;
+  b.vessels.forEach(v=>{
+    const [,lab,cls]=status(v);
+    const hrs=(t(v.etd)-t(v.pb))/H;
+    tb+=`<tr class="${v.mark?"marked":""}"><td class="vs">${v.n}${v.mark?'<span class="flag" title="Marked on sheet"></span>':""}</td><td class="num">${v.loa}</td><td class="num">${fmt(t(v.eta))}</td><td class="num">${fmt(t(v.pb))}</td><td class="num">${fmt(t(v.etd))}</td><td class="num">${hrs} h</td><td class="num">${v.shift||"–"}</td><td><span class="pill ${cls}">${lab}</span></td></tr>`;
+  });
+});
+document.getElementById("tbody").innerHTML=tb;
+
+// Notices
+const pd=s=>{const ms=t(s);return fmt(ms).slice(0,6)};
+document.getElementById("notices").innerHTML=BERTHS.flatMap(b=>(b.restrict||[]).map(r=>{
+  const endMs=t(r.to)-1;
+  return `<tr><td class="vs">${b.id}</td><td><span class="pill ${r.kind==="closed"?"p-closed":"p-anch"}">${r.kind==="closed"?"Berth closed":"Gate stopped"}</span></td><td class="num">${b.id==="20C"?"Until 30 Sep":pd(r.from)+" – "+pd(fmt(endMs).slice(0,2)+"/00")}</td><td>${r.text}</td></tr>`;
+})).join("");
+
+// Summary
+const all=BERTHS.flatMap(b=>b.vessels.map(v=>({...v,berth:b.id,st:status(v)[0]})));
+const along=all.filter(v=>v.st==="along"), anch=all.filter(v=>v.st==="anch");
+const nextSail=all.filter(v=>v.st!=="done").sort((x,y)=>t(x.etd)-t(y.etd))[0];
+const nextIn=all.filter(v=>v.st==="exp"||v.st==="anch").sort((x,y)=>t(x.pb)-t(y.pb))[0];
+const nNotices=BERTHS.reduce((a,b)=>a+(b.restrict||[]).length,0);
+document.getElementById("summary").innerHTML=`
+  <div class="tile"><span class="k">Alongside now</span><span class="v">${along.length}</span><span class="s">${along.map(v=>v.berth).join(" · ")||"–"}</span></div>
+  <div class="tile"><span class="k">At anchorage</span><span class="v">${anch.length}</span><span class="s">${anch.map(v=>v.n).join(", ")||"None waiting"}</span></div>
+  <div class="tile"><span class="k">Next berthing</span><span class="v">${nextIn?nextIn.pb:"–"}</span><span class="s">${nextIn?`${nextIn.n} → ${nextIn.berth}`:""}</span></div>
+  <div class="tile"><span class="k">Berth notices</span><span class="v">${nNotices}</span><span class="s">20C opens, 20D closes 1 Oct</span></div>
+  <div class="tile"><span class="k">Next sailing</span><span class="v">${nextSail?nextSail.etd:"–"}</span><span class="s">${nextSail?`${nextSail.n} · ${nextSail.berth}`:""}</span></div>`;
 </script>
+</body>
+</html>
