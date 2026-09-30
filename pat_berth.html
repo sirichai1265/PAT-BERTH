@@ -111,8 +111,8 @@
       <h1>PAT Berth Window</h1>
     </div>
     <div class="meta">
-      <span>Sheet dated <b>29/09/2026</b></span>
-      <span>Window <b>27 Sep – 02 Oct 2026</b> · times local (UTC+7)</span>
+      <span>Sheet dated <b>30/09/2026</b></span>
+      <span>Window <b>27 Sep – 04 Oct 2026</b> · times local (UTC+7)</span>
     </div>
   </header>
 
@@ -149,33 +149,32 @@
   </section>
 
   <div class="foot">
-    <span>P.B = pilot boarding / berthing time. Times on the sheet are written DD/HH; dates 27–30 are September, 01–02 are October.</span>
-    <span>Gate stoppages (G.29, G.25) reduce crane/gate capacity at the berth but do not close it. Closures beyond 02 Oct continue past the right edge of the timeline.</span>
+    <span>P.B = pilot boarding / berthing time. Times on the sheet are written DD/HH; dates 27–30 are September, 01–04 are October.</span>
+    <span>Gate stoppages (G.29, G.25) reduce crane/gate capacity at the berth but do not close it. Closures beyond 04 Oct continue past the right edge of the timeline.</span>
   </div>
 </div>
 
 <script>
 const BERTHS = [
   {id:"20AB", gates:"Gate 29, 30", vessels:[
-    {n:"INFINITY", loa:565, eta:"27/18", pb:"28/05", etd:"29/15"},
     {n:"SKY CHALLENGE", loa:565, eta:"29/08", pb:"29/16", etd:"01/04"},
-    {n:"KHARIS HERITAGE", loa:482, eta:"01/07", pb:"01/07", etd:"02/06"}],
+    {n:"CAPE FAWLEY", loa:558, eta:"30/21", pb:"01/06", etd:"02/06"},
+    {n:"KMTC BANGKOK", loa:565, eta:"02/06", pb:"02/08", etd:"03/17"}],
     restrict:[{kind:"partial", from:"29/00", to:"30/24", label:"G.29 stopped · spreader repair", text:"G.29 stops working 29–30 Sep 2026 to repair spreader"}]},
   {id:"20B", gates:"Gate 27, 28", vessels:[
-    {n:"MILLENNIUM BRIGHT", loa:564, eta:"28/11", pb:"29/05", etd:"30/04"},
-    {n:"M ODYSSEY", loa:449, eta:"30/04", pb:"30/05", etd:"01/05", shift:"4A"}]},
-  {id:"20C", gates:"Gate 21, 22", vessels:[
-    {n:"CAPE FAWLEY", loa:558, eta:"30/21", pb:"01/06", etd:"02/06"}],
-    restrict:[{kind:"closed", from:"27/00", to:"01/00", label:"Not in use · opens 1 Oct", text:"Wharf to be utilised from 1 Oct 2026"}]},
+    {n:"M ODYSSEY", loa:449, eta:"30/04", pb:"30/05", etd:"01/05", shift:"4A"},
+    {n:"KHARIS HERITAGE", loa:482, eta:"01/11", pb:"01/17", etd:"02/17", mark:true}]},
+  {id:"20C", gates:"Gate 21, 22", vessels:[],
+    restrict:[{kind:"closed", from:"27/00", to:"03/00", label:"Not in use · opens 3 Oct", text:"Wharf to be utilised from 3 Oct 2026"}]},
   {id:"20D", gates:"Gate 23, 24", vessels:[
-    {n:"BANGKOK", loa:551, eta:"27/13", pb:"27/15", etd:"29/14"}],
-    restrict:[{kind:"closed", from:"01/00", to:"21/24", label:"Closed 1–21 Oct · electric channel renovation", text:"Berth closed 1–21 Oct 2026 to renovate electric channel"}]},
+    {n:"ALS SUMIRE", loa:537, eta:"01/17", pb:"01/17", etd:"02/17", shift:"1C", mark:true}],
+    restrict:[{kind:"closed", from:"03/00", to:"24/24", label:"Closed 3–24 Oct · electric channel renovation", text:"Berth closed 3–24 Oct 2026 to renovate electric channel"}]},
   {id:"20E", gates:"Gate 25, 26", vessels:[
     {n:"MITRA BHUM", loa:485, eta:"30/03", pb:"30/05", etd:"30/18"}],
-    restrict:[{kind:"partial", from:"01/00", to:"15/24", label:"G.25 stopped · trolley rail change (to 15 Oct)", text:"G.25 stops working 1–15 Oct 2026 to change trolley rail"}]},
+    restrict:[{kind:"partial", from:"03/00", to:"18/24", label:"G.25 stopped · trolley rail change (to 18 Oct)", text:"G.25 stops working 3–18 Oct 2026 to change trolley rail"}]},
   {id:"20F", gates:"Gate 33, 34", vessels:[
     {n:"HOPE C", loa:481, eta:"29/17", pb:"29/17", etd:"30/16"},
-    {n:"ALS SUMIRE", loa:537, eta:"01/13", pb:"01/17", etd:"02/17", shift:"1C"}]},
+    {n:"WAN HAI 278", loa:564, eta:"02/09", pb:"02/09", etd:"04/10"}]},
   {id:"22A", gates:"", vessels:[]},
   {id:"22B", gates:"", vessels:[]},
   {id:"22C", gates:"", vessels:[]},
@@ -185,13 +184,13 @@ const BERTHS = [
 const H = 3600e3;
 // DD/HH -> ms. Days 27-30 = September, 01-26 = October 2026. Local UTC+7.
 function t(s){const [d,h]=s.split("/").map(Number);const m=d>=27?8:9;return Date.UTC(2026,m,d,h-7);}
-const START=Date.UTC(2026,8,27,-7), DAYS=6, END=START+DAYS*24*H;
+const START=Date.UTC(2026,8,27,-7), DAYS=8, END=START+DAYS*24*H;
 const pct=ms=>((ms-START)/(END-START)*100);
 const fmt=ms=>{const d=new Date(ms+7*H);const dd=String(d.getUTCDate()).padStart(2,"0");const mo=d.getUTCMonth()===8?"Sep":"Oct";return `${dd} ${mo} ${String(d.getUTCHours()).padStart(2,"0")}:00`;};
 const DOW=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 
 let now=Date.now();
-const SHEET_NOW=Date.UTC(2026,8,29,10-7,42);
+const SHEET_NOW=Date.UTC(2026,8,30,12-7);
 if(now<START||now>END) now=SHEET_NOW;
 
 function status(v){
@@ -257,7 +256,7 @@ document.getElementById("tbody").innerHTML=tb;
 const pd=s=>{const ms=t(s);return fmt(ms).slice(0,6)};
 document.getElementById("notices").innerHTML=BERTHS.flatMap(b=>(b.restrict||[]).map(r=>{
   const endMs=t(r.to)-1;
-  return `<tr><td class="vs">${b.id}</td><td><span class="pill ${r.kind==="closed"?"p-closed":"p-anch"}">${r.kind==="closed"?"Berth closed":"Gate stopped"}</span></td><td class="num">${b.id==="20C"?"Until 30 Sep":pd(r.from)+" – "+pd(fmt(endMs).slice(0,2)+"/00")}</td><td>${r.text}</td></tr>`;
+  return `<tr><td class="vs">${b.id}</td><td><span class="pill ${r.kind==="closed"?"p-closed":"p-anch"}">${r.kind==="closed"?"Berth closed":"Gate stopped"}</span></td><td class="num">${b.id==="20C"?"Until 3 Oct":pd(r.from)+" – "+pd(fmt(endMs).slice(0,2)+"/00")}</td><td>${r.text}</td></tr>`;
 })).join("");
 
 // Summary
@@ -270,7 +269,7 @@ document.getElementById("summary").innerHTML=`
   <div class="tile"><span class="k">Alongside now</span><span class="v">${along.length}</span><span class="s">${along.map(v=>v.berth).join(" · ")||"–"}</span></div>
   <div class="tile"><span class="k">At anchorage</span><span class="v">${anch.length}</span><span class="s">${anch.map(v=>v.n).join(", ")||"None waiting"}</span></div>
   <div class="tile"><span class="k">Next berthing</span><span class="v">${nextIn?nextIn.pb:"–"}</span><span class="s">${nextIn?`${nextIn.n} → ${nextIn.berth}`:""}</span></div>
-  <div class="tile"><span class="k">Berth notices</span><span class="v">${nNotices}</span><span class="s">20C opens, 20D closes 1 Oct</span></div>
+  <div class="tile"><span class="k">Berth notices</span><span class="v">${nNotices}</span><span class="s">20C opens, 20D closes 3 Oct</span></div>
   <div class="tile"><span class="k">Next sailing</span><span class="v">${nextSail?nextSail.etd:"–"}</span><span class="s">${nextSail?`${nextSail.n} · ${nextSail.berth}`:""}</span></div>`;
 </script>
 </body>
