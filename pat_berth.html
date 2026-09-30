@@ -23,8 +23,23 @@
   header{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:12px 24px}
   .eyebrow{font-family:var(--display);font-weight:600;letter-spacing:.12em;text-transform:uppercase;font-size:12px;color:var(--ink-3)}
   h1{font-family:var(--display);font-weight:700;font-size:clamp(26px,4vw,36px);line-height:1.05;margin:4px 0 0;text-wrap:balance}
-  .meta{font-family:var(--mono);font-size:12.5px;color:var(--ink-2);text-align:right;display:flex;flex-direction:column;gap:2px}
+  .meta{font-family:var(--mono);font-size:12.5px;color:var(--ink-2);text-align:right;display:flex;flex-direction:column;gap:6px;align-items:flex-end}
   .meta b{color:var(--ink);font-weight:500}
+
+  .daypicker{display:flex;align-items:center;gap:8px;font-family:var(--body);font-size:13px;color:var(--ink-2)}
+  .daypicker label{font-family:var(--display);font-weight:600;font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3)}
+  .daypicker select{
+    font-family:var(--mono);font-size:13px;color:var(--ink);background:var(--panel);
+    border:1px solid var(--line);border-radius:6px;padding:5px 8px;cursor:pointer;
+  }
+  .daypicker .navbtn{
+    font-family:var(--mono);font-size:13px;color:var(--ink);background:var(--panel);
+    border:1px solid var(--line);border-radius:6px;padding:5px 9px;cursor:pointer;line-height:1;
+  }
+  .daypicker .navbtn:disabled{opacity:.35;cursor:default}
+  .daypicker .navbtn:not(:disabled):hover{background:var(--line-2)}
+  .badge-latest{font-family:var(--display);font-weight:600;font-size:11px;letter-spacing:.04em;color:var(--ok);background:var(--ok-soft);padding:2px 8px;border-radius:999px}
+  .badge-hist{font-family:var(--display);font-weight:600;font-size:11px;letter-spacing:.04em;color:var(--warn);background:var(--warn-soft);padding:2px 8px;border-radius:999px}
 
   .summary{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
   .tile{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px 14px;display:flex;flex-direction:column;gap:4px}
@@ -111,8 +126,14 @@
       <h1>PAT Berth Window</h1>
     </div>
     <div class="meta">
-      <span>Sheet dated <b>30/09/2026</b></span>
-      <span>Window <b>27 Sep – 04 Oct 2026</b> · times local (UTC+7)</span>
+      <div class="daypicker">
+        <label for="daySelect">Sheet date</label>
+        <button type="button" class="navbtn" id="prevDay" title="Previous day">‹</button>
+        <select id="daySelect"></select>
+        <button type="button" class="navbtn" id="nextDay" title="Next day">›</button>
+        <span id="dayBadge"></span>
+      </div>
+      <span>Window <b id="windowLabel"></b> · times local (UTC+7)</span>
     </div>
   </header>
 
@@ -149,128 +170,251 @@
   </section>
 
   <div class="foot">
-    <span>P.B = pilot boarding / berthing time. Times on the sheet are written DD/HH; dates 27–30 are September, 01–04 are October.</span>
-    <span>Gate stoppages (G.29, G.25) reduce crane/gate capacity at the berth but do not close it. Closures beyond 04 Oct continue past the right edge of the timeline.</span>
+    <span>P.B = pilot boarding / berthing time. Times on the sheet are written DD/HH; dates 27–30 are September, 01–04 are October 2026.</span>
+    <span>Gate stoppages (G.29, G.25) reduce crane/gate capacity at the berth but do not close it. A historical sheet freezes "Now" to that day's snapshot time.</span>
   </div>
 </div>
 
 <script>
-const BERTHS = [
-  {id:"20AB", gates:"Gate 29, 30", vessels:[
-    {n:"SKY CHALLENGE", loa:565, eta:"29/08", pb:"29/16", etd:"01/04"},
-    {n:"CAPE FAWLEY", loa:558, eta:"30/21", pb:"01/06", etd:"02/06"},
-    {n:"KMTC BANGKOK", loa:565, eta:"02/06", pb:"02/08", etd:"03/17"}],
-    restrict:[{kind:"partial", from:"29/00", to:"30/24", label:"G.29 stopped · spreader repair", text:"G.29 stops working 29–30 Sep 2026 to repair spreader"}]},
-  {id:"20B", gates:"Gate 27, 28", vessels:[
-    {n:"M ODYSSEY", loa:449, eta:"30/04", pb:"30/05", etd:"01/05", shift:"4A"},
-    {n:"KHARIS HERITAGE", loa:482, eta:"01/11", pb:"01/17", etd:"02/17", mark:true}]},
-  {id:"20C", gates:"Gate 21, 22", vessels:[],
-    restrict:[{kind:"closed", from:"27/00", to:"03/00", label:"Not in use · opens 3 Oct", text:"Wharf to be utilised from 3 Oct 2026"}]},
-  {id:"20D", gates:"Gate 23, 24", vessels:[
-    {n:"ALS SUMIRE", loa:537, eta:"01/17", pb:"01/17", etd:"02/17", shift:"1C", mark:true}],
-    restrict:[{kind:"closed", from:"03/00", to:"24/24", label:"Closed 3–24 Oct · electric channel renovation", text:"Berth closed 3–24 Oct 2026 to renovate electric channel"}]},
-  {id:"20E", gates:"Gate 25, 26", vessels:[
-    {n:"MITRA BHUM", loa:485, eta:"30/03", pb:"30/05", etd:"30/18"}],
-    restrict:[{kind:"partial", from:"03/00", to:"18/24", label:"G.25 stopped · trolley rail change (to 18 Oct)", text:"G.25 stops working 3–18 Oct 2026 to change trolley rail"}]},
-  {id:"20F", gates:"Gate 33, 34", vessels:[
-    {n:"HOPE C", loa:481, eta:"29/17", pb:"29/17", etd:"30/16"},
-    {n:"WAN HAI 278", loa:564, eta:"02/09", pb:"02/09", etd:"04/10"}]},
-  {id:"22A", gates:"", vessels:[]},
-  {id:"22B", gates:"", vessels:[]},
-  {id:"22C", gates:"", vessels:[]},
-  {id:"22D", gates:"", vessels:[]},
-];
+// ---------------------------------------------------------------------------
+// One dataset per sheet date. Each new day: copy a block, update vessels and
+// restrictions from the sheet, and add its key to DAY_ORDER (latest last).
+// ---------------------------------------------------------------------------
+const DATASETS = {
+  "2026-09-28": {
+    label: "28/09/2026",
+    sheetNow: "28/1200",
+    berths: [
+      {id:"20AB", gates:"Gate 29, 30", vessels:[
+        {n:"INFINITY", loa:565, eta:"28/07", pb:"28/07", etd:"29/15"},
+        {n:"SKY CHALLENGE", loa:565, eta:"29/11", pb:"29/16", etd:"01/04"},
+        {n:"CAPE FAWLEY", loa:558, eta:"30/21", pb:"01/06", etd:"02/06"}]},
+      {id:"20B", gates:"Gate 27, 28", vessels:[
+        {n:"KMTC GWANGYANG", loa:564, eta:"27/19", pb:"27/19", etd:"29/05"},
+        {n:"MILLENNIUM BRIGHT", loa:564, eta:"28/11", pb:"29/05", etd:"30/04"},
+        {n:"M ODYSSEY", loa:449, eta:"30/04", pb:"30/05", etd:"01/17", shift:"4A"}]},
+      {id:"20C", gates:"Gate 21, 22", vessels:[],
+        restrict:[{kind:"closed", from:"27/00", to:"30/00", label:"Not in use · opens 30 Sep", text:"Wharf to be utilised from 30 Sep 2026"}]},
+      {id:"20D", gates:"Gate 23, 24", vessels:[
+        {n:"BANGKOK", loa:551, eta:"27/15", pb:"27/15", etd:"29/14"}]},
+      {id:"20E", gates:"Gate 25, 26", vessels:[
+        {n:"TS CHIBA", loa:485, eta:"28/07", pb:"28/07", etd:"29/04"},
+        {n:"HOPE C", loa:481, eta:"29/17", pb:"29/17", etd:"01/05"}]},
+      {id:"20F", gates:"Gate 33, 34", vessels:[
+        {n:"JARU BHUM", loa:564, eta:"28/08", pb:"28/08", etd:"29/04", shift:"7B", mark:true},
+        {n:"MITRA BHUM", loa:485, eta:"29/23", pb:"30/05", etd:"30/18"}]},
+      {id:"22A", gates:"", vessels:[]},
+      {id:"22B", gates:"", vessels:[]},
+      {id:"22D", gates:"", vessels:[]},
+      {id:"22E", gates:"", vessels:[]},
+    ]
+  },
+  "2026-09-29": {
+    label: "29/09/2026",
+    sheetNow: "29/1200",
+    berths: [
+      {id:"20AB", gates:"Gate 29, 30", vessels:[
+        {n:"INFINITY", loa:565, eta:"27/18", pb:"28/05", etd:"29/15"},
+        {n:"SKY CHALLENGE", loa:565, eta:"29/08", pb:"29/16", etd:"01/04"},
+        {n:"KHARIS HERITAGE", loa:482, eta:"01/07", pb:"01/07", etd:"02/06"}],
+        restrict:[{kind:"partial", from:"29/00", to:"30/24", label:"G.29 stopped · spreader repair", text:"G.29 stops working 29–30 Sep 2026 to repair spreader"}]},
+      {id:"20B", gates:"Gate 27, 28", vessels:[
+        {n:"MILLENNIUM BRIGHT", loa:564, eta:"28/11", pb:"29/05", etd:"30/04"},
+        {n:"M ODYSSEY", loa:449, eta:"30/04", pb:"30/05", etd:"01/05", shift:"4A"}]},
+      {id:"20C", gates:"Gate 21, 22", vessels:[
+        {n:"CAPE FAWLEY", loa:558, eta:"30/21", pb:"01/06", etd:"02/06"}],
+        restrict:[{kind:"closed", from:"27/00", to:"01/00", label:"Not in use · opens 1 Oct", text:"Wharf to be utilised from 1 Oct 2026"}]},
+      {id:"20D", gates:"Gate 23, 24", vessels:[
+        {n:"BANGKOK", loa:551, eta:"27/13", pb:"27/15", etd:"29/14"}],
+        restrict:[{kind:"closed", from:"01/00", to:"21/24", label:"Closed 1–21 Oct · electric channel renovation", text:"Berth closed 1–21 Oct 2026 to renovate electric channel"}]},
+      {id:"20E", gates:"Gate 25, 26", vessels:[
+        {n:"MITRA BHUM", loa:485, eta:"30/03", pb:"30/05", etd:"30/18"}],
+        restrict:[{kind:"partial", from:"01/00", to:"15/24", label:"G.25 stopped · trolley rail change (to 15 Oct)", text:"G.25 stops working 1–15 Oct 2026 to change trolley rail"}]},
+      {id:"20F", gates:"Gate 33, 34", vessels:[
+        {n:"HOPE C", loa:481, eta:"29/17", pb:"29/17", etd:"30/16"},
+        {n:"ALS SUMIRE", loa:537, eta:"01/13", pb:"01/17", etd:"02/17", shift:"1C"}]},
+      {id:"22A", gates:"", vessels:[]},
+      {id:"22B", gates:"", vessels:[]},
+      {id:"22C", gates:"", vessels:[]},
+      {id:"22D", gates:"", vessels:[]},
+    ]
+  },
+  "2026-09-30": {
+    label: "30/09/2026",
+    sheetNow: "30/1200",
+    berths: [
+      {id:"20AB", gates:"Gate 29, 30", vessels:[
+        {n:"SKY CHALLENGE", loa:565, eta:"29/08", pb:"29/16", etd:"01/04"},
+        {n:"CAPE FAWLEY", loa:558, eta:"30/21", pb:"01/06", etd:"02/06"},
+        {n:"KMTC BANGKOK", loa:565, eta:"02/06", pb:"02/08", etd:"03/17"}],
+        restrict:[{kind:"partial", from:"29/00", to:"30/24", label:"G.29 stopped · spreader repair", text:"G.29 stops working 29–30 Sep 2026 to repair spreader"}]},
+      {id:"20B", gates:"Gate 27, 28", vessels:[
+        {n:"M ODYSSEY", loa:449, eta:"30/04", pb:"30/05", etd:"01/05", shift:"4A"},
+        {n:"KHARIS HERITAGE", loa:482, eta:"01/11", pb:"01/17", etd:"02/17", mark:true}]},
+      {id:"20C", gates:"Gate 21, 22", vessels:[],
+        restrict:[{kind:"closed", from:"27/00", to:"03/00", label:"Not in use · opens 3 Oct", text:"Wharf to be utilised from 3 Oct 2026"}]},
+      {id:"20D", gates:"Gate 23, 24", vessels:[
+        {n:"ALS SUMIRE", loa:537, eta:"01/17", pb:"01/17", etd:"02/17", shift:"1C", mark:true}],
+        restrict:[{kind:"closed", from:"03/00", to:"24/24", label:"Closed 3–24 Oct · electric channel renovation", text:"Berth closed 3–24 Oct 2026 to renovate electric channel"}]},
+      {id:"20E", gates:"Gate 25, 26", vessels:[
+        {n:"MITRA BHUM", loa:485, eta:"30/03", pb:"30/05", etd:"30/18"}],
+        restrict:[{kind:"partial", from:"03/00", to:"18/24", label:"G.25 stopped · trolley rail change (to 18 Oct)", text:"G.25 stops working 3–18 Oct 2026 to change trolley rail"}]},
+      {id:"20F", gates:"Gate 33, 34", vessels:[
+        {n:"HOPE C", loa:481, eta:"29/17", pb:"29/17", etd:"30/16"},
+        {n:"WAN HAI 278", loa:564, eta:"02/09", pb:"02/09", etd:"04/10"}]},
+      {id:"22A", gates:"", vessels:[]},
+      {id:"22B", gates:"", vessels:[]},
+      {id:"22C", gates:"", vessels:[]},
+      {id:"22D", gates:"", vessels:[]},
+    ]
+  },
+};
+const DAY_ORDER = ["2026-09-28","2026-09-29","2026-09-30"]; // oldest -> latest
+const LATEST_KEY = DAY_ORDER[DAY_ORDER.length-1];
 
 const H = 3600e3;
-// DD/HH -> ms. Days 27-30 = September, 01-26 = October 2026. Local UTC+7.
-function t(s){const [d,h]=s.split("/").map(Number);const m=d>=27?8:9;return Date.UTC(2026,m,d,h-7);}
-const START=Date.UTC(2026,8,27,-7), DAYS=8, END=START+DAYS*24*H;
-const pct=ms=>((ms-START)/(END-START)*100);
-const fmt=ms=>{const d=new Date(ms+7*H);const dd=String(d.getUTCDate()).padStart(2,"0");const mo=d.getUTCMonth()===8?"Sep":"Oct";return `${dd} ${mo} ${String(d.getUTCHours()).padStart(2,"0")}:00`;};
+const START=Date.UTC(2026,8,27,-7), DAYS=8, END=START+DAYS*24*H; // 27 Sep - 04 Oct, fixed window for all snapshots
 const DOW=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 
-let now=Date.now();
-const SHEET_NOW=Date.UTC(2026,8,30,12-7);
-if(now<START||now>END) now=SHEET_NOW;
+// DD/HH -> ms. Days 27-31 = September, 01-26 = October 2026. Local UTC+7.
+function t(s){const [d,h]=s.split("/").map(Number);const m=d>=27?8:9;return Date.UTC(2026,m,d,h-7);}
+// DD/HHMM -> ms, for a sheet's fixed "now" fallback.
+function tFull(s){const [d,hm]=s.split("/");const h=Number(hm.slice(0,2)),mi=Number(hm.slice(2));const m=Number(d)>=27?8:9;return Date.UTC(2026,m,Number(d),h-7,mi);}
+const pct=ms=>((ms-START)/(END-START)*100);
+const fmt=ms=>{const d=new Date(ms+7*H);const dd=String(d.getUTCDate()).padStart(2,"0");const mo=d.getUTCMonth()===8?"Sep":"Oct";return `${dd} ${mo} ${String(d.getUTCHours()).padStart(2,"0")}:00`;};
 
-function status(v){
-  const a=t(v.eta),p=t(v.pb),e=t(v.etd);
-  if(now>=e) return ["done","Sailed","p-done"];
-  if(now>=p) return ["along","Alongside","p-along"];
-  if(now>=a) return ["anch","At anchorage","p-anch"];
-  return ["exp","Expected","p-exp"];
+function statusFor(now){
+  return v=>{
+    const a=t(v.eta),p=t(v.pb),e=t(v.etd);
+    if(now>=e) return ["done","Sailed","p-done"];
+    if(now>=p) return ["along","Alongside","p-along"];
+    if(now>=a) return ["anch","At anchorage","p-anch"];
+    return ["exp","Expected","p-exp"];
+  };
 }
 
-// Gantt
-const g=document.getElementById("gantt");
-let html=`<div class="g-row axis"><div class="g-label"><span class="gt">Berth / Gate</span></div><div class="g-track">`;
-for(let i=0;i<DAYS;i++){
-  const ms=START+i*24*H, d=new Date(ms+7*H);
-  html+=`<div class="day${i%2?" alt":""}" style="left:${i/DAYS*100}%;width:${100/DAYS}%"><div class="dlab">${String(d.getUTCDate()).padStart(2,"0")} ${d.getUTCMonth()===8?"Sep":"Oct"}<small>${DOW[d.getUTCDay()]}</small></div></div>`;
-  [6,12,18].forEach(h=>html+=`<span class="hr" style="left:${(i*24+h)/(DAYS*24)*100}%">${String(h).padStart(2,"0")}</span>`);
-}
-html+=`</div></div>`;
-const grid=()=>{let s="";for(let i=0;i<DAYS;i++){s+=`<div class="day${i%2?" alt":""}" style="left:${i/DAYS*100}%;width:${100/DAYS}%"></div>`;[6,12,18].forEach(h=>s+=`<div class="tick" style="left:${(i*24+h)/(DAYS*24)*100}%"></div>`);}return s;};
-BERTHS.forEach(b=>{
-  const empty=!b.vessels.length;
-  html+=`<div class="g-row${empty?" empty":""}"><div class="g-label"><span class="bn">${b.id}</span>${b.gates?`<span class="gt">${b.gates}</span>`:""}</div><div class="g-track">${grid()}`;
-  (b.restrict||[]).forEach(r=>{
-    const l=Math.max(0,pct(t(r.from))), rr=Math.min(100,pct(t(r.to)));
-    html+=`<div class="rs ${r.kind}" style="left:${l}%;width:${rr-l}%" title="${r.text}"><span>${r.label}</span></div>`;
-  });
-  if(empty) html+=`<div class="note">No vessel scheduled</div>`;
-  b.vessels.forEach(v=>{
-    const a=t(v.eta),p=t(v.pb),e=t(v.etd),[st]=status(v);
-    if(p>a) html+=`<div class="wait" style="left:${pct(a)}%;width:${pct(p)-pct(a)}%" title="${v.n} waiting ${(p-a)/H} h"></div>`;
-    const tip=`${v.n} · LOA ${v.loa} m\nETA ${fmt(a)}\nP.B ${fmt(p)}\nETD ${fmt(e)}${v.shift?"\nShift "+v.shift:""}`;
-    html+=`<div class="bar${st==="done"?" done":""}${v.mark?" marked":""}" tabindex="0" style="left:${pct(p)}%;width:calc(${pct(e)-pct(p)}% - 4px);margin-left:2px" title="${tip}"><span class="nm">${v.n}</span><span class="tm">${v.pb}→${v.etd}${v.shift?" · "+v.shift:""}</span></div>`;
-  });
+function render(key){
+  const ds = DATASETS[key];
+  const isLatest = key === LATEST_KEY;
+  let now = Date.now();
+  if(!isLatest || now<START || now>END) now = tFull(ds.sheetNow);
+  const status = statusFor(now);
+  const BERTHS = ds.berths;
+
+  document.getElementById("windowLabel").textContent = "27 Sep – 04 Oct 2026";
+  document.getElementById("dayBadge").innerHTML = isLatest
+    ? '<span class="badge-latest">Latest</span>'
+    : '<span class="badge-hist">Historical</span>';
+
+  // Gantt
+  const g=document.getElementById("gantt");
+  let html=`<div class="g-row axis"><div class="g-label"><span class="gt">Berth / Gate</span></div><div class="g-track">`;
+  for(let i=0;i<DAYS;i++){
+    const ms=START+i*24*H, d=new Date(ms+7*H);
+    html+=`<div class="day${i%2?" alt":""}" style="left:${i/DAYS*100}%;width:${100/DAYS}%"><div class="dlab">${String(d.getUTCDate()).padStart(2,"0")} ${d.getUTCMonth()===8?"Sep":"Oct"}<small>${DOW[d.getUTCDay()]}</small></div></div>`;
+    [6,12,18].forEach(h=>html+=`<span class="hr" style="left:${(i*24+h)/(DAYS*24)*100}%">${String(h).padStart(2,"0")}</span>`);
+  }
   html+=`</div></div>`;
-});
-g.innerHTML=html;
-// now line spanning all rows (placed within track area)
-const nl=document.createElement("div");
-nl.className="nowline";
-nl.style.left=`calc(150px + (100% - 150px) * ${pct(now)/100})`;
-g.appendChild(nl);
-const tag=document.createElement("div");
-tag.className="nowtag";tag.style.left=nl.style.left;
-const nd=new Date(now+7*H);
-tag.textContent=`NOW ${String(nd.getUTCDate()).padStart(2,"0")}/${String(nd.getUTCHours()).padStart(2,"0")}:${String(nd.getUTCMinutes()).padStart(2,"0")}`;
-g.appendChild(tag);
-
-// Table
-let tb="";
-BERTHS.forEach(b=>{
-  if(!b.vessels.length) return;
-  tb+=`<tr class="grp"><td colspan="8">Berth ${b.id}<span>${b.gates}</span></td></tr>`;
-  b.vessels.forEach(v=>{
-    const [,lab,cls]=status(v);
-    const hrs=(t(v.etd)-t(v.pb))/H;
-    tb+=`<tr class="${v.mark?"marked":""}"><td class="vs">${v.n}${v.mark?'<span class="flag" title="Marked on sheet"></span>':""}</td><td class="num">${v.loa}</td><td class="num">${fmt(t(v.eta))}</td><td class="num">${fmt(t(v.pb))}</td><td class="num">${fmt(t(v.etd))}</td><td class="num">${hrs} h</td><td class="num">${v.shift||"–"}</td><td><span class="pill ${cls}">${lab}</span></td></tr>`;
+  const grid=()=>{let s="";for(let i=0;i<DAYS;i++){s+=`<div class="day${i%2?" alt":""}" style="left:${i/DAYS*100}%;width:${100/DAYS}%"></div>`;[6,12,18].forEach(h=>s+=`<div class="tick" style="left:${(i*24+h)/(DAYS*24)*100}%"></div>`);}return s;};
+  BERTHS.forEach(b=>{
+    const empty=!b.vessels.length;
+    html+=`<div class="g-row${empty?" empty":""}"><div class="g-label"><span class="bn">${b.id}</span>${b.gates?`<span class="gt">${b.gates}</span>`:""}</div><div class="g-track">${grid()}`;
+    (b.restrict||[]).forEach(r=>{
+      const l=Math.max(0,pct(t(r.from))), rr=Math.min(100,pct(t(r.to)));
+      html+=`<div class="rs ${r.kind}" style="left:${l}%;width:${rr-l}%" title="${r.text}"><span>${r.label}</span></div>`;
+    });
+    if(empty) html+=`<div class="note">No vessel scheduled</div>`;
+    b.vessels.forEach(v=>{
+      const a=t(v.eta),p=t(v.pb),e=t(v.etd),[st]=status(v);
+      if(p>a) html+=`<div class="wait" style="left:${pct(a)}%;width:${pct(p)-pct(a)}%" title="${v.n} waiting ${(p-a)/H} h"></div>`;
+      const tip=`${v.n} · LOA ${v.loa} m\nETA ${fmt(a)}\nP.B ${fmt(p)}\nETD ${fmt(e)}${v.shift?"\nShift "+v.shift:""}`;
+      html+=`<div class="bar${st==="done"?" done":""}${v.mark?" marked":""}" tabindex="0" style="left:${pct(p)}%;width:calc(${pct(e)-pct(p)}% - 4px);margin-left:2px" title="${tip}"><span class="nm">${v.n}</span><span class="tm">${v.pb}→${v.etd}${v.shift?" · "+v.shift:""}</span></div>`;
+    });
+    html+=`</div></div>`;
   });
+  g.innerHTML=html;
+  const nl=document.createElement("div");
+  nl.className="nowline";
+  nl.style.left=`calc(150px + (100% - 150px) * ${pct(now)/100})`;
+  g.appendChild(nl);
+  const tag=document.createElement("div");
+  tag.className="nowtag";tag.style.left=nl.style.left;
+  const nd=new Date(now+7*H);
+  tag.textContent=`NOW ${String(nd.getUTCDate()).padStart(2,"0")}/${String(nd.getUTCHours()).padStart(2,"0")}:${String(nd.getUTCMinutes()).padStart(2,"0")}`;
+  g.appendChild(tag);
+
+  // Table
+  let tb="";
+  BERTHS.forEach(b=>{
+    if(!b.vessels.length) return;
+    tb+=`<tr class="grp"><td colspan="8">Berth ${b.id}<span>${b.gates}</span></td></tr>`;
+    b.vessels.forEach(v=>{
+      const [,lab,cls]=status(v);
+      const hrs=(t(v.etd)-t(v.pb))/H;
+      tb+=`<tr class="${v.mark?"marked":""}"><td class="vs">${v.n}${v.mark?'<span class="flag" title="Marked on sheet"></span>':""}</td><td class="num">${v.loa}</td><td class="num">${fmt(t(v.eta))}</td><td class="num">${fmt(t(v.pb))}</td><td class="num">${fmt(t(v.etd))}</td><td class="num">${hrs} h</td><td class="num">${v.shift||"–"}</td><td><span class="pill ${cls}">${lab}</span></td></tr>`;
+    });
+  });
+  document.getElementById("tbody").innerHTML=tb;
+
+  // Notices
+  const pd=s=>{const ms=t(s);return fmt(ms).slice(0,6)};
+  document.getElementById("notices").innerHTML=BERTHS.flatMap(b=>(b.restrict||[]).map(r=>{
+    const endMs=t(r.to)-1;
+    const untilFrom = t(r.from) <= START; // closure/stoppage that started before the visible window
+    return `<tr><td class="vs">${b.id}</td><td><span class="pill ${r.kind==="closed"?"p-closed":"p-anch"}">${r.kind==="closed"?"Berth closed":"Gate stopped"}</span></td><td class="num">${untilFrom?"Until "+pd(fmt(endMs).slice(0,2)+"/00"):pd(r.from)+" – "+pd(fmt(endMs).slice(0,2)+"/00")}</td><td>${r.text}</td></tr>`;
+  })).join("") || `<tr><td colspan="4" style="color:var(--ink-3);font-style:italic">No berth or gate notices on this sheet</td></tr>`;
+
+  // Summary
+  const all=BERTHS.flatMap(b=>b.vessels.map(v=>({...v,berth:b.id,st:status(v)[0]})));
+  const along=all.filter(v=>v.st==="along"), anch=all.filter(v=>v.st==="anch");
+  const nextSail=all.filter(v=>v.st!=="done").sort((x,y)=>t(x.etd)-t(y.etd))[0];
+  const nextIn=all.filter(v=>v.st==="exp"||v.st==="anch").sort((x,y)=>t(x.pb)-t(y.pb))[0];
+  const nNotices=BERTHS.reduce((a,b)=>a+(b.restrict||[]).length,0);
+  document.getElementById("summary").innerHTML=`
+    <div class="tile"><span class="k">Alongside now</span><span class="v">${along.length}</span><span class="s">${along.map(v=>v.berth).join(" · ")||"–"}</span></div>
+    <div class="tile"><span class="k">At anchorage</span><span class="v">${anch.length}</span><span class="s">${anch.map(v=>v.n).join(", ")||"None waiting"}</span></div>
+    <div class="tile"><span class="k">Next berthing</span><span class="v">${nextIn?nextIn.pb:"–"}</span><span class="s">${nextIn?`${nextIn.n} → ${nextIn.berth}`:""}</span></div>
+    <div class="tile"><span class="k">Berth notices</span><span class="v">${nNotices}</span><span class="s">${nNotices?"see notices table below":"none on this sheet"}</span></div>
+    <div class="tile"><span class="k">Next sailing</span><span class="v">${nextSail?nextSail.etd:"–"}</span><span class="s">${nextSail?`${nextSail.n} · ${nextSail.berth}`:""}</span></div>`;
+}
+
+// ---- day picker wiring ----
+const sel = document.getElementById("daySelect");
+const prevBtn = document.getElementById("prevDay");
+const nextBtn = document.getElementById("nextDay");
+
+DAY_ORDER.forEach(key=>{
+  const opt = document.createElement("option");
+  opt.value = key;
+  opt.textContent = DATASETS[key].label + (key===LATEST_KEY ? " (latest)" : "");
+  sel.appendChild(opt);
 });
-document.getElementById("tbody").innerHTML=tb;
 
-// Notices
-const pd=s=>{const ms=t(s);return fmt(ms).slice(0,6)};
-document.getElementById("notices").innerHTML=BERTHS.flatMap(b=>(b.restrict||[]).map(r=>{
-  const endMs=t(r.to)-1;
-  return `<tr><td class="vs">${b.id}</td><td><span class="pill ${r.kind==="closed"?"p-closed":"p-anch"}">${r.kind==="closed"?"Berth closed":"Gate stopped"}</span></td><td class="num">${b.id==="20C"?"Until 3 Oct":pd(r.from)+" – "+pd(fmt(endMs).slice(0,2)+"/00")}</td><td>${r.text}</td></tr>`;
-})).join("");
+function goTo(key){
+  sel.value = key;
+  const i = DAY_ORDER.indexOf(key);
+  prevBtn.disabled = i<=0;
+  nextBtn.disabled = i>=DAY_ORDER.length-1;
+  render(key);
+  try{ localStorage.setItem("patBerthLastDay", key); }catch(e){}
+}
 
-// Summary
-const all=BERTHS.flatMap(b=>b.vessels.map(v=>({...v,berth:b.id,st:status(v)[0]})));
-const along=all.filter(v=>v.st==="along"), anch=all.filter(v=>v.st==="anch");
-const nextSail=all.filter(v=>v.st!=="done").sort((x,y)=>t(x.etd)-t(y.etd))[0];
-const nextIn=all.filter(v=>v.st==="exp"||v.st==="anch").sort((x,y)=>t(x.pb)-t(y.pb))[0];
-const nNotices=BERTHS.reduce((a,b)=>a+(b.restrict||[]).length,0);
-document.getElementById("summary").innerHTML=`
-  <div class="tile"><span class="k">Alongside now</span><span class="v">${along.length}</span><span class="s">${along.map(v=>v.berth).join(" · ")||"–"}</span></div>
-  <div class="tile"><span class="k">At anchorage</span><span class="v">${anch.length}</span><span class="s">${anch.map(v=>v.n).join(", ")||"None waiting"}</span></div>
-  <div class="tile"><span class="k">Next berthing</span><span class="v">${nextIn?nextIn.pb:"–"}</span><span class="s">${nextIn?`${nextIn.n} → ${nextIn.berth}`:""}</span></div>
-  <div class="tile"><span class="k">Berth notices</span><span class="v">${nNotices}</span><span class="s">20C opens, 20D closes 3 Oct</span></div>
-  <div class="tile"><span class="k">Next sailing</span><span class="v">${nextSail?nextSail.etd:"–"}</span><span class="s">${nextSail?`${nextSail.n} · ${nextSail.berth}`:""}</span></div>`;
+sel.addEventListener("change", ()=>goTo(sel.value));
+prevBtn.addEventListener("click", ()=>{
+  const i = DAY_ORDER.indexOf(sel.value);
+  if(i>0) goTo(DAY_ORDER[i-1]);
+});
+nextBtn.addEventListener("click", ()=>{
+  const i = DAY_ORDER.indexOf(sel.value);
+  if(i<DAY_ORDER.length-1) goTo(DAY_ORDER[i+1]);
+});
+
+let startKey = LATEST_KEY;
+try{
+  const saved = localStorage.getItem("patBerthLastDay");
+  if(saved && DATASETS[saved]) startKey = saved;
+}catch(e){}
+goTo(startKey);
 </script>
 </body>
 </html>
