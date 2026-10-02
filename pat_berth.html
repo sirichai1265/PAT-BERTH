@@ -38,6 +38,9 @@
   }
   .daypicker .navbtn:disabled{opacity:.35;cursor:default}
   .daypicker .navbtn:not(:disabled):hover{background:var(--line-2)}
+  .linkbtn{display:inline-flex;align-items:center;gap:6px;font-family:var(--display);font-weight:600;font-size:13px;letter-spacing:.03em;color:#fff;background:var(--berth);border:1px solid var(--berth);border-radius:6px;padding:6px 12px;text-decoration:none;cursor:pointer}
+  .linkbtn:hover{filter:brightness(1.1)}
+  .linkbtn:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
   .badge-latest{font-family:var(--display);font-weight:600;font-size:11px;letter-spacing:.04em;color:var(--ok);background:var(--ok-soft);padding:2px 8px;border-radius:999px}
   .badge-hist{font-family:var(--display);font-weight:600;font-size:11px;letter-spacing:.04em;color:var(--warn);background:var(--warn-soft);padding:2px 8px;border-radius:999px}
 
@@ -133,6 +136,7 @@
         <button type="button" class="navbtn" id="nextDay" title="Next day">›</button>
         <span id="dayBadge"></span>
       </div>
+      <a class="linkbtn" href="https://datastudio.google.com/reporting/473cd015-edbb-4011-a58c-b9b2d55090fb/page/xm5rF" target="_blank" rel="noopener noreferrer">Open Data Studio report ↗</a>
       <span>Window <b id="windowLabel"></b> · times local (UTC+7)</span>
     </div>
   </header>
