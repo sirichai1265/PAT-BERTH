@@ -119,4 +119,6 @@ booked into 20C once it reopens.
 `pat_berth.html`; add a new dataset entry to `DATASETS`/`DAY_ORDER` in the live
 `pat_berth.html`/`index.html`; update the vessel continuity table above (carry forward
 each vessel still on the sheet, mark newly-sailed vessels, flag any berth reassignment
-or slipped closure date); then append a new per-day snapshot section.
+or slipped closure date); then append a new per-day snapshot section; rebuild
+`PAT_Berth_Window.xlsx` at the repo root with the new day's data and copy it into every
+dated folder (including the new one) so each day's archive carries the latest summary.
