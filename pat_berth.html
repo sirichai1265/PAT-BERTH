@@ -65,9 +65,15 @@
   .daypicker .navbtn:disabled{opacity:.35;cursor:default}
   .daypicker .navbtn:not(:disabled):hover,.daypicker select:hover{background:rgba(255,255,255,.24)}
   .daypicker select:focus-visible,.daypicker .navbtn:focus-visible{outline:2px solid #fff;outline-offset:2px}
-  .linkbtn{display:inline-flex;align-items:center;gap:6px;font-family:var(--display);font-weight:700;font-size:14px;letter-spacing:.03em;color:#10293F;background:#fff;border-radius:999px;padding:9px 18px;text-decoration:none;cursor:pointer;box-shadow:0 4px 14px -6px rgba(0,0,0,.45);transition:transform .12s ease,box-shadow .12s ease}
-  .linkbtn:hover{transform:translateY(-1px);box-shadow:0 8px 18px -8px rgba(0,0,0,.5)}
-  .linkbtn:focus-visible{outline:2px solid #fff;outline-offset:3px}
+  .linkbtn{position:relative;display:inline-flex;align-items:center;gap:10px;font-family:var(--display);font-weight:700;font-size:16px;letter-spacing:.04em;color:#2A1600;background:linear-gradient(135deg,#FFC25A 0%,#F28C28 100%);border-radius:999px;padding:12px 24px 12px 18px;text-decoration:none;cursor:pointer;box-shadow:0 8px 22px -8px rgba(242,140,40,.75),0 0 0 3px rgba(255,255,255,.22);transition:transform .15s ease,box-shadow .15s ease;animation:btnpulse 2.6s ease-out infinite}
+  .linkbtn .ico{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:rgba(42,22,0,.14)}
+  .linkbtn .ico svg{width:17px;height:17px}
+  .linkbtn .arr{display:inline-block;font-size:17px;line-height:1;transition:transform .15s ease}
+  .linkbtn:hover{transform:translateY(-2px);box-shadow:0 14px 28px -10px rgba(242,140,40,.9),0 0 0 4px rgba(255,255,255,.35);animation:none}
+  .linkbtn:hover .arr{transform:translate(3px,-3px)}
+  .linkbtn:focus-visible{outline:3px solid #fff;outline-offset:3px}
+  @keyframes btnpulse{0%{box-shadow:0 8px 22px -8px rgba(242,140,40,.75),0 0 0 3px rgba(255,255,255,.22),0 0 0 0 rgba(255,194,90,.55)}70%{box-shadow:0 8px 22px -8px rgba(242,140,40,.75),0 0 0 3px rgba(255,255,255,.22),0 0 0 14px rgba(255,194,90,0)}100%{box-shadow:0 8px 22px -8px rgba(242,140,40,.75),0 0 0 3px rgba(255,255,255,.22),0 0 0 0 rgba(255,194,90,0)}}
+  @media (prefers-reduced-motion:reduce){.linkbtn{animation:none}.linkbtn,.linkbtn .arr{transition:none}}
   .badge-latest{font-family:var(--display);font-weight:700;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:#0F5C3A;background:#CFF2E0;padding:3px 9px;border-radius:999px}
   .badge-hist{font-family:var(--display);font-weight:700;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:#6E4308;background:#F9E3B8;padding:3px 9px;border-radius:999px}
 
@@ -174,7 +180,7 @@
       <h1>PAT Berth Window</h1>
     </div>
     <div class="hdr-center">
-      <a class="linkbtn" href="https://datastudio.google.com/reporting/473cd015-edbb-4011-a58c-b9b2d55090fb/page/xm5rF" target="_blank" rel="noopener noreferrer">Open Data Studio report ↗</a>
+      <a class="linkbtn" href="https://datastudio.google.com/reporting/473cd015-edbb-4011-a58c-b9b2d55090fb/page/xm5rF" target="_blank" rel="noopener noreferrer"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-8"/><path d="M22 20H2"/></svg></span><span>Open Data Studio report</span><span class="arr" aria-hidden="true">↗</span></a>
     </div>
     <div class="meta">
       <div class="daypicker">
