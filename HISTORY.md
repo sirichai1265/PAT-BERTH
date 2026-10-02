@@ -10,48 +10,58 @@ Tracks every vessel that appeared on any of the three sheets so far, across bert
 "→ 20X" marks a berth reassignment from the previous sheet; "sailed" means it no longer
 appears on the next day's sheet.
 
-| Vessel | 28 Sep | 29 Sep | 30 Sep | 01 Oct |
-|---|---|---|---|---|
-| INFINITY | alongside · 20AB | alongside · 20AB (ETD 29/15) | sailed | — |
-| SKY CHALLENGE | expected · 20AB | alongside · 20AB | alongside · 20AB | sailed (01/04) |
-| KMTC GWANGYANG | alongside · 20B | sailed (29/05) | — | — |
-| MILLENNIUM BRIGHT | at anchorage · 20B | alongside · 20B | sailed (30/04) | — |
-| BANGKOK | alongside · 20D | alongside · 20D | sailed (29/14) | — |
-| TS CHIBA | alongside · 20E | sailed (29/04) | — | — |
-| HOPE C | expected · 20E | alongside · **→ 20F** | alongside · 20F | sailed (30/16) |
-| JARU BHUM | alongside · 20F (7B) | sailed (29/04) | — | — |
-| MITRA BHUM | expected · 20F | alongside · **→ 20E** | alongside · 20E | sailed (30/18) |
-| CAPE FAWLEY | expected · 20AB | expected · **→ 20C** | alongside · **→ 20AB** | alongside · 20AB |
-| M ODYSSEY | expected · 20B (4A) | alongside · 20B | alongside · 20B | sailed (01/05) |
-| KHARIS HERITAGE | — | expected · 20AB | alongside · **→ 20B** (marked) | alongside · 20B (marked) |
-| ALS SUMIRE | — | expected · 20F (1C) | alongside · **→ 20D** (marked, 1C) | expected · 20D (marked, 1C) |
-| KMTC BANGKOK | — | — | expected · 20AB (new) | expected · 20AB |
-| WAN HAI 278 | — | — | expected · 20F (new) | expected · 20F |
-| ZHONG GU BEI HAI | — | — | — | expected · 20B (new) |
-| YM IMPROVEMENT | — | — | — | expected · **20C** (new, first vessel since reopening) |
-| RESURGENCE | — | — | — | expected · 20E (new) |
+| Vessel | 28 Sep | 29 Sep | 30 Sep | 01 Oct | 02 Oct |
+|---|---|---|---|---|---|
+| INFINITY | alongside · 20AB | alongside · 20AB (ETD 29/15) | sailed | — | — |
+| SKY CHALLENGE | expected · 20AB | alongside · 20AB | alongside · 20AB | sailed (01/04) | — |
+| KMTC GWANGYANG | alongside · 20B | sailed (29/05) | — | — | — |
+| MILLENNIUM BRIGHT | at anchorage · 20B | alongside · 20B | sailed (30/04) | — | — |
+| BANGKOK | alongside · 20D | alongside · 20D | sailed (29/14) | — | — |
+| TS CHIBA | alongside · 20E | sailed (29/04) | — | — | — |
+| HOPE C | expected · 20E | alongside · **→ 20F** | alongside · 20F | sailed (30/16) | — |
+| JARU BHUM | alongside · 20F (7B) | sailed (29/04) | — | — | — |
+| MITRA BHUM | expected · 20F | alongside · **→ 20E** | alongside · 20E | sailed (30/18) | — |
+| CAPE FAWLEY | expected · 20AB | expected · **→ 20C** | alongside · **→ 20AB** | alongside · 20AB | alongside · 20AB (ETD now 02/15, was 02/06) |
+| M ODYSSEY | expected · 20B (4A) | alongside · 20B | alongside · 20B | sailed (01/05) | — |
+| KHARIS HERITAGE | — | expected · 20AB | alongside · **→ 20B** (marked) | alongside · 20B (marked) | alongside · 20B (marked) |
+| ALS SUMIRE | — | expected · 20F (1C) | alongside · **→ 20D** (marked, 1C) | expected · 20D (marked, 1C) | alongside · 20D (marked, 1C) |
+| KMTC BANGKOK | — | — | expected · 20AB (new) | expected · 20AB | alongside · **→ 20F** |
+| WAN HAI 278 | — | — | expected · 20F (new) | expected · 20F | expected · 20E (**→ 20E**, ETA/P.B pushed later) |
+| ZHONG GU BEI HAI | — | — | — | expected · 20B (new) | expected · **→ 20AB** |
+| YM IMPROVEMENT | — | — | — | expected · 20C (new) | expected · **→ 20B** |
+| RESURGENCE | — | — | — | expected · 20E (new) | expected · **→ 20AB** (ETA/P.B pulled earlier) |
+| JOSCO LUCKY | — | — | — | — | expected · 20B (new) |
+| SAWASDEE DENEB | — | — | — | — | expected · 20C (new, first since reopening) |
+| HARI BHUM (Barge) | — | — | — | — | expected · 20D (new, barge) |
+| XIN MING ZHOU 98 | — | — | — | — | expected · 20F (new) |
 
 Notable reassignments: HOPE C and MITRA BHUM swapped their originally-planned berths (20E/20F)
 once actually scheduled; CAPE FAWLEY was provisionally booked at 20C then moved to 20AB once
 20C's closure was confirmed; KHARIS HERITAGE and ALS SUMIRE both moved berths between their
 first appearance and their actual berthing day. On 01 Oct, ALS SUMIRE's status read back to
 "expected" from "alongside" — its P.B (01/17) is still a few hours ahead of that sheet's
-snapshot time (01/12), which is expected, not a data error.
+snapshot time (01/12), which is expected, not a data error. On 02 Oct, four vessels moved
+berths at once (KMTC BANGKOK → 20F, ZHONG GU BEI HAI → 20AB, YM IMPROVEMENT → 20B,
+RESURGENCE → 20AB) — 20C's reopening slipped to 5 Oct, so vessels originally slotted there or
+near it kept getting reshuffled across 20AB/20B/20C right up to the day each one plans to berth.
 
 ## Berth closures & gate stoppages (as announced, by sheet date)
 
 | Berth/Gate | First announced | Period (as of latest sheet) | Status |
 |---|---|---|---|
-| 20AB / G.29 | 29 Sep sheet | 29–30 Sep 2026 | spreader repair, gate only |
-| 20C | 29 Sep sheet | closed until **3 Oct** (was 1 Oct on the 29 Sep sheet) | full berth closure |
-| 20D | 29 Sep sheet | **3–24 Oct** (was 1–21 Oct on the 29 Sep sheet) | full berth closure, electric channel |
-| 20E / G.25 | 29 Sep sheet | **3–18 Oct** (was 1–15 Oct on the 29 Sep sheet) | trolley rail, gate only |
+| 20AB / G.29 | 29 Sep sheet | 29–30 Sep 2026 (ended) | spreader repair, gate only |
+| 20C | 29 Sep sheet | closed until **5 Oct** (was 1 Oct → 3 Oct → 5 Oct) | full berth closure |
+| 20D | 29 Sep sheet | **4–24 Oct** (was 1–21 Oct → 3–24 Oct → 4–24 Oct) | full berth closure, electric channel |
+| 20E / G.25 | 29 Sep sheet | **5–18 Oct** (was 1→3→5 Oct start on earlier sheets) | trolley rail, gate only |
 
-Both the 20D closure and the 20E gate stoppage slipped by two days between the 29 Sep and
-30 Sep sheets, then held steady (3–24 Oct / 3–18 Oct) on the 01 Oct sheet — no further
-slippage so far. The 20AB / G.29 stoppage is no longer listed on the 01 Oct sheet (its
-29–30 Sep window has passed). 20C reopened as announced: YM IMPROVEMENT is its first
-booked vessel, berthing 03/20 — just after the 3 Oct opening.
+The 20D closure and the 20E gate stoppage both slipped by two days between the 29 Sep and
+30 Sep sheets, then held steady through the 01 Oct sheet. On the 02 Oct sheet, 20D's start
+slipped one more day (3 Oct → 4 Oct) and 20E / G.25's start slipped two more days (3 Oct →
+5 Oct) — both keep slipping, worth checking again on every new sheet. The 20AB / G.29
+stoppage is no longer listed (its 29–30 Sep window has passed). **20C's reopening itself
+slipped from 3 Oct to 5 Oct** on the 02 Oct sheet — YM IMPROVEMENT, originally booked as its
+first vessel, was reassigned to 20B instead, and SAWASDEE DENEB (new) is now the vessel
+booked into 20C once it reopens.
 
 ## Per-day snapshots
 
@@ -92,6 +102,17 @@ booked vessel, berthing 03/20 — just after the 3 Oct opening.
 - **20F**: WAN HAI 278
 - Window extended to 27 Sep – 06 Oct to fit ZHONG GU BEI HAI's ETD (05/16)
 - Folder: [`01-10-2026/`](01-10-2026)
+
+### 02-10-2026
+- **20AB**: CAPE FAWLEY (ETD pushed 02/06→02/15), RESURGENCE (**← moved from 20E**), ZHONG GU BEI HAI (**← moved from 20B**)
+- **20B**: KHARIS HERITAGE (marked), YM IMPROVEMENT (**← moved from 20C**), JOSCO LUCKY (new)
+- **20C**: empty — reopening slipped **1 Oct → 3 Oct → 5 Oct**; SAWASDEE DENEB (new) now booked in once it reopens
+- **20D**: ALS SUMIRE (1C, marked), HARI BHUM (Barge, new) — closure start slipped to **4 Oct** (now 4–24 Oct)
+- **20E**: empty — WAN HAI 278 moved out to 20F; G.25 stoppage start slipped to **5 Oct** (now 5–18 Oct)
+- **20F**: KMTC BANGKOK (**← moved from 20AB**), XIN MING ZHOU 98 (new)
+- Window extended to 27 Sep – 08 Oct to fit JOSCO LUCKY's ETD (07/13)
+- Four vessels reassigned berths in a single day (see continuity table) as the 20C reopening keeps slipping
+- Folder: [`02-10-2026/`](02-10-2026)
 
 ---
 **Process for the next sheet:** add a dated folder with the source PDF and a copy of
