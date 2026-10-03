@@ -25,16 +25,16 @@ appears on the next day's sheet.
 | M ODYSSEY | expected · 20B (4A) | alongside · 20B | alongside · 20B | sailed (01/05) | — | — |
 | KHARIS HERITAGE | — | expected · 20AB | alongside · **→ 20B** (marked) | alongside · 20B (marked) | alongside · 20B (marked) | sailed (02/17) |
 | ALS SUMIRE | — | expected · 20F (1C) | alongside · **→ 20D** (marked, 1C) | expected · 20D (marked, 1C) | alongside · 20D (marked, 1C) | sailed (02/17) |
-| KMTC BANGKOK | — | — | expected · 20AB (new) | expected · 20AB | alongside · **→ 20F** | alongside · 20F |
-| WAN HAI 278 | — | — | expected · 20F (new) | expected · 20F | expected · 20E (**→ 20E**, ETA/P.B pushed later) | alongside · 20E |
+| KMTC BANGKOK | — | — | expected · 20AB (new) | expected · 20AB | alongside · **→ 20F** | alongside · 20F (D&T 02/11) |
+| WAN HAI 278 | — | — | expected · 20F (new) | expected · 20F | expected · 20E (**→ 20E**, ETA/P.B pushed later) | at anchorage · 20E (ETA 02/22, P.B 03/10) |
 | ZHONG GU BEI HAI | — | — | — | expected · 20B (new) | expected · **→ 20AB** | expected · 20AB (marked, P.B slipped 04/11→04/15) |
 | YM IMPROVEMENT | — | — | — | expected · 20C (new) | expected · **→ 20B** | expected · 20B (P.B slipped 03/20→04/10) |
-| RESURGENCE | — | — | — | expected · 20E (new) | expected · **→ 20AB** (ETA/P.B pulled earlier) | alongside · 20AB (ETD now 04/17) |
-| JOSCO LUCKY | — | — | — | — | expected · 20B (new) | expected · **→ 20AB** |
+| RESURGENCE | — | — | — | expected · 20E (new) | expected · **→ 20AB** (ETA/P.B pulled earlier) | expected · 20AB (ETD now 04/17) |
+| JOSCO LUCKY | — | — | — | — | expected · 20B (new) | expected · **→ 20B** (back from 20AB) |
 | SAWASDEE DENEB | — | — | — | — | expected · 20C (new, first since reopening) | expected · 20C |
-| HARI BHUM (Barge) | — | — | — | — | expected · 20D (new, barge) | alongside · 20D |
+| HARI BHUM (Barge) | — | — | — | — | expected · 20D (new, barge) | alongside · 20D (D&T 03/07) |
 | XIN MING ZHOU 98 | — | — | — | — | expected · 20F (new) | expected · 20F |
-| SAWASDEE SPICA | — | — | — | — | — | expected · 20B (new) |
+| SAWASDEE SPICA | — | — | — | — | — | feeder sheet only · 20B (not on berthing sheet) |
 
 Notable reassignments: HOPE C and MITRA BHUM swapped their originally-planned berths (20E/20F)
 once actually scheduled; CAPE FAWLEY was provisionally booked at 20C then moved to 20AB once
@@ -116,14 +116,17 @@ booked into 20C once it reopens.
 - Folder: [`02-10-2026/`](02-10-2026)
 
 ### 03-10-2026
-- **20AB**: RESURGENCE (ETD 04/12→04/17), ZHONG GU BEI HAI (marked; P.B slipped 04/11→04/15), JOSCO LUCKY (**← moved from 20B**)
-- **20B**: YM IMPROVEMENT (P.B slipped 03/20→04/10), SAWASDEE SPICA (new)
-- **20C**: SAWASDEE DENEB — reopening still **5 Oct** (held)
-- **20D**: HARI BHUM (Barge) — closure still **4–24 Oct** (held)
-- **20E**: WAN HAI 278 — G.25 stoppage still **5–18 Oct** (held)
-- **20F**: KMTC BANGKOK, XIN MING ZHOU 98
+Two sheets exist for this date. The berthing-section sheet (ETA / P.B / ETD for container ships plus
+berth notices) is used as the source of truth; the feeder sheet (LOA / FEEDER NAME) is archived alongside it.
+- **20AB**: RESURGENCE (ETD 04/12→04/17), ZHONG GU BEI HAI (P.B slipped 04/11→04/15)
+- **20B**: YM IMPROVEMENT (P.B slipped 03/20→04/10), JOSCO LUCKY (back at 20B; feeder sheet had put it at 20AB)
+- **20C**: SAWASDEE DENEB — reopening still **5 Oct**; new notice: cable splicing 4 Oct 09:00–12:00 (20C and 20D)
+- **20D**: HARI BHUM (Barge, D&T 03/07) — closure now **4–25 Oct** (end moved 24→25 Oct)
+- **20E**: WAN HAI 278 at anchorage since 02/22, P.B 03/10 — G.25 stops from **5 Oct 12:00** (end date cut off on this sheet; daily sheet says 18 Oct)
+- **20F**: KMTC BANGKOK (alongside since 02/11, sails 03/17), XIN MING ZHOU 98
 - Sailed since previous sheet: CAPE FAWLEY (02/15), KHARIS HERITAGE (02/17), ALS SUMIRE (02/17)
-- Closure/stoppage dates held steady for the first time since they started slipping on 30 Sep
+- Not on the berthing sheet: SAWASDEE SPICA (listed on the feeder sheet only)
+- Other terminals on this sheet, not shown on the dashboard: MTT SANDAKAN (4A), KMTC PUSAN (2F)
 - Folder: [`03-10-2026/`](03-10-2026)
 
 ---

@@ -385,26 +385,29 @@ const DATASETS = {
   },
   "2026-10-03": {
     label: "03/10/2026",
-    sheetNow: "03/1200",
+    sheetNow: "03/0900",
     berths: [
       {id:"20AB", gates:"Gate 29, 30", vessels:[
         {n:"RESURGENCE", loa:458, eta:"03/12", pb:"03/12", etd:"04/17"},
-        {n:"ZHONG GU BEI HAI", loa:561, eta:"04/09", pb:"04/15", etd:"06/10", mark:true},
-        {n:"JOSCO LUCKY", loa:564, eta:"05/22", pb:"06/12", etd:"07/13"}]},
+        {n:"ZHONG GU BEI HAI", loa:561, eta:"04/09", pb:"04/15", etd:"06/10", mark:true}]},
       {id:"20B", gates:"Gate 27, 28", vessels:[
         {n:"YM IMPROVEMENT", loa:564, eta:"03/23", pb:"04/10", etd:"05/12"},
-        {n:"SAWASDEE SPICA", loa:564, eta:"05/20", pb:"05/20", etd:"07/12"}]},
+        {n:"JOSCO LUCKY", loa:564, eta:"05/22", pb:"06/12", etd:"07/13"}]},
       {id:"20C", gates:"Gate 21, 22", vessels:[
         {n:"SAWASDEE DENEB", loa:564, eta:"04/24", pb:"05/12", etd:"07/12"}],
-        restrict:[{kind:"closed", from:"27/00", to:"05/00", label:"Not in use · opens 5 Oct", text:"Wharf to be utilised from 5 Oct 2026"}]},
+        restrict:[
+          {kind:"closed", from:"27/00", to:"05/00", label:"Not in use · opens 5 Oct", text:"Wharf to be utilised from 5 Oct 2026"},
+          {kind:"closed", from:"04/09", to:"04/12", label:"Cable splicing", when:"04 Oct · 09:00–12:00", text:"20C and 20D cable splicing on 4 Oct 2026, 09:00–12:00"}]},
       {id:"20D", gates:"Gate 23, 24", vessels:[
-        {n:"HARI BHUM (Barge)", loa:259, eta:"03/05", pb:"03/05", etd:"03/16"}],
-        restrict:[{kind:"closed", from:"04/00", to:"24/24", label:"Closed 4–24 Oct · electric channel renovation", text:"Berth closed 4–24 Oct 2026 to renovate electric channel"}]},
+        {n:"HARI BHUM (Barge)", loa:259, eta:"03/05", pb:"03/07", etd:"03/16"}],
+        restrict:[
+          {kind:"closed", from:"04/09", to:"04/12", label:"Cable splicing", when:"04 Oct · 09:00–12:00", text:"20C and 20D cable splicing on 4 Oct 2026, 09:00–12:00"},
+          {kind:"closed", from:"04/00", to:"25/24", label:"Closed 4–25 Oct · electric channel renovation", text:"Berth closed 4–25 Oct 2026 to renovate electric channel (cable track, bays 1700–1800)"}]},
       {id:"20E", gates:"Gate 25, 26", vessels:[
-        {n:"WAN HAI 278", loa:564, eta:"02/18", pb:"03/10", etd:"05/11"}],
-        restrict:[{kind:"partial", from:"05/00", to:"18/24", label:"G.25 stopped · trolley rail change (to 18 Oct)", text:"G.25 stops working 5–18 Oct 2026 to change trolley rail"}]},
+        {n:"WAN HAI 278", loa:564, eta:"02/22", pb:"03/10", etd:"05/11"}],
+        restrict:[{kind:"partial", from:"05/12", to:"18/24", label:"G.25 stopped · trolley rail change (from 5 Oct 12:00)", when:"05 Oct 12:00 – 18 Oct", text:"G.25 stops working from 5 Oct 12:00 to change trolley rail (G.25, G.26 bays 700–900); berthing sheet end date is cut off, daily sheet says 18 Oct"}]},
       {id:"20F", gates:"Gate 33, 34", vessels:[
-        {n:"KMTC BANGKOK", loa:565, eta:"02/07", pb:"02/08", etd:"03/17"},
+        {n:"KMTC BANGKOK", loa:564, eta:"02/07", pb:"02/11", etd:"03/17"},
         {n:"XIN MING ZHOU 98", loa:564, eta:"04/09", pb:"04/09", etd:"05/09"}]},
       {id:"22A", gates:"", vessels:[]},
       {id:"22B", gates:"", vessels:[]},
@@ -506,7 +509,7 @@ function render(key){
   const cards=BERTHS.flatMap(b=>(b.restrict||[]).map(r=>{
     const endMs=t(r.to)-1;
     const untilFrom = t(r.from) <= START;
-    const per = untilFrom ? "Until "+pd(r.to) : pd(r.from)+" – "+pd(fmt(endMs).slice(0,2)+"/00");
+    const per = r.when ? r.when : untilFrom ? "Until "+pd(r.to) : pd(r.from)+" – "+pd(fmt(endMs).slice(0,2)+"/00");
     const closed = r.kind==="closed";
     return `<div class="ncard${closed?" closed":""}"><div class="top"><span class="bn">${b.id}</span><span class="pill ${closed?"p-closed":"p-anch"}">${closed?"Berth closed":"Gate stopped"}</span></div><div class="per">${per}</div><div class="txt">${r.text}</div></div>`;
   })).join("");
