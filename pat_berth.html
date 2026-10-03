@@ -383,8 +383,37 @@ const DATASETS = {
       {id:"22D", gates:"", vessels:[]},
     ]
   },
+  "2026-10-03": {
+    label: "03/10/2026",
+    sheetNow: "03/1200",
+    berths: [
+      {id:"20AB", gates:"Gate 29, 30", vessels:[
+        {n:"RESURGENCE", loa:458, eta:"03/12", pb:"03/12", etd:"04/17"},
+        {n:"ZHONG GU BEI HAI", loa:561, eta:"04/09", pb:"04/15", etd:"06/10", mark:true},
+        {n:"JOSCO LUCKY", loa:564, eta:"05/22", pb:"06/12", etd:"07/13"}]},
+      {id:"20B", gates:"Gate 27, 28", vessels:[
+        {n:"YM IMPROVEMENT", loa:564, eta:"03/23", pb:"04/10", etd:"05/12"},
+        {n:"SAWASDEE SPICA", loa:564, eta:"05/20", pb:"05/20", etd:"07/12"}]},
+      {id:"20C", gates:"Gate 21, 22", vessels:[
+        {n:"SAWASDEE DENEB", loa:564, eta:"04/24", pb:"05/12", etd:"07/12"}],
+        restrict:[{kind:"closed", from:"27/00", to:"05/00", label:"Not in use · opens 5 Oct", text:"Wharf to be utilised from 5 Oct 2026"}]},
+      {id:"20D", gates:"Gate 23, 24", vessels:[
+        {n:"HARI BHUM (Barge)", loa:259, eta:"03/05", pb:"03/05", etd:"03/16"}],
+        restrict:[{kind:"closed", from:"04/00", to:"24/24", label:"Closed 4–24 Oct · electric channel renovation", text:"Berth closed 4–24 Oct 2026 to renovate electric channel"}]},
+      {id:"20E", gates:"Gate 25, 26", vessels:[
+        {n:"WAN HAI 278", loa:564, eta:"02/18", pb:"03/10", etd:"05/11"}],
+        restrict:[{kind:"partial", from:"05/00", to:"18/24", label:"G.25 stopped · trolley rail change (to 18 Oct)", text:"G.25 stops working 5–18 Oct 2026 to change trolley rail"}]},
+      {id:"20F", gates:"Gate 33, 34", vessels:[
+        {n:"KMTC BANGKOK", loa:565, eta:"02/07", pb:"02/08", etd:"03/17"},
+        {n:"XIN MING ZHOU 98", loa:564, eta:"04/09", pb:"04/09", etd:"05/09"}]},
+      {id:"22A", gates:"", vessels:[]},
+      {id:"22B", gates:"", vessels:[]},
+      {id:"22C", gates:"", vessels:[]},
+      {id:"22D", gates:"", vessels:[]},
+    ]
+  },
 };
-const DAY_ORDER = ["2026-09-28","2026-09-29","2026-09-30","2026-10-01","2026-10-02"]; // oldest -> latest
+const DAY_ORDER = ["2026-09-28","2026-09-29","2026-09-30","2026-10-01","2026-10-02","2026-10-03"]; // oldest -> latest
 const LATEST_KEY = DAY_ORDER[DAY_ORDER.length-1];
 
 const H = 3600e3;
