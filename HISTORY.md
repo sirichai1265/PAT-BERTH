@@ -162,5 +162,6 @@ berth notices) is used as the source of truth; the feeder sheet (LOA / FEEDER NA
 `pat_berth.html`/`index.html`; update the vessel continuity table above (carry forward
 each vessel still on the sheet, mark newly-sailed vessels, flag any berth reassignment
 or slipped closure date); then append a new per-day snapshot section; rebuild
-`PAT_Berth_Window.xlsx` at the repo root with the new day's data and copy it into every
-dated folder (including the new one) so each day's archive carries the latest summary.
+`PAT_Berth_Window.xlsx` at the repo root (cumulative: continuity, all-days notices log and one
+sheet per day), then save a per-day copy into each dated folder containing only that day's sheet
+(vessel list + that day's notices).
