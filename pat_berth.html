@@ -111,7 +111,7 @@
 
   /* gantt */
   .scroll{overflow-x:auto}
-  .gantt{min-width:1040px;position:relative}
+  .gantt{min-width:1400px;position:relative}
   .g-row{display:grid;grid-template-columns:150px 1fr;border-bottom:1px solid var(--line-2)}
   .g-row:last-child{border-bottom:0}
   .g-row:not(.axis):hover .g-track{background:rgba(44,119,163,.04)}
@@ -227,7 +227,7 @@
   </section>
 
   <div class="foot">
-    <span>P.B = pilot boarding / berthing time. Times on the sheet are written DD/HH; dates 27–30 are September, 01–08 are October 2026.</span>
+    <span>P.B = pilot boarding / berthing time. Times on the sheet are written DD/HH; dates 27–30 are September, 01–11 are October 2026.</span>
     <span>Gate stoppages (G.29, G.25) reduce crane/gate capacity at the berth but do not close it. A historical sheet freezes "Now" to that day's snapshot time.</span>
   </div>
 </div>
@@ -443,12 +443,43 @@ const DATASETS = {
       {id:"22E", gates:"", vessels:[]},
     ]
   },
+  "2026-10-05": {
+    label: "05/10/2026",
+    sheetNow: "05/0900",
+    berths: [
+      {id:"20AB", gates:"Gate 29, 30", vessels:[
+        {n:"ZHONG GU BEI HAI", loa:561, eta:"04/09", pb:"04/15", etd:"06/11"},
+        {n:"KMTC TOKYO", loa:565, eta:"06/13", pb:"06/13", etd:"08/12"},
+        {n:"GREEN PARK", loa:482, eta:"07/11", pb:"08/15", etd:"09/14", mark:true}]},
+      {id:"20B", gates:"Gate 27, 28", vessels:[
+        {n:"YM IMPROVEMENT", loa:564, eta:"03/23", pb:"04/10", etd:"05/12"},
+        {n:"SAWASDEE SPICA", loa:564, eta:"05/21", pb:"06/13", etd:"08/13"}]},
+      {id:"20C", gates:"Gate 21, 22", vessels:[
+        {n:"SAWASDEE DENEB", loa:564, eta:"04/24", pb:"05/12", etd:"07/12"},
+        {n:"SAWASDEE ATLANTIC", loa:564, eta:"07/22", pb:"08/15", etd:"10/13"}]},
+      {id:"20D", gates:"Gate 23, 24", vessels:[
+        {n:"JOSCO LUCKY", loa:564, eta:"06/18", pb:"06/18", etd:"07/15"},
+        {n:"MTT BANGKOK", loa:564, eta:"07/15", pb:"07/17", etd:"09/13", mark:true}],
+        restrict:[{kind:"closed", from:"04/00", to:"24/24", label:"Closed 4–24 Oct · electric channel renovation", text:"Berth closed 4–24 Oct 2026 to renovate electric channel (vessels are nevertheless booked from 6 Oct on this sheet)"}]},
+      {id:"20E", gates:"Gate 25, 26", vessels:[
+        {n:"WAN HAI 278", loa:564, eta:"02/18", pb:"03/10", etd:"05/11"}],
+        restrict:[{kind:"partial", from:"05/00", to:"18/24", label:"G.25 stopped · trolley rail change (to 18 Oct)", text:"G.25 stops working 5–18 Oct 2026 to change trolley rail"}]},
+      {id:"20F", gates:"Gate 33, 34", vessels:[
+        {n:"XIN AN", loa:564, eta:"07/14", pb:"07/17", etd:"09/13", mark:true}]},
+      {id:"22A", gates:"", vessels:[]},
+      {id:"22B", gates:"", vessels:[]},
+      {id:"22D", gates:"", vessels:[]},
+      {id:"22F", gates:"", vessels:[]},
+      {id:"22E", gates:"", vessels:[]},
+      {id:"20G", gates:"", vessels:[]},
+    ]
+  },
 };
-const DAY_ORDER = ["2026-09-28","2026-09-29","2026-09-30","2026-10-01","2026-10-02","2026-10-03","2026-10-04"]; // oldest -> latest
+const DAY_ORDER = ["2026-09-28","2026-09-29","2026-09-30","2026-10-01","2026-10-02","2026-10-03","2026-10-04","2026-10-05"]; // oldest -> latest
 const LATEST_KEY = DAY_ORDER[DAY_ORDER.length-1];
 
 const H = 3600e3;
-const START=Date.UTC(2026,8,27,-7), DAYS=12, END=START+DAYS*24*H; // 27 Sep - 08 Oct, fixed window for all snapshots
+const START=Date.UTC(2026,8,27,-7), DAYS=15, END=START+DAYS*24*H; // 27 Sep - 11 Oct, fixed window for all snapshots
 const DOW=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 
 // DD/HH -> ms. Days 27-31 = September, 01-26 = October 2026. Local UTC+7.
@@ -477,7 +508,7 @@ function render(key){
   const BERTHS = ds.berths;
   const todayIdx=Math.floor((now-START)/(24*H));
 
-  document.getElementById("windowLabel").textContent = "27 Sep – 08 Oct 2026";
+  document.getElementById("windowLabel").textContent = "27 Sep – 11 Oct 2026";
   document.getElementById("dayBadge").innerHTML = isLatest
     ? '<span class="badge-latest">Latest</span>'
     : '<span class="badge-hist">Historical</span>';
