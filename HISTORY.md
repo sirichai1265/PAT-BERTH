@@ -10,36 +10,41 @@ Tracks every vessel that appeared on any of the three sheets so far, across bert
 "→ 20X" marks a berth reassignment from the previous sheet; "sailed" means it no longer
 appears on the next day's sheet.
 
-| Vessel | 28 Sep | 29 Sep | 30 Sep | 01 Oct | 02 Oct | 03 Oct | 04 Oct | 05 Oct |
-|---|---|---|---|---|---|---|---|---|
-| INFINITY | alongside · 20AB | alongside · 20AB (ETD 29/15) | sailed | — | — | — | — | — |
-| SKY CHALLENGE | expected · 20AB | alongside · 20AB | alongside · 20AB | sailed (01/04) | — | — | — | — |
-| KMTC GWANGYANG | alongside · 20B | sailed (29/05) | — | — | — | — | — | — |
-| MILLENNIUM BRIGHT | at anchorage · 20B | alongside · 20B | sailed (30/04) | — | — | — | — | — |
-| BANGKOK | alongside · 20D | alongside · 20D | sailed (29/14) | — | — | — | — | — |
-| TS CHIBA | alongside · 20E | sailed (29/04) | — | — | — | — | — | — |
-| HOPE C | expected · 20E | alongside · **→ 20F** | alongside · 20F | sailed (30/16) | — | — | — | — |
-| JARU BHUM | alongside · 20F (7B) | sailed (29/04) | — | — | — | — | — | — |
-| MITRA BHUM | expected · 20F | alongside · **→ 20E** | alongside · 20E | sailed (30/18) | — | — | — | — |
-| CAPE FAWLEY | expected · 20AB | expected · **→ 20C** | alongside · **→ 20AB** | alongside · 20AB | alongside · 20AB (ETD now 02/15, was 02/06) | sailed (02/15) | — | — |
-| M ODYSSEY | expected · 20B (4A) | alongside · 20B | alongside · 20B | sailed (01/05) | — | — | — | — |
-| KHARIS HERITAGE | — | expected · 20AB | alongside · **→ 20B** (marked) | alongside · 20B (marked) | alongside · 20B (marked) | sailed (02/17) | — | — |
-| ALS SUMIRE | — | expected · 20F (1C) | alongside · **→ 20D** (marked, 1C) | expected · 20D (marked, 1C) | alongside · 20D (marked, 1C) | sailed (02/17) | — | — |
-| KMTC BANGKOK | — | — | expected · 20AB (new) | expected · 20AB | alongside · **→ 20F** | alongside · 20F (D&T 02/11) | sailed (03/17) | — |
-| WAN HAI 278 | — | — | expected · 20F (new) | expected · 20F | expected · 20E (**→ 20E**, ETA/P.B pushed later) | at anchorage · 20E (ETA 02/22, P.B 03/10) | alongside · 20E (P.B 03/10) | alongside · 20E (ETD 05/11) |
-| ZHONG GU BEI HAI | — | — | — | expected · 20B (new) | expected · **→ 20AB** | expected · 20AB (marked, P.B slipped 04/11→04/15) | at anchorage · 20AB (ETA 04/09, P.B 04/15) | alongside · 20AB (ETD slipped 06/10→06/11) |
-| YM IMPROVEMENT | — | — | — | expected · 20C (new) | expected · **→ 20B** | expected · 20B (P.B slipped 03/20→04/10) | alongside · 20B (P.B 04/10) | alongside · 20B (ETD 05/12) |
-| RESURGENCE | — | — | — | expected · 20E (new) | expected · **→ 20AB** (ETA/P.B pulled earlier) | expected · 20AB (ETD now 04/17) | alongside · 20AB (ETD 04/17) | sailed (04/17) |
-| JOSCO LUCKY | — | — | — | — | expected · 20B (new) | expected · **→ 20B** (back from 20AB) | expected · **→ 20AB** (flip-flopped back) | expected · **→ 20D** (P.B 06/18) |
-| SAWASDEE DENEB | — | — | — | — | expected · 20C (new, first since reopening) | expected · 20C | expected · 20C | at anchorage · 20C (P.B 05/12) |
-| HARI BHUM (Barge) | — | — | — | — | expected · 20D (new, barge) | alongside · 20D (D&T 03/07) | sailed (03/16) | — |
-| XIN MING ZHOU 98 | — | — | — | — | expected · 20F (new) | expected · 20F | alongside · 20F (P.B 04/09) | sailed (05/09) |
-| SAWASDEE SPICA | — | — | — | — | — | feeder sheet only · 20B (not on berthing sheet) | expected · 20B (P.B 06/13, ETD 08/13) | expected · 20B |
-| KMTC TOKYO | — | — | — | — | — | — | expected · 20F (new) | expected · **→ 20AB** (ETA 06/13) |
-| GREEN PARK | — | — | — | — | — | — | — | expected · 20AB (new, marked) |
-| SAWASDEE ATLANTIC | — | — | — | — | — | — | — | expected · 20C (new) |
-| MTT BANGKOK | — | — | — | — | — | — | — | expected · 20D (new, marked) |
-| XIN AN | — | — | — | — | — | — | — | expected · 20F (new, marked) |
+| Vessel | 28 Sep | 29 Sep | 30 Sep | 01 Oct | 02 Oct | 03 Oct | 04 Oct | 05 Oct | 06 Oct |
+|---|---|---|---|---|---|---|---|---|---|
+| INFINITY | alongside · 20AB | alongside · 20AB (ETD 29/15) | sailed | — | — | — | — | — | — |
+| SKY CHALLENGE | expected · 20AB | alongside · 20AB | alongside · 20AB | sailed (01/04) | — | — | — | — | — |
+| KMTC GWANGYANG | alongside · 20B | sailed (29/05) | — | — | — | — | — | — | — |
+| MILLENNIUM BRIGHT | at anchorage · 20B | alongside · 20B | sailed (30/04) | — | — | — | — | — | — |
+| BANGKOK | alongside · 20D | alongside · 20D | sailed (29/14) | — | — | — | — | — | — |
+| TS CHIBA | alongside · 20E | sailed (29/04) | — | — | — | — | — | — | — |
+| HOPE C | expected · 20E | alongside · **→ 20F** | alongside · 20F | sailed (30/16) | — | — | — | — | — |
+| JARU BHUM | alongside · 20F (7B) | sailed (29/04) | — | — | — | — | — | — | — |
+| MITRA BHUM | expected · 20F | alongside · **→ 20E** | alongside · 20E | sailed (30/18) | — | — | — | — | — |
+| CAPE FAWLEY | expected · 20AB | expected · **→ 20C** | alongside · **→ 20AB** | alongside · 20AB | alongside · 20AB (ETD now 02/15, was 02/06) | sailed (02/15) | — | — | — |
+| M ODYSSEY | expected · 20B (4A) | alongside · 20B | alongside · 20B | sailed (01/05) | — | — | — | — | — |
+| KHARIS HERITAGE | — | expected · 20AB | alongside · **→ 20B** (marked) | alongside · 20B (marked) | alongside · 20B (marked) | sailed (02/17) | — | — | — |
+| ALS SUMIRE | — | expected · 20F (1C) | alongside · **→ 20D** (marked, 1C) | expected · 20D (marked, 1C) | alongside · 20D (marked, 1C) | sailed (02/17) | — | — | — |
+| KMTC BANGKOK | — | — | expected · 20AB (new) | expected · 20AB | alongside · **→ 20F** | alongside · 20F (D&T 02/11) | sailed (03/17) | — | — |
+| WAN HAI 278 | — | — | expected · 20F (new) | expected · 20F | expected · 20E (**→ 20E**, ETA/P.B pushed later) | at anchorage · 20E (ETA 02/22, P.B 03/10) | alongside · 20E (P.B 03/10) | alongside · 20E (ETD 05/11) | sailed (05/11) |
+| ZHONG GU BEI HAI | — | — | — | expected · 20B (new) | expected · **→ 20AB** | expected · 20AB (marked, P.B slipped 04/11→04/15) | at anchorage · 20AB (ETA 04/09, P.B 04/15) | alongside · 20AB (ETD slipped 06/10→06/11) | alongside · 20AB (ETD 06/11) |
+| YM IMPROVEMENT | — | — | — | expected · 20C (new) | expected · **→ 20B** | expected · 20B (P.B slipped 03/20→04/10) | alongside · 20B (P.B 04/10) | alongside · 20B (ETD 05/12) | sailed (05/12) |
+| RESURGENCE | — | — | — | expected · 20E (new) | expected · **→ 20AB** (ETA/P.B pulled earlier) | expected · 20AB (ETD now 04/17) | alongside · 20AB (ETD 04/17) | sailed (04/17) | — |
+| JOSCO LUCKY | — | — | — | — | expected · 20B (new) | expected · **→ 20B** (back from 20AB) | expected · **→ 20AB** (flip-flopped back) | expected · **→ 20D** (P.B 06/18) | expected · **→ 20C** (P.B 07/13) |
+| SAWASDEE DENEB | — | — | — | — | expected · 20C (new, first since reopening) | expected · 20C | expected · 20C | at anchorage · 20C (P.B 05/12) | alongside · 20C (ETD 07/12→07/11) |
+| HARI BHUM (Barge) | — | — | — | — | expected · 20D (new, barge) | alongside · 20D (D&T 03/07) | sailed (03/16) | — | — |
+| XIN MING ZHOU 98 | — | — | — | — | expected · 20F (new) | expected · 20F | alongside · 20F (P.B 04/09) | sailed (05/09) | — |
+| SAWASDEE SPICA | — | — | — | — | — | feeder sheet only · 20B (not on berthing sheet) | expected · 20B (P.B 06/13, ETD 08/13) | expected · 20B | expected · 20B (P.B 06/13) |
+| KMTC TOKYO | — | — | — | — | — | — | expected · 20F (new) | expected · **→ 20AB** (ETA 06/13) | expected · 20AB (P.B 06/13) |
+| GREEN PARK | — | — | — | — | — | — | — | expected · 20AB (new, marked) | expected · **→ 20B** |
+| SAWASDEE ATLANTIC | — | — | — | — | — | — | — | expected · 20C (new) | expected · 20C (P.B 08/15→09/15, ETD 10/13→11/03) |
+| MTT BANGKOK | — | — | — | — | — | — | — | expected · 20D (new, marked) | expected · 20D (P.B 07/17→07/14) |
+| XIN AN | — | — | — | — | — | — | — | expected · 20F (new, marked) | expected · 20F (P.B 07/17→07/14) |
+| SITC HOCHIMINH | — | — | — | — | — | — | — | — | expected · 20AB (new) |
+| YM INCEPTION | — | — | — | — | — | — | — | — | expected · 20AB (new) |
+| HE JIN | — | — | — | — | — | — | — | — | expected · 20B (new) |
+| ZHONG GU DONG HAI | — | — | — | — | — | — | — | — | expected · 20C (new) |
+| KANWAY FORTUNE | — | — | — | — | — | — | — | — | expected · 20D (new) |
 
 Notable reassignments: HOPE C and MITRA BHUM swapped their originally-planned berths (20E/20F)
 once actually scheduled; CAPE FAWLEY was provisionally booked at 20C then moved to 20AB once
@@ -155,6 +160,17 @@ berth notices) is used as the source of truth; the feeder sheet (LOA / FEEDER NA
 - Sailed since previous sheet: RESURGENCE (04/17), XIN MING ZHOU 98 (05/09)
 - Window extended to 27 Sep – 11 Oct to fit SAWASDEE ATLANTIC's ETD (10/13)
 - Folder: [`05-10-2026/`](05-10-2026)
+
+### 06-10-2026
+- **20AB**: ZHONG GU BEI HAI (alongside, sails 06/11), KMTC TOKYO (P.B 06/13), SITC HOCHIMINH and YM INCEPTION (new)
+- **20B**: SAWASDEE SPICA, GREEN PARK (**← moved from 20AB**), HE JIN (new)
+- **20C**: SAWASDEE DENEB (alongside, ETD 07/12→07/11), JOSCO LUCKY (**← moved from 20D**), ZHONG GU DONG HAI (new), SAWASDEE ATLANTIC (P.B pushed 08/15→09/15, ETD 10/13→11/03)
+- **20D**: MTT BANGKOK (P.B 07/17→07/14), KANWAY FORTUNE (new) — closure still printed as **4–24 Oct**, yet vessels are booked from 7 Oct; still to be confirmed
+- **20E**: empty (WAN HAI 278 sailed 05/11) — G.25 stoppage **5–18 Oct** in progress
+- **20F**: XIN AN (P.B 07/17→07/14)
+- Sailed since previous sheet: YM IMPROVEMENT (05/12), WAN HAI 278 (05/11)
+- Five new vessels appear on this sheet, and most of the 20C/20D bookings moved by a few hours
+- Folder: [`06-10-2026/`](06-10-2026)
 
 ---
 **Process for the next sheet:** add a dated folder with the source PDF and a copy of
