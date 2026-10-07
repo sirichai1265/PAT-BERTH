@@ -693,5 +693,23 @@ try{
 }catch(e){}
 goTo(startKey);
 </script>
+
+<script>
+// Auto-refresh: GitHub Pages caches pages for up to 10 minutes. Ask the server directly
+// (cache bypassed) whether a newer version was published and reload when it was.
+(function(){
+  if(!/\.github\.io$/.test(location.hostname)) return;
+  var loaded = Date.parse(document.lastModified) || 0;
+  function check(){
+    fetch(location.pathname + "?v=" + Date.now(), {method:"HEAD", cache:"no-store"})
+      .then(function(r){
+        var lm = Date.parse(r.headers.get("last-modified") || "") || 0;
+        if(lm && loaded && lm > loaded + 1000) location.reload();
+      }).catch(function(){});
+  }
+  setInterval(check, 60000);
+  document.addEventListener("visibilitychange", function(){ if(!document.hidden) check(); });
+})();
+</script>
 </body>
 </html>
