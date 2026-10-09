@@ -747,6 +747,8 @@ function goTo(key){
   prevBtn.disabled = i<=0;
   nextBtn.disabled = i>=DAY_ORDER.length-1;
   render(key);
+  // keep the timeline scrolled to the far right (latest dates) whenever it is drawn
+  requestAnimationFrame(function(){var sc=document.getElementById("gantt").parentElement;sc.scrollLeft=sc.scrollWidth;});
   try{ localStorage.setItem("patBerthLastDay", key); }catch(e){}
 }
 
