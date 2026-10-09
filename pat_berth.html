@@ -111,7 +111,7 @@
 
   /* gantt */
   .scroll{overflow-x:auto}
-  .gantt{min-width:1560px;position:relative}
+  .gantt{min-width:1720px;position:relative}
   .g-row{display:grid;grid-template-columns:150px 1fr;border-bottom:1px solid var(--line-2)}
   .g-row:last-child{border-bottom:0}
   .g-row:not(.axis):hover .g-track{background:rgba(44,119,163,.04)}
@@ -227,7 +227,7 @@
   </section>
 
   <div class="foot">
-    <span>P.B = pilot boarding / berthing time. Times on the sheet are written DD/HH; dates 27–30 are September, 01–13 are October 2026.</span>
+    <span>P.B = pilot boarding / berthing time. Times on the sheet are written DD/HH; dates 27–30 are September, 01–15 are October 2026.</span>
     <span>Gate stoppages (G.29, G.25) reduce crane/gate capacity at the berth but do not close it. A historical sheet freezes "Now" to that day's snapshot time.</span>
   </div>
 </div>
@@ -578,12 +578,49 @@ const DATASETS = {
       {id:"22D", gates:"", vessels:[]},
     ]
   },
+  "2026-10-09": {
+    label: "09/10/2026",
+    sheetNow: "09/0900",
+    berths: [
+      {id:"20AB", gates:"Gate 29, 30", vessels:[
+        {n:"GREEN PARK", loa:482, eta:"07/10", pb:"08/14", etd:"09/16"},
+        {n:"KANWAY FORTUNE", loa:564, eta:"08/16", pb:"09/14", etd:"10/15"},
+        {n:"CNC MARS", loa:564, eta:"09/22", pb:"10/15", etd:"11/15"},
+        {n:"SAMAL", loa:564, eta:"12/04", pb:"12/05", etd:"13/14"}]},
+      {id:"20B", gates:"Gate 27, 28", vessels:[
+        {n:"SITC HOCHIMINH", loa:470, eta:"07/15", pb:"08/14", etd:"09/17"},
+        {n:"INDURO", loa:565, eta:"09/06", pb:"09/16", etd:"11/14"},
+        {n:"JOSCO SHINE", loa:564, eta:"11/17", pb:"11/17", etd:"12/14"}]},
+      {id:"20C", gates:"Gate 21, 22", vessels:[
+        {n:"ZHONG GU DONG HAI", loa:564, eta:"07/14", pb:"08/14", etd:"09/14"},
+        {n:"YM INCEPTION", loa:564, eta:"08/13", pb:"09/13", etd:"10/16"},
+        {n:"STARSHIP AQUILA", loa:565, eta:"09/22", pb:"10/16", etd:"12/05"},
+        {n:"ALS SUMIRE", loa:537, eta:"12/18", pb:"12/18", etd:"14/05", shift:"1C"}]},
+      {id:"20D", gates:"Gate 23, 24", vessels:[
+        {n:"HE JIN", loa:552, eta:"08/24", pb:"08/24", etd:"10/13"},
+        {n:"CUL HAIPHONG", loa:458, eta:"09/20", pb:"10/16", etd:"11/06", shift:"4A"},
+        {n:"INCEDA", loa:564, eta:"10/17", pb:"11/05", etd:"12/14"},
+        {n:"KMTC TAIPEIS", loa:565, eta:"12/23", pb:"13/05", etd:"14/15"}],
+        restrict:[{kind:"closed", from:"04/00", to:"24/24", label:"Closed 4–24 Oct · electric channel renovation", text:"Berth closed 4–24 Oct 2026 to renovate electric channel (HE JIN has nevertheless shifted in to 20D on this sheet)"}]},
+      {id:"20E", gates:"Gate 25, 26", vessels:[],
+        restrict:[{kind:"partial", from:"05/00", to:"18/24", label:"G.25 stopped · trolley rail change (to 18 Oct)", text:"G.25 stops working 5–18 Oct 2026 to change trolley rail"}]},
+      {id:"20F", gates:"Gate 33, 34", vessels:[
+        {n:"XIN AN", loa:564, eta:"07/13", pb:"07/14", etd:"09/13"},
+        {n:"SAWASDEE ATLANTIC", loa:564, eta:"07/20", pb:"09/15", etd:"11/03"},
+        {n:"XIN MING ZHOU 102", loa:564, eta:"10/21", pb:"11/05", etd:"12/02"},
+        {n:"SAWASDEE SUNRISE", loa:564, eta:"12/05", pb:"12/05", etd:"13/15"}]},
+      {id:"22A", gates:"", vessels:[]},
+      {id:"22B", gates:"", vessels:[]},
+      {id:"22C", gates:"", vessels:[]},
+      {id:"22D", gates:"", vessels:[]},
+    ]
+  },
 };
-const DAY_ORDER = ["2026-09-28","2026-09-29","2026-09-30","2026-10-01","2026-10-02","2026-10-03","2026-10-04","2026-10-05","2026-10-06","2026-10-07","2026-10-08"]; // oldest -> latest
+const DAY_ORDER = ["2026-09-28","2026-09-29","2026-09-30","2026-10-01","2026-10-02","2026-10-03","2026-10-04","2026-10-05","2026-10-06","2026-10-07","2026-10-08","2026-10-09"]; // oldest -> latest
 const LATEST_KEY = DAY_ORDER[DAY_ORDER.length-1];
 
 const H = 3600e3;
-const START=Date.UTC(2026,8,27,-7), DAYS=17, END=START+DAYS*24*H; // 27 Sep - 13 Oct, fixed window for all snapshots
+const START=Date.UTC(2026,8,27,-7), DAYS=19, END=START+DAYS*24*H; // 27 Sep - 15 Oct, fixed window for all snapshots
 const DOW=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 
 // DD/HH -> ms. Days 27-31 = September, 01-26 = October 2026. Local UTC+7.
@@ -612,7 +649,7 @@ function render(key){
   const BERTHS = ds.berths;
   const todayIdx=Math.floor((now-START)/(24*H));
 
-  document.getElementById("windowLabel").textContent = "27 Sep – 13 Oct 2026";
+  document.getElementById("windowLabel").textContent = "27 Sep – 15 Oct 2026";
   document.getElementById("dayBadge").innerHTML = isLatest
     ? '<span class="badge-latest">Latest</span>'
     : '<span class="badge-hist">Historical</span>';
