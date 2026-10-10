@@ -65,6 +65,11 @@
   .daypicker .navbtn:disabled{opacity:.35;cursor:default}
   .daypicker .navbtn:not(:disabled):hover,.daypicker select:hover{background:rgba(255,255,255,.24)}
   .daypicker select:focus-visible,.daypicker .navbtn:focus-visible{outline:2px solid #fff;outline-offset:2px}
+  .daypicker{flex-wrap:wrap;justify-content:flex-end}
+  .daypicker .dash{color:rgba(255,255,255,.8)}
+  .daypicker .navbtn.txt{font-family:var(--display);font-weight:600;font-size:12px;letter-spacing:.04em;padding:7px 11px}
+  .daypicker .navbtn.on{background:#fff;color:#10293F;border-color:#fff}
+  .badge-range{font-family:var(--display);font-weight:700;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:#0C3C63;background:#CFE3F5;padding:3px 9px;border-radius:999px}
   .linkbtn{position:relative;display:inline-flex;align-items:center;gap:10px;font-family:var(--display);font-weight:700;font-size:16px;letter-spacing:.04em;color:#2A1600;background:linear-gradient(135deg,#FFC25A 0%,#F28C28 100%);border-radius:999px;padding:12px 24px 12px 18px;text-decoration:none;cursor:pointer;box-shadow:0 8px 22px -8px rgba(242,140,40,.75),0 0 0 3px rgba(255,255,255,.22);transition:transform .15s ease,box-shadow .15s ease;animation:btnpulse 2.6s ease-out infinite}
   .linkbtn .ico{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:rgba(42,22,0,.14)}
   .linkbtn .ico svg{width:17px;height:17px}
@@ -184,13 +189,16 @@
     </div>
     <div class="meta">
       <div class="daypicker">
-        <label for="daySelect">Sheet date</label>
-        <button type="button" class="navbtn" id="prevDay" title="Previous day">‹</button>
-        <select id="daySelect"></select>
-        <button type="button" class="navbtn" id="nextDay" title="Next day">›</button>
+        <label for="fromSelect">Sheet date</label>
+        <button type="button" class="navbtn" id="prevDay" title="Previous day" aria-label="Previous day">‹</button>
+        <select id="fromSelect" aria-label="From date"></select>
+        <span class="dash" aria-hidden="true">–</span>
+        <select id="toSelect" aria-label="To date"></select>
+        <button type="button" class="navbtn" id="nextDay" title="Next day" aria-label="Next day">›</button>
+        <button type="button" class="navbtn txt" id="allDays" title="Combine every sheet">All days</button>
         <span id="dayBadge"></span>
       </div>
-      <span>Window <b id="windowLabel"></b> · times local (UTC+7)</span>
+      <span>First ETA → last ETD <b id="windowLabel"></b> · times local (UTC+7)</span>
     </div>
   </header>
 
@@ -654,8 +662,9 @@ const DATASETS = {
 const DAY_ORDER = ["2026-09-28","2026-09-29","2026-09-30","2026-10-01","2026-10-02","2026-10-03","2026-10-04","2026-10-05","2026-10-06","2026-10-07","2026-10-08","2026-10-09","2026-10-10"]; // oldest -> latest
 const LATEST_KEY = DAY_ORDER[DAY_ORDER.length-1];
 
-const H = 3600e3;
-const START=Date.UTC(2026,8,27,-7), DAYS=19, END=START+DAYS*24*H; // 27 Sep - 15 Oct, fixed window for all snapshots
+const H = 3600e3, DAY_MS = 24*H;
+const DATA_START = Date.UTC(2026,8,27,-7);          // first day covered by the oldest sheet (27 Sep, UTC+7)
+let START = DATA_START, END = DATA_START + 3*DAY_MS, DAYS = 3;   // reset on every render: first ETA -> last ETD
 const DOW=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 
 // DD/HH -> ms. Days 27-31 = September, 01-26 = October 2026. Local UTC+7.
@@ -664,6 +673,7 @@ function t(s){const [d,h]=s.split("/").map(Number);const m=d>=27?8:9;return Date
 function tFull(s){const [d,hm]=s.split("/");const h=Number(hm.slice(0,2)),mi=Number(hm.slice(2));const m=Number(d)>=27?8:9;return Date.UTC(2026,m,Number(d),h-7,mi);}
 const pct=ms=>((ms-START)/(END-START)*100);
 const fmt=ms=>{const d=new Date(ms+7*H);const dd=String(d.getUTCDate()).padStart(2,"0");const mo=d.getUTCMonth()===8?"Sep":"Oct";return `${dd} ${mo} ${String(d.getUTCHours()).padStart(2,"0")}:00`;};
+const dayFloor=ms=>Math.floor((ms+7*H)/DAY_MS)*DAY_MS-7*H;   // local midnight
 
 function statusFor(now){
   return v=>{
@@ -675,22 +685,56 @@ function statusFor(now){
   };
 }
 
-function render(key){
-  const ds = DATASETS[key];
-  const isLatest = key === LATEST_KEY;
+const BERTH_ORDER=["20AB","20B","20C","20D","20E","20F","22A","22B","22C","22D","22E","22F","20G"];
+const berthIdx=id=>{const i=BERTH_ORDER.indexOf(id);return i<0?99:i;};
+
+// Combine one or more sheets: each vessel is shown as on the LAST sheet (in the range) that lists it.
+function merge(keys){
+  const lastSeen={};
+  keys.forEach((k,i)=>DATASETS[k].berths.forEach(b=>b.vessels.forEach(v=>{lastSeen[v.n]=i;})));
+  const berths={};
+  keys.forEach((k,i)=>DATASETS[k].berths.forEach(b=>{
+    const e=berths[b.id]||(berths[b.id]={id:b.id,gates:"",vessels:[],restrict:[],restrictFrom:-1});
+    if(b.gates) e.gates=b.gates;
+    if(i>=e.restrictFrom){e.restrictFrom=i;e.restrict=b.restrict||[];}
+    b.vessels.forEach(v=>{if(lastSeen[v.n]===i) e.vessels.push(v);});
+  }));
+  const inLast=new Set(DATASETS[keys[keys.length-1]].berths.map(b=>b.id));
+  return Object.values(berths)
+    .filter(b=>inLast.has(b.id)||b.vessels.length||b.restrict.length)
+    .sort((a,b)=>berthIdx(a.id)-berthIdx(b.id))
+    .map(b=>({...b,vessels:b.vessels.slice().sort((x,y)=>t(x.pb)-t(y.pb))}));
+}
+
+function render(keys){
+  const lastKey = keys[keys.length-1];
+  const ds = DATASETS[lastKey];
+  const isLatest = lastKey === LATEST_KEY;
+  const BERTHS = merge(keys);
+
+  // timeline spans the first ETA to the last ETD of the vessels shown, rounded out to whole days
+  const vs = BERTHS.flatMap(b=>b.vessels);
+  let minEta = Infinity, maxEtd = -Infinity;
+  vs.forEach(v=>{minEta=Math.min(minEta,t(v.eta));maxEtd=Math.max(maxEtd,t(v.etd));});
+  if(!vs.length){minEta=tFull(ds.sheetNow);maxEtd=minEta;}
+  START = dayFloor(minEta);
+  END = dayFloor(maxEtd) + DAY_MS;
+  if(END-START < 3*DAY_MS) END = START + 3*DAY_MS;
+  DAYS = Math.round((END-START)/DAY_MS);
+
   let now = Date.now();
   if(!isLatest || now<START || now>END) now = tFull(ds.sheetNow);
   const status = statusFor(now);
-  const BERTHS = ds.berths;
   const todayIdx=Math.floor((now-START)/(24*H));
 
-  document.getElementById("windowLabel").textContent = "27 Sep – 15 Oct 2026";
-  document.getElementById("dayBadge").innerHTML = isLatest
-    ? '<span class="badge-latest">Latest</span>'
-    : '<span class="badge-hist">Historical</span>';
+  document.getElementById("windowLabel").textContent = vs.length ? fmt(minEta)+" → "+fmt(maxEtd) : "no vessels";
+  document.getElementById("dayBadge").innerHTML = keys.length>1
+    ? '<span class="badge-range">'+keys.length+' sheets</span>'
+    : (isLatest ? '<span class="badge-latest">Latest</span>' : '<span class="badge-hist">Historical</span>');
 
   // Gantt
   const g=document.getElementById("gantt");
+  g.style.minWidth = Math.max(900, 150+DAYS*86)+"px";
   let html=`<div class="g-row axis"><div class="g-label"><span class="gt">Berth / Gate</span></div><div class="g-track">`;
   for(let i=0;i<DAYS;i++){
     const ms=START+i*24*H, d=new Date(ms+7*H);
@@ -704,6 +748,7 @@ function render(key){
     html+=`<div class="g-row${empty?" empty":""}"><div class="g-label"><span class="bn">${b.id}</span>${b.gates?`<span class="gt">${b.gates}</span>`:""}</div><div class="g-track">${grid()}`;
     (b.restrict||[]).forEach(r=>{
       const l=Math.max(0,pct(t(r.from))), rr=Math.min(100,pct(t(r.to)));
+      if(rr<=l) return;
       html+=`<div class="rs ${r.kind}" style="left:${l}%;width:${rr-l}%" title="${r.text}"><span>${r.label}</span></div>`;
     });
     if(empty) html+=`<div class="note">No vessel scheduled</div>`;
@@ -716,15 +761,17 @@ function render(key){
     html+=`</div></div>`;
   });
   g.innerHTML=html;
-  const nl=document.createElement("div");
-  nl.className="nowline";
-  nl.style.left=`calc(150px + (100% - 150px) * ${pct(now)/100})`;
-  g.appendChild(nl);
-  const tag=document.createElement("div");
-  tag.className="nowtag";tag.style.left=nl.style.left;
-  const nd=new Date(now+7*H);
-  tag.textContent=`NOW ${String(nd.getUTCDate()).padStart(2,"0")}/${String(nd.getUTCHours()).padStart(2,"0")}:${String(nd.getUTCMinutes()).padStart(2,"0")}`;
-  g.appendChild(tag);
+  if(now>=START && now<=END){
+    const nl=document.createElement("div");
+    nl.className="nowline";
+    nl.style.left=`calc(150px + (100% - 150px) * ${pct(now)/100})`;
+    g.appendChild(nl);
+    const tag=document.createElement("div");
+    tag.className="nowtag";tag.style.left=nl.style.left;
+    const nd=new Date(now+7*H);
+    tag.textContent=`NOW ${String(nd.getUTCDate()).padStart(2,"0")}/${String(nd.getUTCHours()).padStart(2,"0")}:${String(nd.getUTCMinutes()).padStart(2,"0")}`;
+    g.appendChild(tag);
+  }
 
   // Table
   let tb="";
@@ -743,7 +790,7 @@ function render(key){
   const pd=s=>{const ms=t(s);return fmt(ms).slice(0,6)};
   const cards=BERTHS.flatMap(b=>(b.restrict||[]).map(r=>{
     const endMs=t(r.to)-1;
-    const untilFrom = t(r.from) <= START;
+    const untilFrom = t(r.from) <= DATA_START;
     const per = r.when ? r.when : untilFrom ? "Until "+pd(r.to) : pd(r.from)+" – "+pd(fmt(endMs).slice(0,2)+"/00");
     const closed = r.kind==="closed";
     return `<div class="ncard${closed?" closed":""}"><div class="top"><span class="bn">${b.id}</span><span class="pill ${closed?"p-closed":"p-anch"}">${closed?"Berth closed":"Gate stopped"}</span></div><div class="per">${per}</div><div class="txt">${r.text}</div></div>`;
@@ -764,45 +811,60 @@ function render(key){
     <div class="tile t-slate"><span class="k">Next sailing</span><span class="v">${nextSail?nextSail.etd:"–"}</span><span class="s">${nextSail?`${nextSail.n} · ${nextSail.berth}`:""}</span></div>`;
 }
 
-// ---- day picker wiring ----
-const sel = document.getElementById("daySelect");
+// ---- date range picker: a single day (From = To) or several sheets combined ----
+const fromSel = document.getElementById("fromSelect");
+const toSel = document.getElementById("toSelect");
 const prevBtn = document.getElementById("prevDay");
 const nextBtn = document.getElementById("nextDay");
+const allBtn = document.getElementById("allDays");
 
-DAY_ORDER.forEach(key=>{
+[fromSel,toSel].forEach(sel=>DAY_ORDER.forEach(key=>{
   const opt = document.createElement("option");
   opt.value = key;
   opt.textContent = DATASETS[key].label + (key===LATEST_KEY ? " (latest)" : "");
   sel.appendChild(opt);
-});
+}));
 
-function goTo(key){
-  sel.value = key;
-  const i = DAY_ORDER.indexOf(key);
+function applyRange(from,to){
+  let i=DAY_ORDER.indexOf(from), j=DAY_ORDER.indexOf(to);
+  if(i<0) i=DAY_ORDER.length-1;
+  if(j<0) j=DAY_ORDER.length-1;
+  if(i>j){const x=i;i=j;j=x;}
+  const f=DAY_ORDER[i], tt=DAY_ORDER[j];
+  fromSel.value=f; toSel.value=tt;
   prevBtn.disabled = i<=0;
-  nextBtn.disabled = i>=DAY_ORDER.length-1;
-  render(key);
+  nextBtn.disabled = j>=DAY_ORDER.length-1;
+  allBtn.classList.toggle("on", i===0 && j===DAY_ORDER.length-1);
+  render(DAY_ORDER.slice(i,j+1));
   // keep the timeline scrolled to the far right (latest dates) whenever it is drawn
-  requestAnimationFrame(function(){var sc=document.getElementById("gantt").parentElement;sc.scrollLeft=sc.scrollWidth;});
-  try{ localStorage.setItem("patBerthLastDay", key); }catch(e){}
+  (function(){var sc=document.getElementById("gantt").parentElement;sc.scrollLeft=sc.scrollWidth;requestAnimationFrame(function(){sc.scrollLeft=sc.scrollWidth;});})();
+  try{ localStorage.setItem("patBerthRange", JSON.stringify([f,tt])); }catch(e){}
 }
 
-sel.addEventListener("change", ()=>goTo(sel.value));
+fromSel.addEventListener("change", ()=>{
+  const f=fromSel.value, cur=DAY_ORDER.indexOf(toSel.value);
+  applyRange(f, DAY_ORDER.indexOf(f)>cur ? f : toSel.value);
+});
+toSel.addEventListener("change", ()=>{
+  const tt=toSel.value, cur=DAY_ORDER.indexOf(fromSel.value);
+  applyRange(DAY_ORDER.indexOf(tt)<cur ? tt : fromSel.value, tt);
+});
 prevBtn.addEventListener("click", ()=>{
-  const i = DAY_ORDER.indexOf(sel.value);
-  if(i>0) goTo(DAY_ORDER[i-1]);
+  const i=DAY_ORDER.indexOf(fromSel.value), j=DAY_ORDER.indexOf(toSel.value);
+  if(i>0) applyRange(DAY_ORDER[i-1], DAY_ORDER[j-1]);
 });
 nextBtn.addEventListener("click", ()=>{
-  const i = DAY_ORDER.indexOf(sel.value);
-  if(i<DAY_ORDER.length-1) goTo(DAY_ORDER[i+1]);
+  const i=DAY_ORDER.indexOf(fromSel.value), j=DAY_ORDER.indexOf(toSel.value);
+  if(j<DAY_ORDER.length-1) applyRange(DAY_ORDER[i+1], DAY_ORDER[j+1]);
 });
+allBtn.addEventListener("click", ()=>applyRange(DAY_ORDER[0], LATEST_KEY));
 
-let startKey = LATEST_KEY;
+let startFrom = LATEST_KEY, startTo = LATEST_KEY;
 try{
-  const saved = localStorage.getItem("patBerthLastDay");
-  if(saved && DATASETS[saved]) startKey = saved;
+  const saved = JSON.parse(localStorage.getItem("patBerthRange")||"null");
+  if(saved && DATASETS[saved[0]] && DATASETS[saved[1]]){startFrom=saved[0];startTo=saved[1];}
 }catch(e){}
-goTo(startKey);
+applyRange(startFrom, startTo);
 </script>
 
 <script>
