@@ -46,12 +46,12 @@
   .wrap{max-width:1260px;margin:0 auto;padding-inline:20px;padding-block:24px 52px;display:flex;flex-direction:column;gap:20px}
 
   /* hero header */
-  header{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:14px 24px;padding:24px 28px;border-radius:16px;color:#fff;background:linear-gradient(115deg,var(--hero-1) 0%,var(--hero-2) 100%);box-shadow:var(--shadow);position:relative;overflow:hidden}
+  header{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:14px 24px;padding:24px 28px;border-radius:16px;color:#fff;background:linear-gradient(115deg,var(--hero-1) 0%,var(--hero-2) 100%);box-shadow:var(--shadow);position:relative;overflow:hidden}
   header::after{content:"";position:absolute;inset:0;background:radial-gradient(120% 140% at 100% 0%,rgba(255,255,255,.14),transparent 55%);pointer-events:none}
   header>*{position:relative;z-index:1}
-  .hdr-center{display:flex;justify-content:center}
+  .hdr-center{display:flex;justify-content:center;transform:translateY(16px)}
   header .meta{justify-self:end}
-  @media (max-width:900px){header{grid-template-columns:1fr;padding:20px}.hdr-center{justify-content:flex-start}header .meta{justify-self:start;text-align:left;align-items:flex-start}}
+  @media (max-width:900px){header{grid-template-columns:1fr;padding:20px}.hdr-center{justify-content:flex-start;transform:none}header .meta{justify-self:start;text-align:left;align-items:flex-start}header .daypicker{align-items:flex-start}header .daypicker .dp-row{justify-content:flex-start;flex-wrap:wrap}header .daypicker .rng{flex-wrap:wrap;white-space:normal}}
   .eyebrow{font-family:var(--display);font-weight:600;letter-spacing:.14em;text-transform:uppercase;font-size:12px;color:rgba(255,255,255,.72)}
   h1{font-family:var(--display);font-weight:700;font-size:clamp(28px,4.4vw,42px);line-height:1.02;margin:6px 0 0;text-wrap:balance;letter-spacing:-.01em}
   .meta{font-family:var(--mono);font-size:12.5px;color:rgba(255,255,255,.85);text-align:right;display:flex;flex-direction:column;gap:8px;align-items:flex-end}
@@ -65,20 +65,23 @@
   .daypicker .navbtn:disabled{opacity:.35;cursor:default}
   .daypicker .navbtn:not(:disabled):hover,.daypicker select:hover{background:rgba(255,255,255,.24)}
   .daypicker select:focus-visible,.daypicker .navbtn:focus-visible{outline:2px solid #fff;outline-offset:2px}
-  .daypicker{flex-wrap:wrap;justify-content:flex-end}
+  .daypicker{flex-direction:column;align-items:flex-end;gap:8px}
+  .daypicker .dp-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+  .daypicker .dp-row:first-child{flex-wrap:nowrap}
+  .daypicker label{white-space:nowrap}
   .daypicker .dash{color:rgba(255,255,255,.8)}
   .daypicker .rng{display:inline-flex;align-items:center;gap:8px;white-space:nowrap}
   .daypicker .navbtn.txt{font-family:var(--display);font-weight:600;font-size:12px;letter-spacing:.04em;padding:7px 11px}
   .daypicker .navbtn.on{background:#fff;color:#10293F;border-color:#fff}
   .badge-range{font-family:var(--display);font-weight:700;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:#0C3C63;background:#CFE3F5;padding:3px 9px;border-radius:999px}
-  .linkbtn{position:relative;display:inline-flex;align-items:center;gap:10px;font-family:var(--display);font-weight:700;font-size:16px;letter-spacing:.04em;color:#2A1600;background:linear-gradient(135deg,#FFC25A 0%,#F28C28 100%);border-radius:999px;padding:12px 24px 12px 18px;text-decoration:none;cursor:pointer;box-shadow:0 8px 22px -8px rgba(242,140,40,.75),0 0 0 3px rgba(255,255,255,.22);transition:transform .15s ease,box-shadow .15s ease;animation:btnpulse 2.6s ease-out infinite}
-  .linkbtn .ico{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:rgba(42,22,0,.14)}
-  .linkbtn .ico svg{width:17px;height:17px}
-  .linkbtn .arr{display:inline-block;font-size:17px;line-height:1;transition:transform .15s ease}
+  .linkbtn{position:relative;display:inline-flex;align-items:center;gap:8px;font-family:var(--display);font-weight:700;font-size:13.5px;letter-spacing:.04em;color:#2A1600;background:linear-gradient(135deg,#FFC25A 0%,#F28C28 100%);border-radius:999px;padding:8px 16px 8px 10px;text-decoration:none;cursor:pointer;box-shadow:0 8px 22px -8px rgba(242,140,40,.75),0 0 0 3px rgba(255,255,255,.22);transition:transform .15s ease,box-shadow .15s ease;animation:btnpulse 2.6s ease-out infinite}
+  .linkbtn .ico{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:rgba(42,22,0,.14)}
+  .linkbtn .ico svg{width:14px;height:14px}
+  .linkbtn .arr{display:inline-block;font-size:14px;line-height:1;transition:transform .15s ease}
   .linkbtn:hover{transform:translateY(-2px);box-shadow:0 14px 28px -10px rgba(242,140,40,.9),0 0 0 4px rgba(255,255,255,.35);animation:none}
   .linkbtn:hover .arr{transform:translate(3px,-3px)}
   .linkbtn:focus-visible{outline:3px solid #fff;outline-offset:3px}
-  @keyframes btnpulse{0%{box-shadow:0 8px 22px -8px rgba(242,140,40,.75),0 0 0 3px rgba(255,255,255,.22),0 0 0 0 rgba(255,194,90,.55)}70%{box-shadow:0 8px 22px -8px rgba(242,140,40,.75),0 0 0 3px rgba(255,255,255,.22),0 0 0 14px rgba(255,194,90,0)}100%{box-shadow:0 8px 22px -8px rgba(242,140,40,.75),0 0 0 3px rgba(255,255,255,.22),0 0 0 0 rgba(255,194,90,0)}}
+  @keyframes btnpulse{0%{box-shadow:0 8px 22px -8px rgba(242,140,40,.75),0 0 0 3px rgba(255,255,255,.22),0 0 0 0 rgba(255,194,90,.55)}70%{box-shadow:0 8px 22px -8px rgba(242,140,40,.75),0 0 0 3px rgba(255,255,255,.22),0 0 0 10px rgba(255,194,90,0)}100%{box-shadow:0 8px 22px -8px rgba(242,140,40,.75),0 0 0 3px rgba(255,255,255,.22),0 0 0 0 rgba(255,194,90,0)}}
   @media (prefers-reduced-motion:reduce){.linkbtn{animation:none}.linkbtn,.linkbtn .arr{transition:none}}
   .badge-latest{font-family:var(--display);font-weight:700;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:#0F5C3A;background:#CFF2E0;padding:3px 9px;border-radius:999px}
   .badge-hist{font-family:var(--display);font-weight:700;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:#6E4308;background:#F9E3B8;padding:3px 9px;border-radius:999px}
@@ -190,13 +193,17 @@
     </div>
     <div class="meta">
       <div class="daypicker">
-        <label for="fromSelect">Sheet date</label>
-        <button type="button" class="navbtn" id="prevDay" title="Previous day" aria-label="Previous day">‹</button>
-        <span class="rng"><select id="fromSelect" aria-label="From date"></select><span class="dash" aria-hidden="true">–</span><select id="toSelect" aria-label="To date"></select></span>
-        <button type="button" class="navbtn" id="nextDay" title="Next day" aria-label="Next day">›</button>
-        <button type="button" class="navbtn txt" id="todayBtn" title="Jump to today's sheet (or the latest one)">Today</button>
-        <button type="button" class="navbtn txt" id="allDays" title="Combine every sheet">All days</button>
-        <span id="dayBadge"></span>
+        <div class="dp-row">
+          <label for="fromSelect">Sheet date</label>
+          <span class="rng"><select id="fromSelect" aria-label="From date"></select><span class="dash" aria-hidden="true">–</span><select id="toSelect" aria-label="To date"></select></span>
+        </div>
+        <div class="dp-row">
+          <button type="button" class="navbtn" id="prevDay" title="Previous day" aria-label="Previous day">‹</button>
+          <button type="button" class="navbtn" id="nextDay" title="Next day" aria-label="Next day">›</button>
+          <button type="button" class="navbtn txt" id="todayBtn" title="Jump to today's sheet (or the latest one)">Today</button>
+          <button type="button" class="navbtn txt" id="allDays" title="Combine every sheet">All days</button>
+          <span id="dayBadge"></span>
+        </div>
       </div>
       <span>First ETA → last ETD <b id="windowLabel"></b> · times local (UTC+7)</span>
     </div>
