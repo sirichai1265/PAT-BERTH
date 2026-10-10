@@ -67,6 +67,7 @@
   .daypicker select:focus-visible,.daypicker .navbtn:focus-visible{outline:2px solid #fff;outline-offset:2px}
   .daypicker{flex-wrap:wrap;justify-content:flex-end}
   .daypicker .dash{color:rgba(255,255,255,.8)}
+  .daypicker .rng{display:inline-flex;align-items:center;gap:8px;white-space:nowrap}
   .daypicker .navbtn.txt{font-family:var(--display);font-weight:600;font-size:12px;letter-spacing:.04em;padding:7px 11px}
   .daypicker .navbtn.on{background:#fff;color:#10293F;border-color:#fff}
   .badge-range{font-family:var(--display);font-weight:700;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:#0C3C63;background:#CFE3F5;padding:3px 9px;border-radius:999px}
@@ -191,10 +192,9 @@
       <div class="daypicker">
         <label for="fromSelect">Sheet date</label>
         <button type="button" class="navbtn" id="prevDay" title="Previous day" aria-label="Previous day">‹</button>
-        <select id="fromSelect" aria-label="From date"></select>
-        <span class="dash" aria-hidden="true">–</span>
-        <select id="toSelect" aria-label="To date"></select>
+        <span class="rng"><select id="fromSelect" aria-label="From date"></select><span class="dash" aria-hidden="true">–</span><select id="toSelect" aria-label="To date"></select></span>
         <button type="button" class="navbtn" id="nextDay" title="Next day" aria-label="Next day">›</button>
+        <button type="button" class="navbtn txt" id="todayBtn" title="Jump to today's sheet (or the latest one)">Today</button>
         <button type="button" class="navbtn txt" id="allDays" title="Combine every sheet">All days</button>
         <span id="dayBadge"></span>
       </div>
@@ -817,6 +817,8 @@ const toSel = document.getElementById("toSelect");
 const prevBtn = document.getElementById("prevDay");
 const nextBtn = document.getElementById("nextDay");
 const allBtn = document.getElementById("allDays");
+const todayBtn = document.getElementById("todayBtn");
+function todayKeyNow(){const d=new Date(Date.now()+7*H);const k=d.getUTCFullYear()+"-"+String(d.getUTCMonth()+1).padStart(2,"0")+"-"+String(d.getUTCDate()).padStart(2,"0");return DATASETS[k]?k:LATEST_KEY;}
 
 [fromSel,toSel].forEach(sel=>DAY_ORDER.forEach(key=>{
   const opt = document.createElement("option");
@@ -835,6 +837,7 @@ function applyRange(from,to){
   prevBtn.disabled = i<=0;
   nextBtn.disabled = j>=DAY_ORDER.length-1;
   allBtn.classList.toggle("on", i===0 && j===DAY_ORDER.length-1);
+  todayBtn.classList.toggle("on", i===j && DAY_ORDER[i]===todayKeyNow());
   render(DAY_ORDER.slice(i,j+1));
   // keep the timeline scrolled to the far right (latest dates) whenever it is drawn
   (function(){var sc=document.getElementById("gantt").parentElement;sc.scrollLeft=sc.scrollWidth;requestAnimationFrame(function(){sc.scrollLeft=sc.scrollWidth;});})();
@@ -858,6 +861,7 @@ nextBtn.addEventListener("click", ()=>{
   if(j<DAY_ORDER.length-1) applyRange(DAY_ORDER[i+1], DAY_ORDER[j+1]);
 });
 allBtn.addEventListener("click", ()=>applyRange(DAY_ORDER[0], LATEST_KEY));
+todayBtn.addEventListener("click", ()=>{const k=todayKeyNow();applyRange(k,k);});
 
 let startFrom = LATEST_KEY, startTo = LATEST_KEY;
 try{
