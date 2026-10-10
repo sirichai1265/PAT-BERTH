@@ -615,8 +615,43 @@ const DATASETS = {
       {id:"22D", gates:"", vessels:[]},
     ]
   },
+  "2026-10-10": {
+    label: "10/10/2026",
+    sheetNow: "10/0900",
+    berths: [
+      {id:"20AB", gates:"Gate 29, 30", vessels:[
+        {n:"KANWAY FORTUNE", loa:564, eta:"08/16", pb:"09/14", etd:"10/15"},
+        {n:"CNC MARS", loa:564, eta:"09/22", pb:"10/15", etd:"11/15"},
+        {n:"JOSCO SHINE", loa:564, eta:"12/13", pb:"12/16", etd:"13/14"},
+        {n:"KHUNA BHUM", loa:564, eta:"13/07", pb:"13/13", etd:"14/07", shift:"7B"}]},
+      {id:"20B", gates:"Gate 27, 28", vessels:[
+        {n:"INDURO", loa:565, eta:"09/06", pb:"09/16", etd:"11/04"},
+        {n:"XIN MING ZHOU 102", loa:564, eta:"10/21", pb:"11/05", etd:"12/02", mark:true},
+        {n:"ALS SUMIRE", loa:537, eta:"12/22", pb:"13/06", etd:"14/06", shift:"1C", mark:true}]},
+      {id:"20C", gates:"Gate 21, 22", vessels:[
+        {n:"YM INCEPTION", loa:564, eta:"08/13", pb:"09/13", etd:"10/14", mark:true},
+        {n:"STARSHIP AQUILA", loa:565, eta:"09/22", pb:"10/14", etd:"12/02", mark:true},
+        {n:"KMTC TAIPEIS", loa:565, eta:"12/23", pb:"13/05", etd:"14/15"}]},
+      {id:"20D", gates:"Gate 23, 24", vessels:[
+        {n:"HE JIN", loa:552, eta:"08/24", pb:"08/24", etd:"10/13"},
+        {n:"CUL HAIPHONG", loa:458, eta:"09/20", pb:"10/16", etd:"11/06", shift:"4A"},
+        {n:"INCEDA", loa:564, eta:"10/17", pb:"11/05", etd:"12/14"},
+        {n:"SAWASDEE SUNRISE", loa:564, eta:"12/09", pb:"12/16", etd:"14/05"}],
+        restrict:[{kind:"closed", from:"04/00", to:"24/24", label:"Closed 4–24 Oct · electric channel renovation", text:"Berth closed 4–24 Oct 2026 to renovate electric channel (HE JIN is nevertheless alongside at 20D on this sheet)"}]},
+      {id:"20E", gates:"Gate 25, 26", vessels:[],
+        restrict:[{kind:"partial", from:"05/00", to:"18/24", label:"G.25 stopped · trolley rail change (to 18 Oct)", text:"G.25 stops working 5–18 Oct 2026 to change trolley rail"}]},
+      {id:"20F", gates:"Gate 33, 34", vessels:[
+        {n:"SAWASDEE ATLANTIC", loa:564, eta:"07/20", pb:"09/15", etd:"11/13"},
+        {n:"SAMAL", loa:564, eta:"12/01", pb:"12/06", etd:"13/14", mark:true},
+        {n:"WAN HAI 277", loa:564, eta:"13/04", pb:"13/16", etd:"15/05", mark:true}]},
+      {id:"22A", gates:"", vessels:[]},
+      {id:"22B", gates:"", vessels:[]},
+      {id:"22C", gates:"", vessels:[]},
+      {id:"22D", gates:"", vessels:[]},
+    ]
+  },
 };
-const DAY_ORDER = ["2026-09-28","2026-09-29","2026-09-30","2026-10-01","2026-10-02","2026-10-03","2026-10-04","2026-10-05","2026-10-06","2026-10-07","2026-10-08","2026-10-09"]; // oldest -> latest
+const DAY_ORDER = ["2026-09-28","2026-09-29","2026-09-30","2026-10-01","2026-10-02","2026-10-03","2026-10-04","2026-10-05","2026-10-06","2026-10-07","2026-10-08","2026-10-09","2026-10-10"]; // oldest -> latest
 const LATEST_KEY = DAY_ORDER[DAY_ORDER.length-1];
 
 const H = 3600e3;
