@@ -665,8 +665,39 @@ const DATASETS = {
       {id:"22D", gates:"", vessels:[]},
     ]
   },
+  "2026-10-11": {
+    label: "11/10/2026",
+    sheetNow: "11/0900",
+    berths: [
+      {id:"20AB", gates:"Gate 29, 30", vessels:[
+        {n:"CNC MARS", loa:564, eta:"09/22", pb:"10/15", etd:"11/15"},
+        {n:"SAMAL", loa:564, eta:"12/09", pb:"12/16", etd:"14/05"},
+        {n:"CEBU", loa:564, eta:"12/24", pb:"14/06", etd:"15/16", mark:true}]},
+      {id:"20B", gates:"Gate 27, 28", vessels:[
+        {n:"XIN MING ZHOU 102", loa:564, eta:"10/21", pb:"11/05", etd:"12/02"},
+        {n:"WAN HAI 277", loa:564, eta:"12/23", pb:"13/06", etd:"14/15", mark:true}]},
+      {id:"20C", gates:"Gate 21, 22", vessels:[
+        {n:"STARSHIP AQUILA", loa:565, eta:"09/22", pb:"10/14", etd:"12/02"},
+        {n:"KMTC TAIPEIS", loa:565, eta:"13/01", pb:"13/05", etd:"14/15"}]},
+      {id:"20D", gates:"Gate 23, 24", vessels:[
+        {n:"INCEDA", loa:564, eta:"10/17", pb:"11/06", etd:"12/14"},
+        {n:"SAWASDEE SUNRISE", loa:564, eta:"12/09", pb:"12/16", etd:"14/05"},
+        {n:"KHUNA BHUM", loa:564, eta:"13/07", pb:"14/05", etd:"14/22", shift:"7B", mark:true}],
+        restrict:[{kind:"closed", from:"04/00", to:"24/24", label:"Closed 4–24 Oct · electric channel renovation", text:"Berth closed 4–24 Oct 2026 to renovate electric channel (INCEDA is nevertheless alongside at 20D on this sheet)"}]},
+      {id:"20E", gates:"Gate 25, 26", vessels:[],
+        restrict:[{kind:"partial", from:"05/00", to:"18/24", label:"G.25 stopped · trolley rail change (to 18 Oct)", text:"G.25 stops working 5–18 Oct 2026 to change trolley rail"}]},
+      {id:"20F", gates:"Gate 33, 34", vessels:[
+        {n:"SAWASDEE ATLANTIC", loa:564, eta:"07/20", pb:"09/15", etd:"11/12"},
+        {n:"JOSCO SHINE", loa:564, eta:"12/09", pb:"12/15", etd:"13/06", mark:true},
+        {n:"ALS SUMIRE", loa:537, eta:"12/22", pb:"13/06", etd:"14/06", shift:"1C"}]},
+      {id:"22A", gates:"", vessels:[]},
+      {id:"22B", gates:"", vessels:[]},
+      {id:"22D", gates:"", vessels:[]},
+      {id:"22E", gates:"", vessels:[]},
+    ]
+  },
 };
-const DAY_ORDER = ["2026-09-28","2026-09-29","2026-09-30","2026-10-01","2026-10-02","2026-10-03","2026-10-04","2026-10-05","2026-10-06","2026-10-07","2026-10-08","2026-10-09","2026-10-10"]; // oldest -> latest
+const DAY_ORDER = ["2026-09-28","2026-09-29","2026-09-30","2026-10-01","2026-10-02","2026-10-03","2026-10-04","2026-10-05","2026-10-06","2026-10-07","2026-10-08","2026-10-09","2026-10-10","2026-10-11"]; // oldest -> latest
 const LATEST_KEY = DAY_ORDER[DAY_ORDER.length-1];
 
 const H = 3600e3, DAY_MS = 24*H;
