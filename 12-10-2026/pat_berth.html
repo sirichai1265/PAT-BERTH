@@ -46,8 +46,8 @@
   .wrap{max-width:1260px;margin:0 auto;padding-inline:20px;padding-block:24px 52px;display:flex;flex-direction:column;gap:20px}
 
   /* hero header */
-  header{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:14px 24px;padding:24px 28px;border-radius:16px;color:#fff;background:linear-gradient(115deg,var(--hero-1) 0%,var(--hero-2) 100%);box-shadow:var(--shadow);position:relative;overflow:hidden}
-  header::after{content:"";position:absolute;inset:0;background:radial-gradient(120% 140% at 100% 0%,rgba(255,255,255,.14),transparent 55%);pointer-events:none}
+  header{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:14px 24px;padding:24px 28px;border-radius:16px;color:#fff;background:linear-gradient(115deg,var(--hero-1) 0%,var(--hero-2) 100%);box-shadow:var(--shadow);position:relative}
+  header::after{content:"";position:absolute;inset:0;border-radius:inherit;background:radial-gradient(120% 140% at 100% 0%,rgba(255,255,255,.14),transparent 55%);pointer-events:none}
   header>*{position:relative;z-index:1}
   .hdr-center{display:flex;justify-content:center;transform:translateY(16px)}
   header .meta{justify-self:end}
@@ -74,6 +74,31 @@
   .daypicker .navbtn.txt{font-family:var(--display);font-weight:600;font-size:12px;letter-spacing:.04em;padding:7px 11px}
   .daypicker .navbtn.on{background:#fff;color:#10293F;border-color:#fff}
   .badge-range{font-family:var(--display);font-weight:700;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:#0C3C63;background:#CFE3F5;padding:3px 9px;border-radius:999px}
+  .calwrap{position:relative;display:inline-flex}
+  .calbtn{display:inline-flex;align-items:center;justify-content:center;padding:6px 9px}
+  .calbtn svg{width:16px;height:16px}
+  .calpop{position:absolute;right:0;top:calc(100% + 8px);z-index:30;width:296px;padding:12px;background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:12px;box-shadow:0 18px 40px -12px rgba(0,0,0,.5);text-align:left;white-space:normal}
+  .calpop[hidden]{display:none}
+  .cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;font-family:var(--display);font-weight:700;font-size:17px}
+  .calpop button{font-family:var(--body)}
+  .cal-nav{width:30px;height:30px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--ink);font-size:16px;line-height:1;cursor:pointer}
+  .cal-nav:disabled{opacity:.3;cursor:default}
+  .cal-nav:not(:disabled):hover{background:var(--line-2)}
+  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+  .cal-dow{font-family:var(--display);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);text-align:center;padding:4px 0}
+  .cal-day{position:relative;height:34px;border:0;border-radius:8px;background:transparent;color:var(--ink);font-family:var(--mono);font-size:13px;cursor:pointer}
+  .cal-day:disabled{color:var(--ink-3);opacity:.35;cursor:default}
+  .cal-day.has{font-weight:600;background:var(--info-soft)}
+  .cal-day.has:hover{background:var(--line)}
+  .cal-day.in{background:rgba(44,119,163,.25)}
+  .cal-day.end{background:var(--berth);color:#fff}
+  .cal-day.today::after{content:"";position:absolute;left:50%;bottom:3px;width:4px;height:4px;margin-left:-2px;border-radius:50%;background:var(--now)}
+  .cal-day:focus-visible,.cal-nav:focus-visible,.cal-foot button:focus-visible{outline:2px solid var(--berth);outline-offset:1px}
+  .cal-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:10px;font-size:12px;color:var(--ink-2)}
+  .cal-foot .acts{display:flex;gap:6px;flex-shrink:0}
+  .cal-foot button{font-family:var(--display);font-weight:600;font-size:12px;padding:5px 9px;border-radius:7px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}
+  .cal-foot button:hover{background:var(--line-2)}
+  @media (max-width:900px){.calpop{right:auto;left:0}}
   .linkbtn{position:relative;display:inline-flex;align-items:center;gap:8px;font-family:var(--display);font-weight:700;font-size:13.5px;letter-spacing:.04em;color:#2A1600;background:linear-gradient(135deg,#FFC25A 0%,#F28C28 100%);border-radius:999px;padding:8px 16px 8px 10px;text-decoration:none;cursor:pointer;box-shadow:0 8px 22px -8px rgba(242,140,40,.75),0 0 0 3px rgba(255,255,255,.22);transition:transform .15s ease,box-shadow .15s ease;animation:btnpulse 2.6s ease-out infinite}
   .linkbtn .ico{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:rgba(42,22,0,.14)}
   .linkbtn .ico svg{width:14px;height:14px}
@@ -196,6 +221,10 @@
         <div class="dp-row">
           <label for="fromSelect">Sheet date</label>
           <span class="rng"><select id="fromSelect" aria-label="From date"></select><span class="dash" aria-hidden="true">–</span><select id="toSelect" aria-label="To date"></select></span>
+          <span class="calwrap">
+            <button type="button" class="navbtn calbtn" id="calBtn" aria-haspopup="dialog" aria-expanded="false" title="Open calendar" aria-label="Open calendar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18"/></svg></button>
+            <div class="calpop" id="calPop" role="dialog" aria-label="Choose sheet dates" hidden></div>
+          </span>
         </div>
         <div class="dp-row">
           <button type="button" class="navbtn" id="prevDay" title="Previous day" aria-label="Previous day">‹</button>
@@ -912,6 +941,7 @@ function applyRange(from,to){
   // keep the timeline scrolled to the far right (latest dates) whenever it is drawn
   (function(){var sc=document.getElementById("gantt").parentElement;sc.scrollLeft=sc.scrollWidth;requestAnimationFrame(function(){sc.scrollLeft=sc.scrollWidth;});})();
   try{ localStorage.setItem("patBerthRange", JSON.stringify([f,tt])); }catch(e){}
+  if(typeof renderCal==="function" && !calPop.hidden) renderCal();
 }
 
 fromSel.addEventListener("change", ()=>{
@@ -932,6 +962,60 @@ nextBtn.addEventListener("click", ()=>{
 });
 allBtn.addEventListener("click", ()=>applyRange(DAY_ORDER[0], LATEST_KEY));
 todayBtn.addEventListener("click", ()=>{const k=todayKeyNow();applyRange(k,k);});
+
+
+// ---- calendar popover: click a day (single) or two days (range); only days with a sheet are selectable ----
+const calBtn = document.getElementById("calBtn");
+const calPop = document.getElementById("calPop");
+const MONTH_NAMES = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+const ymOf = k => ({y:+k.slice(0,4), m:+k.slice(5,7)-1});
+let calY, calM, calPending = null;
+
+function realTodayKey(){const d=new Date(Date.now()+7*H);return d.getUTCFullYear()+"-"+String(d.getUTCMonth()+1).padStart(2,"0")+"-"+String(d.getUTCDate()).padStart(2,"0");}
+
+function renderCal(){
+  if(calY===undefined){const o=ymOf(toSel.value);calY=o.y;calM=o.m;}
+  const lo=ymOf(DAY_ORDER[0]), hi=ymOf(LATEST_KEY);
+  const startDow=new Date(Date.UTC(calY,calM,1)).getUTCDay();
+  const dim=new Date(Date.UTC(calY,calM+1,0)).getUTCDate();
+  const fromK=fromSel.value, toK=toSel.value, todayK=realTodayKey();
+  let html='<div class="cal-head"><button type="button" class="cal-nav" data-act="prev" aria-label="Previous month"'+((calY*12+calM)<=(lo.y*12+lo.m)?' disabled':'')+'>‹</button>'
+    +'<span>'+MONTH_NAMES[calM]+' '+calY+'</span>'
+    +'<button type="button" class="cal-nav" data-act="next" aria-label="Next month"'+((calY*12+calM)>=(hi.y*12+hi.m)?' disabled':'')+'>›</button></div>';
+  html+='<div class="cal-grid">'+["Su","Mo","Tu","We","Th","Fr","Sa"].map(d=>'<span class="cal-dow">'+d+'</span>').join("");
+  for(let i=0;i<startDow;i++) html+='<span></span>';
+  for(let d=1;d<=dim;d++){
+    const k=calY+"-"+String(calM+1).padStart(2,"0")+"-"+String(d).padStart(2,"0");
+    const has=!!DATASETS[k];
+    const cls="cal-day"+(has?" has":"")+(has&&k>=fromK&&k<=toK?" in":"")+(has&&(k===fromK||k===toK)?" end":"")+(k===todayK?" today":"");
+    html+='<button type="button" class="'+cls+'" data-key="'+k+'"'+(has?'':' disabled')+' aria-label="'+d+' '+MONTH_NAMES[calM]+' '+calY+(has?'':' (no sheet)')+'">'+d+'</button>';
+  }
+  html+='</div><div class="cal-foot"><span>'+(calPending?'Now click the end date':'Click a day, or two days for a range')+'</span>'
+    +'<span class="acts"><button type="button" data-act="today">Today</button><button type="button" data-act="all">All</button><button type="button" data-act="close">Close</button></span></div>';
+  calPop.innerHTML=html;
+}
+function openCal(){const o=ymOf(toSel.value);calY=o.y;calM=o.m;calPending=null;renderCal();calPop.hidden=false;calBtn.setAttribute("aria-expanded","true");}
+function closeCal(){calPop.hidden=true;calPending=null;calBtn.setAttribute("aria-expanded","false");}
+calBtn.addEventListener("click", ()=>{ calPop.hidden ? openCal() : closeCal(); });
+calPop.addEventListener("click", e=>{
+  const dayBtn=e.target.closest("button[data-key]");
+  if(dayBtn){
+    const k=dayBtn.dataset.key;
+    if(calPending===null){calPending=k;applyRange(k,k);}
+    else{const a=calPending;calPending=null;applyRange(a,k);closeCal();}
+    return;
+  }
+  const act=e.target.closest("button[data-act]");
+  if(!act) return;
+  const a=act.dataset.act;
+  if(a==="prev"){calM--;if(calM<0){calM=11;calY--;}renderCal();}
+  else if(a==="next"){calM++;if(calM>11){calM=0;calY++;}renderCal();}
+  else if(a==="today"){const k=todayKeyNow();applyRange(k,k);closeCal();}
+  else if(a==="all"){applyRange(DAY_ORDER[0],LATEST_KEY);closeCal();}
+  else if(a==="close"){closeCal();}
+});
+document.addEventListener("click", e=>{ if(!calPop.hidden && !e.composedPath().includes(calBtn.parentElement)) closeCal(); });
+document.addEventListener("keydown", e=>{ if(e.key==="Escape" && !calPop.hidden){closeCal();calBtn.focus();} });
 
 let startFrom = LATEST_KEY, startTo = LATEST_KEY;
 try{
