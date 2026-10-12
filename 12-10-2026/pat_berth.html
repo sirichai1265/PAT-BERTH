@@ -328,7 +328,7 @@
     <div class="panel-head"><h2>Vessel list by berth</h2></div>
     <div class="scroll">
       <table>
-        <thead><tr><th>Vessel</th><th>LOA (m)</th><th>ETA</th><th>P.B</th><th>ETD</th><th>Hours alongside</th><th>Shift</th><th>Status</th></tr></thead>
+        <thead><tr><th>Vessel</th><th>LOA (m)</th><th>ETA</th><th>P.B</th><th>ETD</th><th>Waiting for berth</th><th>Hours alongside</th><th>Shift</th><th>Status</th></tr></thead>
         <tbody id="tbody"></tbody>
       </table>
     </div>
@@ -965,11 +965,11 @@ function render(keys){
   let tb="";
   BERTHS.forEach(b=>{
     if(!b.vessels.length) return;
-    tb+=`<tr class="grp"><td colspan="8">Berth ${b.id}<span>${b.gates}</span></td></tr>`;
+    tb+=`<tr class="grp"><td colspan="9">Berth ${b.id}<span>${b.gates}</span></td></tr>`;
     b.vessels.forEach(v=>{
       const [,lab,cls]=status(v);
-      const hrs=(t(v.etd)-t(v.pb))/H;
-      tb+=`<tr class="${v.mark?"marked":""}"><td class="vs">${v.n}${v.mark?'<span class="flag" title="Marked on sheet"></span>':""}</td><td class="num">${v.loa}</td><td class="num">${fmt(t(v.eta))}</td><td class="num">${fmt(t(v.pb))}</td><td class="num">${fmt(t(v.etd))}</td><td class="num">${hrs} h</td><td class="num">${v.shift||"–"}</td><td><span class="pill ${cls}">${lab}</span></td></tr>`;
+      const hrs=(t(v.etd)-t(v.pb))/H, wait=(t(v.pb)-t(v.eta))/H;
+      tb+=`<tr class="${v.mark?"marked":""}"><td class="vs">${v.n}${v.mark?'<span class="flag" title="Marked on sheet"></span>':""}</td><td class="num">${v.loa}</td><td class="num">${fmt(t(v.eta))}</td><td class="num">${fmt(t(v.pb))}</td><td class="num">${fmt(t(v.etd))}</td><td class="num">${wait} h</td><td class="num">${hrs} h</td><td class="num">${v.shift||"–"}</td><td><span class="pill ${cls}">${lab}</span></td></tr>`;
     });
   });
   document.getElementById("tbody").innerHTML=tb;
