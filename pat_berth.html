@@ -99,6 +99,53 @@
   .cal-foot button{font-family:var(--display);font-weight:600;font-size:12px;padding:5px 9px;border-radius:7px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}
   .cal-foot button:hover{background:var(--line-2)}
   @media (max-width:900px){.calpop{right:auto;left:0}}
+  .viewbar{display:flex;gap:4px;align-self:flex-start;background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:4px;box-shadow:var(--shadow)}
+  .vb{font-family:var(--display);font-weight:700;font-size:14px;letter-spacing:.05em;border:0;background:transparent;color:var(--ink-2);padding:7px 20px;border-radius:999px;cursor:pointer}
+  .vb.on{background:var(--berth);color:#fff}
+  .vb:not(.on):hover{background:var(--line-2)}
+  .vb:focus-visible{outline:2px solid var(--berth);outline-offset:2px}
+  #dashView{display:contents}
+  #dashView.off,#calView.off{display:none}
+  body.view-cal header .meta{display:none}
+  .lg{display:inline-block;width:20px;text-align:center;border-radius:4px;font-size:11px;padding:1px 0}
+  .lg.in,.pc-ev.in{background:var(--ok-soft);color:var(--ok)}
+  .lg.out,.pc-ev.out{background:var(--idle);color:var(--ink-2)}
+  .pc-dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--berth)}
+  .pc-bar{display:flex;align-items:center;gap:10px;padding:12px 20px}
+  .pc-title{font-family:var(--display);font-weight:700;font-size:20px;min-width:150px;text-align:center}
+  .pc-today{font-family:var(--display);font-weight:600;font-size:12px;padding:6px 12px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer;margin-left:6px}
+  .pc-today:hover{background:var(--line-2)}
+  .pc-wrap{min-width:820px;padding:0 20px 8px}
+  .pc-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));border-top:1px solid var(--line);border-left:1px solid var(--line)}
+  .pc-dow{font-family:var(--display);font-weight:600;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);text-align:center;padding:8px 0;background:var(--line-2);border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .pc-cell{min-height:132px;min-width:0;padding:6px 7px 7px;display:flex;flex-direction:column;gap:4px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--panel);cursor:pointer;position:relative}
+  .pc-cell:hover{background:var(--line-2)}
+  .pc-cell.pc-empty{background:var(--line-2);opacity:.45;cursor:default}
+  .pc-cell.sel{box-shadow:inset 0 0 0 2px var(--berth)}
+  .pc-cell:focus-visible{outline:2px solid var(--berth);outline-offset:-2px}
+  .pc-top{display:flex;align-items:center;justify-content:space-between}
+  .pc-num{font-family:var(--display);font-weight:700;font-size:15px;min-width:24px;height:24px;line-height:24px;text-align:center;border-radius:50%}
+  .pc-cell.today .pc-num{background:var(--berth);color:#fff}
+  .pc-tag{display:block;font-size:10.5px;font-weight:600;padding:1px 6px;border-radius:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .pc-tag.closed{background:rgba(214,69,69,.13);color:var(--now)}
+  .pc-tag.partial{background:var(--warn-soft);color:var(--warn)}
+  .pc-ev{display:block;font-size:11.5px;padding:2px 6px;border-radius:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .pc-ev b{font-size:9.5px;margin-right:3px}
+  .pc-ev.past{opacity:.5}
+  .pc-more{font-size:11px;color:var(--ink-3);padding-left:4px}
+  .pc-detail{padding:16px 20px 20px;border-top:1px solid var(--line)}
+  .pc-dhead{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+  .pc-dhead h3{margin:0;font-family:var(--display);font-weight:700;font-size:20px}
+  .pc-open{font-family:var(--display);font-weight:700;font-size:13px;letter-spacing:.03em;color:#fff;background:var(--berth);border:0;border-radius:8px;padding:8px 14px;cursor:pointer}
+  .pc-open:hover{filter:brightness(1.1)}
+  .pc-nosheet{font-size:13px;color:var(--ink-3);font-style:italic}
+  .pc-cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+  .pc-col h4{margin:0 0 6px;font-family:var(--display);font-weight:600;font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3)}
+  .pc-col ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:5px}
+  .pc-col li{display:flex;align-items:baseline;gap:8px;font-size:14px}
+  .pc-col li .t{font-family:var(--mono);font-size:12px;color:var(--ink-2);min-width:44px}
+  .pc-col li .b{font-family:var(--mono);font-size:11.5px;color:var(--ink-3)}
+  .pc-col .none{font-size:13px;color:var(--ink-3);font-style:italic}
   .linkbtn{position:relative;display:inline-flex;align-items:center;gap:8px;font-family:var(--display);font-weight:700;font-size:13.5px;letter-spacing:.04em;color:#2A1600;background:linear-gradient(135deg,#FFC25A 0%,#F28C28 100%);border-radius:999px;padding:8px 16px 8px 10px;text-decoration:none;cursor:pointer;box-shadow:0 8px 22px -8px rgba(242,140,40,.75),0 0 0 3px rgba(255,255,255,.22);transition:transform .15s ease,box-shadow .15s ease;animation:btnpulse 2.6s ease-out infinite}
   .linkbtn .ico{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:rgba(42,22,0,.14)}
   .linkbtn .ico svg{width:14px;height:14px}
@@ -238,6 +285,12 @@
     </div>
   </header>
 
+  <div class="viewbar" role="tablist" aria-label="View">
+    <button type="button" class="vb on" id="viewDash" role="tab" aria-selected="true">Dashboard</button>
+    <button type="button" class="vb" id="viewCal" role="tab" aria-selected="false">Calendar</button>
+  </div>
+
+  <div id="dashView">
   <section class="summary" id="summary"></section>
 
   <section class="panel">
@@ -268,6 +321,29 @@
         <tbody id="tbody"></tbody>
       </table>
     </div>
+  </section>
+
+  </div>
+
+  <section class="panel off" id="calView" aria-label="Port calendar">
+    <div class="panel-head">
+      <h2>Port calendar</h2>
+      <div class="legend">
+        <span><b class="lg in">▲</b>Berthing (P.B)</span>
+        <span><b class="lg out">▼</b>Sailing (ETD)</span>
+        <span><i class="sw x"></i>Berth closed</span>
+        <span><i class="sw g"></i>Gate stopped</span>
+        <span><i class="pc-dot"></i>Sheet received</span>
+      </div>
+    </div>
+    <div class="pc-bar">
+      <button type="button" class="cal-nav" id="pcPrev" aria-label="Previous month">‹</button>
+      <span class="pc-title" id="pcTitle"></span>
+      <button type="button" class="cal-nav" id="pcNext" aria-label="Next month">›</button>
+      <button type="button" class="pc-today" id="pcToday">Today</button>
+    </div>
+    <div class="scroll"><div class="pc-wrap"><div class="pc-grid" id="pcGrid"></div></div></div>
+    <div class="pc-detail" id="pcDetail"></div>
   </section>
 
   <div class="foot">
@@ -1017,12 +1093,120 @@ calPop.addEventListener("click", e=>{
 document.addEventListener("click", e=>{ if(!calPop.hidden && !e.composedPath().includes(calBtn.parentElement)) closeCal(); });
 document.addEventListener("keydown", e=>{ if(e.key==="Escape" && !calPop.hidden){closeCal();calBtn.focus();} });
 
+
+// ---- port calendar page: a month grid of berthings (P.B) and sailings (ETD) from every sheet ----
+const dashView = document.getElementById("dashView");
+const calView = document.getElementById("calView");
+const viewDashBtn = document.getElementById("viewDash");
+const viewCalBtn = document.getElementById("viewCal");
+const FULL_DOW = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+const pad2 = n => String(n).padStart(2,"0");
+const dayKeyOf = ms => {const d=new Date(ms+7*H);return d.getUTCFullYear()+"-"+pad2(d.getUTCMonth()+1)+"-"+pad2(d.getUTCDate());};
+const hhmm = ms => pad2(new Date(ms+7*H).getUTCHours())+":"+pad2(new Date(ms+7*H).getUTCMinutes());
+let pcY, pcM, pcSel = null;
+
+function pcData(){
+  const ev={}, notes={};
+  const add=(o,k,e)=>{(o[k]||(o[k]=[])).push(e);};
+  merge(DAY_ORDER).forEach(b=>{
+    b.vessels.forEach(v=>{
+      const pb=t(v.pb), etd=t(v.etd);
+      add(ev,dayKeyOf(pb),{kind:"in",ms:pb,n:v.n,berth:b.id});
+      add(ev,dayKeyOf(etd),{kind:"out",ms:etd,n:v.n,berth:b.id});
+    });
+    (b.restrict||[]).forEach(r=>{
+      const a=t(r.from), z=t(r.to)-1;
+      for(let ms=dayFloor(a); ms<=z; ms+=DAY_MS){
+        add(notes,dayKeyOf(ms+H),{berth:b.id,kind:r.kind,label:r.label,text:r.text,when:r.when});
+      }
+    });
+  });
+  Object.values(ev).forEach(a=>a.sort((x,y)=>x.ms-y.ms));
+  return {ev,notes};
+}
+
+function renderPageCal(){
+  const {ev,notes}=pcData();
+  const keys=Object.keys(ev).sort();
+  const lo=ymOf(keys[0]), hi=ymOf(keys[keys.length-1]);
+  const todayK=realTodayKey();
+  if(pcY===undefined){
+    const o=ymOf(todayK);
+    const inRange=(o.y*12+o.m)>=(lo.y*12+lo.m) && (o.y*12+o.m)<=(hi.y*12+hi.m);
+    const pick=inRange?o:hi; pcY=pick.y; pcM=pick.m;
+  }
+  if(pcSel===null) pcSel = (ev[todayK]||DATASETS[todayK]) ? todayK : LATEST_KEY;
+  document.getElementById("pcTitle").textContent=MONTH_NAMES[pcM]+" "+pcY;
+  document.getElementById("pcPrev").disabled=(pcY*12+pcM)<=(lo.y*12+lo.m);
+  document.getElementById("pcNext").disabled=(pcY*12+pcM)>=(hi.y*12+hi.m);
+  const nowMs=Date.now();
+  const startDow=new Date(Date.UTC(pcY,pcM,1)).getUTCDay();
+  const dim=new Date(Date.UTC(pcY,pcM+1,0)).getUTCDate();
+  let html=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].map(d=>'<div class="pc-dow">'+d+'</div>').join("");
+  for(let i=0;i<startDow;i++) html+='<div class="pc-cell pc-empty"></div>';
+  for(let d=1; d<=dim; d++){
+    const k=pcY+"-"+pad2(pcM+1)+"-"+pad2(d);
+    const list=ev[k]||[], nn=notes[k]||[];
+    const shown=list.slice(0,4), more=list.length-shown.length;
+    const tags=nn.slice(0,2).map(n=>'<span class="pc-tag '+n.kind+'" title="'+n.text+'">'+n.berth+(n.kind==="closed"?" closed":" gate stop")+'</span>').join("")
+      +(nn.length>2?'<span class="pc-more">+'+(nn.length-2)+' notices</span>':"");
+    const chips=shown.map(e=>'<span class="pc-ev '+e.kind+(e.ms<nowMs?" past":"")+'" title="'+(e.kind==="in"?"Berthing":"Sailing")+" \u00b7 "+e.berth+'"><b>'+(e.kind==="in"?"\u25B2":"\u25BC")+'</b>'+hhmm(e.ms)+" "+e.n+'</span>').join("");
+    html+='<div class="pc-cell'+(k===todayK?" today":"")+(k===pcSel?" sel":"")+'" data-key="'+k+'" tabindex="0" role="button" aria-label="'+d+' '+MONTH_NAMES[pcM]+' '+pcY+': '+list.length+' movements">'
+      +'<div class="pc-top"><span class="pc-num">'+d+'</span>'+(DATASETS[k]?'<i class="pc-dot" title="Sheet received"></i>':"")+'</div>'
+      +tags+chips+(more>0?'<span class="pc-more">+'+more+' more</span>':"")+'</div>';
+  }
+  const tail=(7-((startDow+dim)%7))%7;
+  for(let i=0;i<tail;i++) html+='<div class="pc-cell pc-empty"></div>';
+  document.getElementById("pcGrid").innerHTML=html;
+  renderPcDetail(pcSel,ev,notes);
+}
+
+function renderPcDetail(k,ev,notes){
+  const [y,m,d]=k.split("-").map(Number);
+  const dow=FULL_DOW[new Date(Date.UTC(y,m-1,d)).getUTCDay()];
+  const list=ev[k]||[], ins=list.filter(e=>e.kind==="in"), outs=list.filter(e=>e.kind==="out"), nn=notes[k]||[];
+  const li=e=>'<li><span class="t">'+hhmm(e.ms)+'</span><b>'+e.n+'</b><span class="b">'+e.berth+'</span></li>';
+  const col=(title,items,fn)=>'<div class="pc-col"><h4>'+title+' ('+items.length+')</h4>'+(items.length?'<ul>'+items.map(fn).join("")+'</ul>':'<div class="none">None</div>')+'</div>';
+  document.getElementById("pcDetail").innerHTML=
+    '<div class="pc-dhead"><h3>'+dow+' '+d+' '+MONTH_NAMES[m-1]+' '+y+'</h3>'
+    +(DATASETS[k]?'<button type="button" class="pc-open" data-open="'+k+'">Open this day\'s sheet</button>':'<span class="pc-nosheet">No sheet for this day</span>')+'</div>'
+    +'<div class="pc-cols">'+col("Berthing (P.B)",ins,li)+col("Sailing (ETD)",outs,li)
+    +col("Notices",nn,n=>'<li><b>'+n.berth+'</b><span class="b">'+n.text+'</span></li>')+'</div>';
+}
+
+function setView(v){
+  const cal = v==="cal";
+  dashView.classList.toggle("off",cal);
+  calView.classList.toggle("off",!cal);
+  document.body.classList.toggle("view-cal",cal);
+  viewDashBtn.classList.toggle("on",!cal); viewDashBtn.setAttribute("aria-selected",String(!cal));
+  viewCalBtn.classList.toggle("on",cal); viewCalBtn.setAttribute("aria-selected",String(cal));
+  if(cal) renderPageCal();
+  else requestAnimationFrame(function(){var sc=document.getElementById("gantt").parentElement;sc.scrollLeft=sc.scrollWidth;});
+  try{ localStorage.setItem("patBerthView", v); }catch(e){}
+}
+viewDashBtn.addEventListener("click", ()=>setView("dash"));
+viewCalBtn.addEventListener("click", ()=>setView("cal"));
+document.getElementById("pcPrev").addEventListener("click", ()=>{pcM--;if(pcM<0){pcM=11;pcY--;}renderPageCal();});
+document.getElementById("pcNext").addEventListener("click", ()=>{pcM++;if(pcM>11){pcM=0;pcY++;}renderPageCal();});
+document.getElementById("pcToday").addEventListener("click", ()=>{const o=ymOf(realTodayKey());pcY=o.y;pcM=o.m;pcSel=realTodayKey();renderPageCal();});
+calView.addEventListener("click", e=>{
+  const open=e.target.closest("button[data-open]");
+  if(open){applyRange(open.dataset.open,open.dataset.open);setView("dash");return;}
+  const cell=e.target.closest(".pc-cell[data-key]");
+  if(cell){pcSel=cell.dataset.key;renderPageCal();}
+});
+calView.addEventListener("keydown", e=>{
+  if((e.key==="Enter"||e.key===" ") && e.target.matches(".pc-cell[data-key]")){e.preventDefault();pcSel=e.target.dataset.key;renderPageCal();}
+});
+
 let startFrom = LATEST_KEY, startTo = LATEST_KEY;
 try{
   const saved = JSON.parse(localStorage.getItem("patBerthRange")||"null");
   if(saved && DATASETS[saved[0]] && DATASETS[saved[1]]){startFrom=saved[0];startTo=saved[1];}
 }catch(e){}
 applyRange(startFrom, startTo);
+try{ if(localStorage.getItem("patBerthView")==="cal") setView("cal"); }catch(e){}
 </script>
 
 <script>
