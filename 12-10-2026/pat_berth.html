@@ -1,0 +1,962 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>*,*::before,*::after{box-sizing:border-box}body{margin:0}</style>
+<title>PAT Berth Window</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root{
+    --bg:#EFF3F7; --panel:#FFFFFF; --ink:#13293F; --ink-2:#4A6076; --ink-3:#7B8FA3;
+    --line:#DCE4EC; --line-2:#EDF2F7; --today:#E9F3FB;
+    --berth:#2C77A3; --berth-2:#1F5E86; --berth-done:#B4C6D4; --wait:#7FB2D6;
+    --mark:#F28C28; --mark-soft:#FFF1E2; --now:#D64545;
+    --ok:#17794F; --ok-soft:#DFF3E9; --warn:#A8690C; --warn-soft:#FBF0D9; --info-soft:#E2EFF9; --idle:#EDF1F5;
+    --hero-1:#10293F; --hero-2:#1E5F8A;
+    --shadow:0 1px 2px rgba(16,40,64,.06),0 8px 22px -12px rgba(16,40,64,.18);
+    --display:"Barlow Semi Condensed","Arial Narrow",Arial,sans-serif;
+    --body:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
+    --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#0C141C; --panel:#131E2A; --ink:#E7EEF5; --ink-2:#AFC0CF; --ink-3:#7E93A5;
+      --line:#27384A; --line-2:#1B2836; --today:#183049;
+      --berth:#5FA0C7; --berth-2:#3F82AB; --berth-done:#3B4C5C; --wait:#5B87A5;
+      --mark:#F2A65A; --mark-soft:#3A2C18; --now:#E06A5C;
+      --ok:#57C48C; --ok-soft:#153327; --warn:#E3B25E; --warn-soft:#3A2E14; --info-soft:#17293A; --idle:#1C2731;
+      --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 22px -12px rgba(0,0,0,.6);
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0C141C; --panel:#131E2A; --ink:#E7EEF5; --ink-2:#AFC0CF; --ink-3:#7E93A5;
+    --line:#27384A; --line-2:#1B2836; --today:#183049;
+    --berth:#5FA0C7; --berth-2:#3F82AB; --berth-done:#3B4C5C; --wait:#5B87A5;
+    --mark:#F2A65A; --mark-soft:#3A2C18; --now:#E06A5C;
+    --ok:#57C48C; --ok-soft:#153327; --warn:#E3B25E; --warn-soft:#3A2E14; --info-soft:#17293A; --idle:#1C2731;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 22px -12px rgba(0,0,0,.6);
+    color-scheme: dark;
+  }
+  *,*::before,*::after{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.45}
+  .wrap{max-width:1260px;margin:0 auto;padding-inline:20px;padding-block:24px 52px;display:flex;flex-direction:column;gap:20px}
+
+  /* hero header */
+  header{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:14px 24px;padding:24px 28px;border-radius:16px;color:#fff;background:linear-gradient(115deg,var(--hero-1) 0%,var(--hero-2) 100%);box-shadow:var(--shadow);position:relative;overflow:hidden}
+  header::after{content:"";position:absolute;inset:0;background:radial-gradient(120% 140% at 100% 0%,rgba(255,255,255,.14),transparent 55%);pointer-events:none}
+  header>*{position:relative;z-index:1}
+  .hdr-center{display:flex;justify-content:center;transform:translateY(16px)}
+  header .meta{justify-self:end}
+  @media (max-width:900px){header{grid-template-columns:1fr;padding:20px}.hdr-center{justify-content:flex-start;transform:none}header .meta{justify-self:start;text-align:left;align-items:flex-start}header .daypicker{align-items:flex-start}header .daypicker .dp-row{justify-content:flex-start;flex-wrap:wrap}header .daypicker .rng{flex-wrap:wrap;white-space:normal}}
+  .eyebrow{font-family:var(--display);font-weight:600;letter-spacing:.14em;text-transform:uppercase;font-size:12px;color:rgba(255,255,255,.72)}
+  h1{font-family:var(--display);font-weight:700;font-size:clamp(28px,4.4vw,42px);line-height:1.02;margin:6px 0 0;text-wrap:balance;letter-spacing:-.01em}
+  .meta{font-family:var(--mono);font-size:12.5px;color:rgba(255,255,255,.85);text-align:right;display:flex;flex-direction:column;gap:8px;align-items:flex-end}
+  .meta b{color:#fff;font-weight:500}
+
+  .daypicker{display:flex;align-items:center;gap:8px;font-size:13px}
+  .daypicker label{font-family:var(--display);font-weight:600;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.72)}
+  .daypicker select,.daypicker .navbtn{font-family:var(--mono);font-size:13px;color:#fff;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.34);border-radius:8px;padding:6px 10px;cursor:pointer}
+  .daypicker select option{color:#13293F;background:#fff}
+  .daypicker .navbtn{line-height:1;padding:6px 11px;font-size:15px}
+  .daypicker .navbtn:disabled{opacity:.35;cursor:default}
+  .daypicker .navbtn:not(:disabled):hover,.daypicker select:hover{background:rgba(255,255,255,.24)}
+  .daypicker select:focus-visible,.daypicker .navbtn:focus-visible{outline:2px solid #fff;outline-offset:2px}
+  .daypicker{flex-direction:column;align-items:flex-end;gap:8px}
+  .daypicker .dp-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+  .daypicker .dp-row:first-child{flex-wrap:nowrap}
+  .daypicker label{white-space:nowrap}
+  .daypicker .dash{color:rgba(255,255,255,.8)}
+  .daypicker .rng{display:inline-flex;align-items:center;gap:8px;white-space:nowrap}
+  .daypicker .navbtn.txt{font-family:var(--display);font-weight:600;font-size:12px;letter-spacing:.04em;padding:7px 11px}
+  .daypicker .navbtn.on{background:#fff;color:#10293F;border-color:#fff}
+  .badge-range{font-family:var(--display);font-weight:700;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:#0C3C63;background:#CFE3F5;padding:3px 9px;border-radius:999px}
+  .linkbtn{position:relative;display:inline-flex;align-items:center;gap:8px;font-family:var(--display);font-weight:700;font-size:13.5px;letter-spacing:.04em;color:#2A1600;background:linear-gradient(135deg,#FFC25A 0%,#F28C28 100%);border-radius:999px;padding:8px 16px 8px 10px;text-decoration:none;cursor:pointer;box-shadow:0 8px 22px -8px rgba(242,140,40,.75),0 0 0 3px rgba(255,255,255,.22);transition:transform .15s ease,box-shadow .15s ease;animation:btnpulse 2.6s ease-out infinite}
+  .linkbtn .ico{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:rgba(42,22,0,.14)}
+  .linkbtn .ico svg{width:14px;height:14px}
+  .linkbtn .arr{display:inline-block;font-size:14px;line-height:1;transition:transform .15s ease}
+  .linkbtn:hover{transform:translateY(-2px);box-shadow:0 14px 28px -10px rgba(242,140,40,.9),0 0 0 4px rgba(255,255,255,.35);animation:none}
+  .linkbtn:hover .arr{transform:translate(3px,-3px)}
+  .linkbtn:focus-visible{outline:3px solid #fff;outline-offset:3px}
+  @keyframes btnpulse{0%{box-shadow:0 8px 22px -8px rgba(242,140,40,.75),0 0 0 3px rgba(255,255,255,.22),0 0 0 0 rgba(255,194,90,.55)}70%{box-shadow:0 8px 22px -8px rgba(242,140,40,.75),0 0 0 3px rgba(255,255,255,.22),0 0 0 10px rgba(255,194,90,0)}100%{box-shadow:0 8px 22px -8px rgba(242,140,40,.75),0 0 0 3px rgba(255,255,255,.22),0 0 0 0 rgba(255,194,90,0)}}
+  @media (prefers-reduced-motion:reduce){.linkbtn{animation:none}.linkbtn,.linkbtn .arr{transition:none}}
+  .badge-latest{font-family:var(--display);font-weight:700;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:#0F5C3A;background:#CFF2E0;padding:3px 9px;border-radius:999px}
+  .badge-hist{font-family:var(--display);font-weight:700;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:#6E4308;background:#F9E3B8;padding:3px 9px;border-radius:999px}
+
+  /* summary tiles */
+  .summary{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+  .tile{--accent:var(--berth);background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:12px;padding:14px 16px 15px;display:flex;flex-direction:column;gap:5px;box-shadow:var(--shadow)}
+  .tile.t-ok{--accent:var(--ok)} .tile.t-warn{--accent:#E0A030} .tile.t-mark{--accent:var(--mark)} .tile.t-slate{--accent:var(--ink-3)}
+  .tile .k{font-family:var(--display);font-weight:600;font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3)}
+  .tile .v{font-family:var(--display);font-weight:700;font-size:38px;line-height:1;letter-spacing:-.01em}
+  .tile .s{font-size:13px;color:var(--ink-2);min-height:1.4em}
+  @media (max-width:980px){.summary{grid-template-columns:repeat(3,1fr)}}@media (max-width:560px){.summary{grid-template-columns:repeat(2,1fr)}}
+
+  /* panels */
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);overflow:hidden}
+  .panel-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px 20px;padding:16px 20px;border-bottom:1px solid var(--line)}
+  .panel-head h2{font-family:var(--display);font-weight:700;font-size:21px;margin:0;letter-spacing:-.005em}
+  .legend{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:13px;color:var(--ink-2)}
+  .legend span{display:inline-flex;align-items:center;gap:7px}
+  .sw{display:inline-block;width:22px;height:11px;border-radius:3px}
+  .sw.b{background:linear-gradient(180deg,var(--berth),var(--berth-2))} .sw.d{background:var(--berth-done)}
+  .sw.w{height:0;border-top:3px dashed var(--wait);border-radius:0}
+  .sw.x{background:repeating-linear-gradient(135deg,rgba(214,69,69,.12) 0 3px,rgba(214,69,69,.38) 3px 6px);border-left:2px solid var(--now)}
+  .sw.g{background:var(--warn-soft);border-top:2px solid var(--warn);height:9px}
+  .sw.n{width:2px;height:15px;background:var(--now);border-radius:0}
+
+  /* notices as cards */
+  .notices{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px;padding:16px 20px 20px}
+  .ncard{--c:var(--warn);position:relative;border:1px solid var(--line);border-left:5px solid var(--c);border-radius:10px;padding:12px 14px 13px;display:flex;flex-direction:column;gap:7px;background:var(--panel)}
+  .ncard.closed{--c:var(--now);background:linear-gradient(0deg,rgba(214,69,69,.04),rgba(214,69,69,.04)),var(--panel)}
+  .ncard .top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+  .ncard .bn{font-family:var(--display);font-weight:700;font-size:24px;line-height:1}
+  .ncard .per{font-family:var(--mono);font-size:12.5px;color:var(--ink)}
+  .ncard .txt{font-size:13.5px;color:var(--ink-2)}
+  .nempty{padding:20px;color:var(--ink-3);font-style:italic}
+
+  /* gantt */
+  .scroll{overflow-x:auto}
+  .gantt{min-width:1720px;position:relative}
+  .g-row{display:grid;grid-template-columns:150px 1fr;border-bottom:1px solid var(--line-2)}
+  .g-row:last-child{border-bottom:0}
+  .g-row:not(.axis):hover .g-track{background:rgba(44,119,163,.04)}
+  .g-label{padding:10px 12px 10px 20px;display:flex;flex-direction:column;justify-content:center;gap:2px;border-right:1px solid var(--line);background:var(--panel);position:sticky;left:0;z-index:3}
+  .g-label .bn{font-family:var(--display);font-weight:700;font-size:20px;line-height:1.05}
+  .g-label .gt{font-family:var(--mono);font-size:11.5px;color:var(--ink-3)}
+  .g-track{position:relative;height:88px}
+  .g-row.empty .g-track{height:42px}
+  .g-row.axis .g-track{height:50px}
+  .g-row.axis .g-label{justify-content:flex-end}
+  .day{position:absolute;top:0;bottom:0;border-left:1px solid var(--line)}
+  .day.alt{background:var(--line-2)}
+  .day.today{background:var(--today)}
+  .dlab{position:absolute;top:7px;left:9px;font-family:var(--display);font-weight:700;font-size:15px;white-space:nowrap}
+  .day.today .dlab{color:var(--berth)}
+  .dlab small{display:block;font-family:var(--body);font-weight:500;font-size:11.5px;color:var(--ink-3);letter-spacing:.05em;text-transform:uppercase}
+  .hr{position:absolute;bottom:5px;font-family:var(--mono);font-size:10px;color:var(--ink-3);transform:translateX(-50%)}
+  .tick{position:absolute;top:0;bottom:0;border-left:1px dashed var(--line)}
+  .nowline{position:absolute;top:0;bottom:0;width:0;border-left:2px solid var(--now);z-index:4;pointer-events:none}
+  .nowtag{position:absolute;top:30px;transform:translateX(-50%);background:var(--now);color:#fff;font-family:var(--mono);font-size:10.5px;font-weight:500;padding:2px 7px;border-radius:4px;white-space:nowrap;z-index:5;box-shadow:0 2px 6px rgba(0,0,0,.25)}
+
+  .wait{position:absolute;top:13px;height:0;border-top:3px dashed var(--wait);z-index:1}
+  .wait::before{content:"";position:absolute;left:-4px;top:-6.5px;width:9px;height:9px;border-radius:50%;background:var(--wait)}
+  .bar{position:absolute;top:24px;height:44px;border-radius:8px;background:linear-gradient(180deg,var(--berth),var(--berth-2));color:#fff;padding:4px 9px;overflow:hidden;z-index:2;display:flex;flex-direction:column;justify-content:center;gap:1px;cursor:default;box-shadow:0 3px 8px -3px rgba(16,40,64,.5);transition:transform .12s ease,box-shadow .12s ease}
+  .bar:hover{transform:translateY(-1px);box-shadow:0 7px 14px -6px rgba(16,40,64,.55)}
+  .bar.done{background:var(--berth-done);color:var(--ink);box-shadow:none}
+  .bar.marked{box-shadow:0 0 0 2px var(--panel),0 0 0 4px var(--mark)}
+  .bar .nm{font-family:var(--display);font-weight:700;font-size:14.5px;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .bar .tm{font-family:var(--mono);font-size:10.5px;opacity:.92;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .bar:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+  .note{position:absolute;inset:8px 14px;display:flex;align-items:center;font-size:13px;color:var(--ink-3);font-style:italic}
+  .rs{position:absolute;z-index:1;overflow:hidden}
+  .rs span{position:absolute;font-size:11.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:calc(100% - 12px)}
+  .rs.closed{top:0;bottom:0;background:repeating-linear-gradient(135deg,rgba(214,69,69,.07) 0 7px,rgba(214,69,69,.16) 7px 14px);border-left:2px solid var(--now)}
+  .rs.closed span{top:5px;left:9px;color:var(--now)}
+  .rs.partial{bottom:0;height:14px;background:var(--warn-soft);border-top:2px solid var(--warn)}
+  .rs.partial span{top:-1px;left:7px;font-size:10.5px;color:var(--warn)}
+
+  /* tables */
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th{font-family:var(--display);font-weight:600;font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);text-align:left;padding:12px 14px;border-bottom:1px solid var(--line);white-space:nowrap;background:var(--line-2)}
+  td{padding:11px 14px;border-bottom:1px solid var(--line-2);white-space:nowrap;vertical-align:middle}
+  tr:last-child td{border-bottom:0}
+  tbody tr:not(.grp):hover td{background:var(--line-2)}
+  td.num,.mono{font-family:var(--mono);font-size:13px;font-variant-numeric:tabular-nums}
+  td.vs{font-family:var(--display);font-weight:700;font-size:16px}
+  tr.grp td{background:var(--info-soft);font-family:var(--display);font-weight:700;font-size:15px;padding:8px 14px;border-bottom:1px solid var(--line)}
+  tr.grp td span{font-family:var(--mono);font-weight:400;font-size:11.5px;color:var(--ink-3);margin-left:8px}
+  tr.marked td{background:var(--mark-soft)}
+  .pill{display:inline-block;font-family:var(--display);font-weight:700;font-size:12px;letter-spacing:.04em;padding:3px 10px;border-radius:999px}
+  .p-along{background:var(--ok-soft);color:var(--ok)}
+  .p-anch{background:var(--warn-soft);color:var(--warn)}
+  .p-exp{background:var(--info-soft);color:var(--berth)}
+  .p-closed{background:rgba(214,69,69,.13);color:var(--now)}
+  .p-done{background:var(--idle);color:var(--ink-3)}
+  .flag{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--mark);margin-left:7px;vertical-align:middle}
+  .foot{font-size:12.5px;color:var(--ink-3);display:flex;flex-direction:column;gap:4px;padding-inline:4px}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <div class="eyebrow">Port Authority of Thailand · Bangkok Port (THBKK)</div>
+      <h1>PAT Berth Window</h1>
+    </div>
+    <div class="hdr-center">
+      <a class="linkbtn" href="https://datastudio.google.com/reporting/473cd015-edbb-4011-a58c-b9b2d55090fb/page/xm5rF" target="_blank" rel="noopener noreferrer"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-8"/><path d="M22 20H2"/></svg></span><span>Open Data Studio report</span><span class="arr" aria-hidden="true">↗</span></a>
+    </div>
+    <div class="meta">
+      <div class="daypicker">
+        <div class="dp-row">
+          <label for="fromSelect">Sheet date</label>
+          <span class="rng"><select id="fromSelect" aria-label="From date"></select><span class="dash" aria-hidden="true">–</span><select id="toSelect" aria-label="To date"></select></span>
+        </div>
+        <div class="dp-row">
+          <button type="button" class="navbtn" id="prevDay" title="Previous day" aria-label="Previous day">‹</button>
+          <button type="button" class="navbtn" id="nextDay" title="Next day" aria-label="Next day">›</button>
+          <button type="button" class="navbtn txt" id="todayBtn" title="Jump to today's sheet (or the latest one)">Today</button>
+          <button type="button" class="navbtn txt" id="allDays" title="Combine every sheet">All days</button>
+          <span id="dayBadge"></span>
+        </div>
+      </div>
+      <span>First ETA → last ETD <b id="windowLabel"></b> · times local (UTC+7)</span>
+    </div>
+  </header>
+
+  <section class="summary" id="summary"></section>
+
+  <section class="panel">
+    <div class="panel-head"><h2>Berth &amp; gate notices</h2></div>
+    <div class="notices" id="notices"></div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head">
+      <h2>Berth timeline</h2>
+      <div class="legend">
+        <span><i class="sw w"></i>Anchorage wait (ETA → P.B)</span>
+        <span><i class="sw b"></i>Alongside (P.B → ETD)</span>
+        <span><i class="sw d"></i>Sailed</span>
+        <span><i class="sw x"></i>Berth closed</span>
+        <span><i class="sw g"></i>Gate out of service</span>
+        <span><i class="sw n"></i>Now</span>
+      </div>
+    </div>
+    <div class="scroll"><div class="gantt" id="gantt"></div></div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head"><h2>Vessel list by berth</h2></div>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Vessel</th><th>LOA (m)</th><th>ETA</th><th>P.B</th><th>ETD</th><th>Hours alongside</th><th>Shift</th><th>Status</th></tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <div class="foot">
+    <span>P.B = pilot boarding / berthing time. Times on the sheet are written DD/HH; dates 27–30 are September, 01–15 are October 2026.</span>
+    <span>Gate stoppages (G.29, G.25) reduce crane/gate capacity at the berth but do not close it. A historical sheet freezes "Now" to that day's snapshot time.</span>
+  </div>
+</div>
+
+<script>
+// ---------------------------------------------------------------------------
+// One dataset per sheet date. Each new day: copy a block, update vessels and
+// restrictions from the sheet, and add its key to DAY_ORDER (latest last).
+// ---------------------------------------------------------------------------
+const DATASETS = {
+  "2026-09-28": {
+    label: "28/09/2026",
+    sheetNow: "28/1200",
+    berths: [
+      {id:"20AB", gates:"Gate 29, 30", vessels:[
+        {n:"INFINITY", loa:565, eta:"28/07", pb:"28/07", etd:"29/15"},
+        {n:"SKY CHALLENGE", loa:565, eta:"29/11", pb:"29/16", etd:"01/04"},
+        {n:"CAPE FAWLEY", loa:558, eta:"30/21", pb:"01/06", etd:"02/06"}]},
+      {id:"20B", gates:"Gate 27, 28", vessels:[
+        {n:"KMTC GWANGYANG", loa:564, eta:"27/19", pb:"27/19", etd:"29/05"},
+        {n:"MILLENNIUM BRIGHT", loa:564, eta:"28/11", pb:"29/05", etd:"30/04"},
+        {n:"M ODYSSEY", loa:449, eta:"30/04", pb:"30/05", etd:"01/17", shift:"4A"}]},
+      {id:"20C", gates:"Gate 21, 22", vessels:[],
+        restrict:[{kind:"closed", from:"27/00", to:"30/00", label:"Not in use · opens 30 Sep", text:"Wharf to be utilised from 30 Sep 2026"}]},
+      {id:"20D", gates:"Gate 23, 24", vessels:[
+        {n:"BANGKOK", loa:551, eta:"27/15", pb:"27/15", etd:"29/14"}]},
+      {id:"20E", gates:"Gate 25, 26", vessels:[
+        {n:"TS CHIBA", loa:485, eta:"28/07", pb:"28/07", etd:"29/04"},
+        {n:"HOPE C", loa:481, eta:"29/17", pb:"29/17", etd:"01/05"}]},
+      {id:"20F", gates:"Gate 33, 34", vessels:[
+        {n:"JARU BHUM", loa:564, eta:"28/08", pb:"28/08", etd:"29/04", shift:"7B", mark:true},
+        {n:"MITRA BHUM", loa:485, eta:"29/23", pb:"30/05", etd:"30/18"}]},
+      {id:"22A", gates:"", vessels:[]},
+      {id:"22B", gates:"", vessels:[]},
+      {id:"22D", gates:"", vessels:[]},
+      {id:"22E", gates:"", vessels:[]},
+    ]
+  },
+  "2026-09-29": {
+    label: "29/09/2026",
+    sheetNow: "29/1200",
+    berths: [
+      {id:"20AB", gates:"Gate 29, 30", vessels:[
+        {n:"INFINITY", loa:565, eta:"27/18", pb:"28/05", etd:"29/15"},
+        {n:"SKY CHALLENGE", loa:565, eta:"29/08", pb:"29/16", etd:"01/04"},
+        {n:"KHARIS HERITAGE", loa:482, eta:"01/07", pb:"01/07", etd:"02/06"}],
+        restrict:[{kind:"partial", from:"29/00", to:"30/24", label:"G.29 stopped · spreader repair", text:"G.29 stops working 29–30 Sep 2026 to repair spreader"}]},
+      {id:"20B", gates:"Gate 27, 28", vessels:[
+        {n:"MILLENNIUM BRIGHT", loa:564, eta:"28/11", pb:"29/05", etd:"30/04"},
+        {n:"M ODYSSEY", loa:449, eta:"30/04", pb:"30/05", etd:"01/05", shift:"4A"}]},
+      {id:"20C", gates:"Gate 21, 22", vessels:[
+        {n:"CAPE FAWLEY", loa:558, eta:"30/21", pb:"01/06", etd:"02/06"}],
+        restrict:[{kind:"closed", from:"27/00", to:"01/00", label:"Not in use · opens 1 Oct", text:"Wharf to be utilised from 1 Oct 2026"}]},
+      {id:"20D", gates:"Gate 23, 24", vessels:[
+        {n:"BANGKOK", loa:551, eta:"27/13", pb:"27/15", etd:"29/14"}],
+        restrict:[{kind:"closed", from:"01/00", to:"21/24", label:"Closed 1–21 Oct · electric channel renovation", text:"Berth closed 1–21 Oct 2026 to renovate electric channel"}]},
+      {id:"20E", gates:"Gate 25, 26", vessels:[
+        {n:"MITRA BHUM", loa:485, eta:"30/03", pb:"30/05", etd:"30/18"}],
+        restrict:[{kind:"partial", from:"01/00", to:"15/24", label:"G.25 stopped · trolley rail change (to 15 Oct)", text:"G.25 stops working 1–15 Oct 2026 to change trolley rail"}]},
+      {id:"20F", gates:"Gate 33, 34", vessels:[
+        {n:"HOPE C", loa:481, eta:"29/17", pb:"29/17", etd:"30/16"},
+        {n:"ALS SUMIRE", loa:537, eta:"01/13", pb:"01/17", etd:"02/17", shift:"1C"}]},
+      {id:"22A", gates:"", vessels:[]},
+      {id:"22B", gates:"", vessels:[]},
+      {id:"22C", gates:"", vessels:[]},
+      {id:"22D", gates:"", vessels:[]},
+    ]
+  },
+  "2026-09-30": {
+    label: "30/09/2026",
+    sheetNow: "30/1200",
+    berths: [
+      {id:"20AB", gates:"Gate 29, 30", vessels:[
+        {n:"SKY CHALLENGE", loa:565, eta:"29/08", pb:"29/16", etd:"01/04"},
+        {n:"CAPE FAWLEY", loa:558, eta:"30/21", pb:"01/06", etd:"02/06"},
+        {n:"KMTC BANGKOK", loa:565, eta:"02/06", pb:"02/08", etd:"03/17"}],
+        restrict:[{kind:"partial", from:"29/00", to:"30/24", label:"G.29 stopped · spreader repair", text:"G.29 stops working 29–30 Sep 2026 to repair spreader"}]},
+      {id:"20B", gates:"Gate 27, 28", vessels:[
+        {n:"M ODYSSEY", loa:449, eta:"30/04", pb:"30/05", etd:"01/05", shift:"4A"},
+        {n:"KHARIS HERITAGE", loa:482, eta:"01/11", pb:"01/17", etd:"02/17", mark:true}]},
+      {id:"20C", gates:"Gate 21, 22", vessels:[],
+        restrict:[{kind:"closed", from:"27/00", to:"03/00", label:"Not in use · opens 3 Oct", text:"Wharf to be utilised from 3 Oct 2026"}]},
+      {id:"20D", gates:"Gate 23, 24", vessels:[
+        {n:"ALS SUMIRE", loa:537, eta:"01/17", pb:"01/17", etd:"02/17", shift:"1C", mark:true}],
+        restrict:[{kind:"closed", from:"03/00", to:"24/24", label:"Closed 3–24 Oct · electric channel renovation", text:"Berth closed 3–24 Oct 2026 to renovate electric channel"}]},
+      {id:"20E", gates:"Gate 25, 26", vessels:[
+        {n:"MITRA BHUM", loa:485, eta:"30/03", pb:"30/05", etd:"30/18"}],
+        restrict:[{kind:"partial", from:"03/00", to:"18/24", label:"G.25 stopped · trolley rail change (to 18 Oct)", text:"G.25 stops working 3–18 Oct 2026 to change trolley rail"}]},
+      {id:"20F", gates:"Gate 33, 34", vessels:[
+        {n:"HOPE C", loa:481, eta:"29/17", pb:"29/17", etd:"30/16"},
+        {n:"WAN HAI 278", loa:564, eta:"02/09", pb:"02/09", etd:"04/10"}]},
+      {id:"22A", gates:"", vessels:[]},
+      {id:"22B", gates:"", vessels:[]},
+      {id:"22C", gates:"", vessels:[]},
+      {id:"22D", gates:"", vessels:[]},
+    ]
+  },
+  "2026-10-01": {
+    label: "01/10/2026",
+    sheetNow: "01/1200",
+    berths: [
+      {id:"20AB", gates:"Gate 29, 30", vessels:[
+        {n:"CAPE FAWLEY", loa:558, eta:"30/21", pb:"01/06", etd:"02/06"},
+        {n:"KMTC BANGKOK", loa:565, eta:"02/06", pb:"02/08", etd:"03/17"}]},
+      {id:"20B", gates:"Gate 27, 28", vessels:[
+        {n:"KHARIS HERITAGE", loa:482, eta:"01/12", pb:"01/17", etd:"02/17", mark:true},
+        {n:"ZHONG GU BEI HAI", loa:561, eta:"03/22", pb:"04/09", etd:"05/16"}]},
+      {id:"20C", gates:"Gate 21, 22", vessels:[
+        {n:"YM IMPROVEMENT", loa:564, eta:"03/20", pb:"03/20", etd:"05/10"}],
+        restrict:[{kind:"closed", from:"27/00", to:"03/00", label:"Not in use · opens 3 Oct", text:"Wharf to be utilised from 3 Oct 2026"}]},
+      {id:"20D", gates:"Gate 23, 24", vessels:[
+        {n:"ALS SUMIRE", loa:537, eta:"01/17", pb:"01/17", etd:"02/17", shift:"1C", mark:true}],
+        restrict:[{kind:"closed", from:"03/00", to:"24/24", label:"Closed 3–24 Oct · electric channel renovation", text:"Berth closed 3–24 Oct 2026 to renovate electric channel"}]},
+      {id:"20E", gates:"Gate 25, 26", vessels:[
+        {n:"RESURGENCE", loa:458, eta:"03/18", pb:"03/18", etd:"04/20"}],
+        restrict:[{kind:"partial", from:"03/00", to:"18/24", label:"G.25 stopped · trolley rail change (to 18 Oct)", text:"G.25 stops working 3–18 Oct 2026 to change trolley rail"}]},
+      {id:"20F", gates:"Gate 33, 34", vessels:[
+        {n:"WAN HAI 278", loa:564, eta:"02/09", pb:"02/09", etd:"04/10"}]},
+      {id:"22A", gates:"", vessels:[]},
+      {id:"22B", gates:"", vessels:[]},
+      {id:"22D", gates:"", vessels:[]},
+      {id:"22E", gates:"", vessels:[]},
+    ]
+  },
+  "2026-10-02": {
+    label: "02/10/2026",
+    sheetNow: "02/1200",
+    berths: [
+      {id:"20AB", gates:"Gate 29, 30", vessels:[
+        {n:"CAPE FAWLEY", loa:558, eta:"30/21", pb:"01/06", etd:"02/15"},
+        {n:"RESURGENCE", loa:458, eta:"03/13", pb:"03/13", etd:"04/12"},
+        {n:"ZHONG GU BEI HAI", loa:561, eta:"04/09", pb:"04/11", etd:"06/11"}]},
+      {id:"20B", gates:"Gate 27, 28", vessels:[
+        {n:"KHARIS HERITAGE", loa:482, eta:"01/11", pb:"01/18", etd:"02/17", mark:true},
+        {n:"YM IMPROVEMENT", loa:564, eta:"03/20", pb:"03/20", etd:"05/10"},
+        {n:"JOSCO LUCKY", loa:564, eta:"05/22", pb:"06/12", etd:"07/13"}]},
+      {id:"20C", gates:"Gate 21, 22", vessels:[
+        {n:"SAWASDEE DENEB", loa:564, eta:"04/24", pb:"05/12", etd:"07/12"}],
+        restrict:[{kind:"closed", from:"27/00", to:"05/00", label:"Not in use · opens 5 Oct", text:"Wharf to be utilised from 5 Oct 2026"}]},
+      {id:"20D", gates:"Gate 23, 24", vessels:[
+        {n:"ALS SUMIRE", loa:537, eta:"01/06", pb:"01/16", etd:"02/17", shift:"1C", mark:true},
+        {n:"HARI BHUM (Barge)", loa:259, eta:"03/05", pb:"03/05", etd:"03/16"}],
+        restrict:[{kind:"closed", from:"04/00", to:"24/24", label:"Closed 4–24 Oct · electric channel renovation", text:"Berth closed 4–24 Oct 2026 to renovate electric channel"}]},
+      {id:"20E", gates:"Gate 25, 26", vessels:[
+        {n:"WAN HAI 278", loa:564, eta:"02/18", pb:"03/10", etd:"05/11"}],
+        restrict:[{kind:"partial", from:"05/00", to:"18/24", label:"G.25 stopped · trolley rail change (to 18 Oct)", text:"G.25 stops working 5–18 Oct 2026 to change trolley rail"}]},
+      {id:"20F", gates:"Gate 33, 34", vessels:[
+        {n:"KMTC BANGKOK", loa:565, eta:"02/07", pb:"02/08", etd:"03/17"},
+        {n:"XIN MING ZHOU 98", loa:564, eta:"04/09", pb:"04/09", etd:"05/09"}]},
+      {id:"22A", gates:"", vessels:[]},
+      {id:"22B", gates:"", vessels:[]},
+      {id:"22C", gates:"", vessels:[]},
+      {id:"22D", gates:"", vessels:[]},
+    ]
+  },
+  "2026-10-03": {
+    label: "03/10/2026",
+    sheetNow: "03/0900",
+    berths: [
+      {id:"20AB", gates:"Gate 29, 30", vessels:[
+        {n:"RESURGENCE", loa:458, eta:"03/12", pb:"03/12", etd:"04/17"},
+        {n:"ZHONG GU BEI HAI", loa:561, eta:"04/09", pb:"04/15", etd:"06/10", mark:true}]},
+      {id:"20B", gates:"Gate 27, 28", vessels:[
+        {n:"YM IMPROVEMENT", loa:564, eta:"03/23", pb:"04/10", etd:"05/12"},
+        {n:"JOSCO LUCKY", loa:564, eta:"05/22", pb:"06/12", etd:"07/13"}]},
+      {id:"20C", gates:"Gate 21, 22", vessels:[
+        {n:"SAWASDEE DENEB", loa:564, eta:"04/24", pb:"05/12", etd:"07/12"}],
+        restrict:[
+          {kind:"closed", from:"27/00", to:"05/00", label:"Not in use · opens 5 Oct", text:"Wharf to be utilised from 5 Oct 2026"},
+          {kind:"closed", from:"04/09", to:"04/12", label:"Cable splicing", when:"04 Oct · 09:00–12:00", text:"20C and 20D cable splicing on 4 Oct 2026, 09:00–12:00"}]},
+      {id:"20D", gates:"Gate 23, 24", vessels:[
+        {n:"HARI BHUM (Barge)", loa:259, eta:"03/05", pb:"03/07", etd:"03/16"}],
+        restrict:[
+          {kind:"closed", from:"04/09", to:"04/12", label:"Cable splicing", when:"04 Oct · 09:00–12:00", text:"20C and 20D cable splicing on 4 Oct 2026, 09:00–12:00"},
+          {kind:"closed", from:"04/00", to:"25/24", label:"Closed 4–25 Oct · electric channel renovation", text:"Berth closed 4–25 Oct 2026 to renovate electric channel (cable track, bays 1700–1800)"}]},
+      {id:"20E", gates:"Gate 25, 26", vessels:[
+        {n:"WAN HAI 278", loa:564, eta:"02/22", pb:"03/10", etd:"05/11"}],
+        restrict:[{kind:"partial", from:"05/12", to:"18/24", label:"G.25 stopped · trolley rail change (from 5 Oct 12:00)", when:"05 Oct 12:00 – 18 Oct", text:"G.25 stops working from 5 Oct 12:00 to change trolley rail (G.25, G.26 bays 700–900); berthing sheet end date is cut off, daily sheet says 18 Oct"}]},
+      {id:"20F", gates:"Gate 33, 34", vessels:[
+        {n:"KMTC BANGKOK", loa:564, eta:"02/07", pb:"02/11", etd:"03/17"},
+        {n:"XIN MING ZHOU 98", loa:564, eta:"04/09", pb:"04/09", etd:"05/09"}]},
+      {id:"22A", gates:"", vessels:[]},
+      {id:"22B", gates:"", vessels:[]},
+      {id:"22C", gates:"", vessels:[]},
+      {id:"22D", gates:"", vessels:[]},
+    ]
+  },
+  "2026-10-04": {
+    label: "04/10/2026",
+    sheetNow: "04/1200",
+    berths: [
+      {id:"20AB", gates:"Gate 29, 30", vessels:[
+        {n:"RESURGENCE", loa:458, eta:"03/12", pb:"03/12", etd:"04/17"},
+        {n:"ZHONG GU BEI HAI", loa:561, eta:"04/09", pb:"04/15", etd:"06/10"},
+        {n:"JOSCO LUCKY", loa:564, eta:"05/22", pb:"06/12", etd:"07/13"}]},
+      {id:"20B", gates:"Gate 27, 28", vessels:[
+        {n:"YM IMPROVEMENT", loa:564, eta:"03/23", pb:"04/10", etd:"05/12"},
+        {n:"SAWASDEE SPICA", loa:564, eta:"05/21", pb:"06/13", etd:"08/13"}]},
+      {id:"20C", gates:"Gate 21, 22", vessels:[
+        {n:"SAWASDEE DENEB", loa:564, eta:"04/24", pb:"05/12", etd:"07/12"}],
+        restrict:[{kind:"closed", from:"27/00", to:"05/00", label:"Not in use · opens 5 Oct", text:"Wharf to be utilised from 5 Oct 2026 (sheet prints 2027, treated as a typo)"}]},
+      {id:"20D", gates:"Gate 23, 24", vessels:[],
+        restrict:[{kind:"closed", from:"04/00", to:"24/24", label:"Closed 4–24 Oct · electric channel renovation", text:"Berth closed 4–24 Oct 2026 to renovate electric channel"}]},
+      {id:"20E", gates:"Gate 25, 26", vessels:[
+        {n:"WAN HAI 278", loa:564, eta:"02/18", pb:"03/10", etd:"05/11"}],
+        restrict:[{kind:"partial", from:"05/00", to:"18/24", label:"G.25 stopped · trolley rail change (to 18 Oct)", text:"G.25 stops working 5–18 Oct 2026 to change trolley rail"}]},
+      {id:"20F", gates:"Gate 33, 34", vessels:[
+        {n:"XIN MING ZHOU 98", loa:564, eta:"04/09", pb:"04/09", etd:"05/09"},
+        {n:"KMTC TOKYO", loa:565, eta:"06/14", pb:"06/14", etd:"08/12"}]},
+      {id:"22A", gates:"", vessels:[]},
+      {id:"22B", gates:"", vessels:[]},
+      {id:"22D", gates:"", vessels:[]},
+      {id:"22E", gates:"", vessels:[]},
+    ]
+  },
+  "2026-10-05": {
+    label: "05/10/2026",
+    sheetNow: "05/0900",
+    berths: [
+      {id:"20AB", gates:"Gate 29, 30", vessels:[
+        {n:"ZHONG GU BEI HAI", loa:561, eta:"04/09", pb:"04/15", etd:"06/11"},
+        {n:"KMTC TOKYO", loa:565, eta:"06/13", pb:"06/13", etd:"08/12"},
+        {n:"GREEN PARK", loa:482, eta:"07/11", pb:"08/15", etd:"09/14", mark:true}]},
+      {id:"20B", gates:"Gate 27, 28", vessels:[
+        {n:"YM IMPROVEMENT", loa:564, eta:"03/23", pb:"04/10", etd:"05/12"},
+        {n:"SAWASDEE SPICA", loa:564, eta:"05/21", pb:"06/13", etd:"08/13"}]},
+      {id:"20C", gates:"Gate 21, 22", vessels:[
+        {n:"SAWASDEE DENEB", loa:564, eta:"04/24", pb:"05/12", etd:"07/12"},
+        {n:"SAWASDEE ATLANTIC", loa:564, eta:"07/22", pb:"08/15", etd:"10/13"}]},
+      {id:"20D", gates:"Gate 23, 24", vessels:[
+        {n:"JOSCO LUCKY", loa:564, eta:"06/18", pb:"06/18", etd:"07/15"},
+        {n:"MTT BANGKOK", loa:564, eta:"07/15", pb:"07/17", etd:"09/13", mark:true}],
+        restrict:[{kind:"closed", from:"04/00", to:"24/24", label:"Closed 4–24 Oct · electric channel renovation", text:"Berth closed 4–24 Oct 2026 to renovate electric channel (vessels are nevertheless booked from 6 Oct on this sheet)"}]},
+      {id:"20E", gates:"Gate 25, 26", vessels:[
+        {n:"WAN HAI 278", loa:564, eta:"02/18", pb:"03/10", etd:"05/11"}],
+        restrict:[{kind:"partial", from:"05/00", to:"18/24", label:"G.25 stopped · trolley rail change (to 18 Oct)", text:"G.25 stops working 5–18 Oct 2026 to change trolley rail"}]},
+      {id:"20F", gates:"Gate 33, 34", vessels:[
+        {n:"XIN AN", loa:564, eta:"07/14", pb:"07/17", etd:"09/13", mark:true}]},
+      {id:"22A", gates:"", vessels:[]},
+      {id:"22B", gates:"", vessels:[]},
+      {id:"22D", gates:"", vessels:[]},
+      {id:"22F", gates:"", vessels:[]},
+      {id:"22E", gates:"", vessels:[]},
+      {id:"20G", gates:"", vessels:[]},
+    ]
+  },
+  "2026-10-06": {
+    label: "06/10/2026",
+    sheetNow: "06/0900",
+    berths: [
+      {id:"20AB", gates:"Gate 29, 30", vessels:[
+        {n:"ZHONG GU BEI HAI", loa:561, eta:"04/09", pb:"04/15", etd:"06/11"},
+        {n:"KMTC TOKYO", loa:565, eta:"06/13", pb:"06/13", etd:"08/12"},
+        {n:"SITC HOCHIMINH", loa:470, eta:"07/19", pb:"08/14", etd:"09/17"},
+        {n:"YM INCEPTION", loa:564, eta:"08/13", pb:"09/15", etd:"10/16"}]},
+      {id:"20B", gates:"Gate 27, 28", vessels:[
+        {n:"SAWASDEE SPICA", loa:564, eta:"05/21", pb:"06/13", etd:"08/13"},
+        {n:"GREEN PARK", loa:482, eta:"07/11", pb:"08/15", etd:"09/14"},
+        {n:"HE JIN", loa:552, eta:"07/21", pb:"09/15", etd:"10/15"}]},
+      {id:"20C", gates:"Gate 21, 22", vessels:[
+        {n:"SAWASDEE DENEB", loa:564, eta:"04/24", pb:"05/12", etd:"07/11"},
+        {n:"JOSCO LUCKY", loa:564, eta:"06/21", pb:"07/13", etd:"08/12"},
+        {n:"ZHONG GU DONG HAI", loa:564, eta:"07/16", pb:"08/14", etd:"09/14"},
+        {n:"SAWASDEE ATLANTIC", loa:564, eta:"07/22", pb:"09/15", etd:"11/03"}]},
+      {id:"20D", gates:"Gate 23, 24", vessels:[
+        {n:"MTT BANGKOK", loa:564, eta:"07/12", pb:"07/14", etd:"09/13"},
+        {n:"KANWAY FORTUNE", loa:564, eta:"08/18", pb:"09/15", etd:"11/03"}],
+        restrict:[{kind:"closed", from:"04/00", to:"24/24", label:"Closed 4–24 Oct · electric channel renovation", text:"Berth closed 4–24 Oct 2026 to renovate electric channel (vessels are nevertheless booked from 7 Oct on this sheet)"}]},
+      {id:"20E", gates:"Gate 25, 26", vessels:[],
+        restrict:[{kind:"partial", from:"05/00", to:"18/24", label:"G.25 stopped · trolley rail change (to 18 Oct)", text:"G.25 stops working 5–18 Oct 2026 to change trolley rail"}]},
+      {id:"20F", gates:"Gate 33, 34", vessels:[
+        {n:"XIN AN", loa:564, eta:"07/13", pb:"07/14", etd:"09/13"}]},
+      {id:"22A", gates:"", vessels:[]},
+      {id:"22B", gates:"", vessels:[]},
+      {id:"22C", gates:"", vessels:[]},
+      {id:"22D", gates:"", vessels:[]},
+    ]
+  },
+  "2026-10-07": {
+    label: "07/10/2026",
+    sheetNow: "07/0900",
+    berths: [
+      {id:"20AB", gates:"Gate 29, 30", vessels:[
+        {n:"KMTC TOKYO", loa:565, eta:"06/13", pb:"06/13", etd:"08/12"},
+        {n:"GREEN PARK", loa:482, eta:"07/11", pb:"08/13", etd:"09/14"},
+        {n:"HE JIN", loa:552, eta:"07/20", pb:"09/15", etd:"10/15"},
+        {n:"CNC MARS", loa:564, eta:"09/10", pb:"10/14", etd:"12/04"}]},
+      {id:"20B", gates:"Gate 27, 28", vessels:[
+        {n:"SAWASDEE SPICA", loa:564, eta:"05/21", pb:"06/13", etd:"08/13"},
+        {n:"SITC HOCHIMINH", loa:470, eta:"07/18", pb:"08/14", etd:"09/17"},
+        {n:"INDURO", loa:565, eta:"09/09", pb:"09/15", etd:"11/03"},
+        {n:"CUL HAIPHONG", loa:458, eta:"09/18", pb:"11/05", etd:"12/05", shift:"4A"}]},
+      {id:"20C", gates:"Gate 21, 22", vessels:[
+        {n:"SAWASDEE DENEB", loa:564, eta:"04/24", pb:"05/12", etd:"07/11"},
+        {n:"JOSCO LUCKY", loa:564, eta:"06/21", pb:"07/13", etd:"08/13"},
+        {n:"ZHONG GU DONG HAI", loa:564, eta:"07/13", pb:"08/14", etd:"09/14"},
+        {n:"YM INCEPTION", loa:564, eta:"08/13", pb:"09/13", etd:"11/01"}]},
+      {id:"20D", gates:"Gate 23, 24", vessels:[
+        {n:"MTT BANGKOK", loa:564, eta:"07/12", pb:"07/14", etd:"09/13"},
+        {n:"SAWASDEE ATLANTIC", loa:564, eta:"07/22", pb:"09/15", etd:"11/03"}],
+        restrict:[{kind:"closed", from:"04/00", to:"24/24", label:"Closed 4–24 Oct · electric channel renovation", text:"Berth closed 4–24 Oct 2026 to renovate electric channel (vessels are nevertheless booked from 7 Oct on this sheet)"}]},
+      {id:"20E", gates:"Gate 25, 26", vessels:[],
+        restrict:[{kind:"partial", from:"05/00", to:"18/24", label:"G.25 stopped · trolley rail change (to 18 Oct)", text:"G.25 stops working 5–18 Oct 2026 to change trolley rail"}]},
+      {id:"20F", gates:"Gate 33, 34", vessels:[
+        {n:"XIN AN", loa:564, eta:"07/13", pb:"07/14", etd:"09/13"},
+        {n:"KANWAY FORTUNE", loa:564, eta:"08/18", pb:"09/14", etd:"10/15"},
+        {n:"XIN MING ZHOU 102", loa:564, eta:"09/13", pb:"10/14", etd:"11/03"}]},
+      {id:"22A", gates:"", vessels:[]},
+      {id:"22B", gates:"", vessels:[]},
+      {id:"22C", gates:"", vessels:[]},
+      {id:"22D", gates:"", vessels:[]},
+    ]
+  },
+  "2026-10-08": {
+    label: "08/10/2026",
+    sheetNow: "08/0900",
+    berths: [
+      {id:"20AB", gates:"Gate 29, 30", vessels:[
+        {n:"KMTC TOKYO", loa:565, eta:"06/13", pb:"06/13", etd:"08/12"},
+        {n:"GREEN PARK", loa:482, eta:"07/10", pb:"08/13", etd:"09/14"},
+        {n:"KANWAY FORTUNE", loa:564, eta:"08/18", pb:"09/14", etd:"10/15"},
+        {n:"CNC MARS", loa:564, eta:"09/22", pb:"10/15", etd:"11/15"}]},
+      {id:"20B", gates:"Gate 27, 28", vessels:[
+        {n:"SAWASDEE SPICA", loa:564, eta:"05/21", pb:"06/13", etd:"08/13"},
+        {n:"SITC HOCHIMINH", loa:470, eta:"07/15", pb:"08/14", etd:"09/17"},
+        {n:"INDURO", loa:565, eta:"09/09", pb:"09/16", etd:"11/14"}]},
+      {id:"20C", gates:"Gate 21, 22", vessels:[
+        {n:"JOSCO LUCKY", loa:564, eta:"06/21", pb:"07/13", etd:"08/13"},
+        {n:"ZHONG GU DONG HAI", loa:564, eta:"07/14", pb:"08/14", etd:"09/14"},
+        {n:"YM INCEPTION", loa:564, eta:"08/13", pb:"09/13", etd:"11/01"},
+        {n:"STARSHIP AQUILA", loa:565, eta:"09/22", pb:"11/04", etd:"12/13"}]},
+      {id:"20D", gates:"Gate 23, 24", vessels:[
+        {n:"MTT BANGKOK", loa:564, eta:"07/13", pb:"07/14", etd:"09/02"},
+        {n:"HE JIN", loa:552, eta:"09/02", pb:"09/02", etd:"10/13"},
+        {n:"CUL HAIPHONG", loa:458, eta:"09/20", pb:"10/16", etd:"11/06", shift:"4A"},
+        {n:"INCEDA", loa:564, eta:"10/17", pb:"11/05", etd:"12/14"}],
+        restrict:[{kind:"closed", from:"04/00", to:"24/24", label:"Closed 4–24 Oct · electric channel renovation", text:"Berth closed 4–24 Oct 2026 to renovate electric channel (MTT BANGKOK has nevertheless been alongside since 7 Oct on this sheet)"}]},
+      {id:"20E", gates:"Gate 25, 26", vessels:[],
+        restrict:[{kind:"partial", from:"05/00", to:"18/24", label:"G.25 stopped · trolley rail change (to 18 Oct)", text:"G.25 stops working 5–18 Oct 2026 to change trolley rail"}]},
+      {id:"20F", gates:"Gate 33, 34", vessels:[
+        {n:"XIN AN", loa:564, eta:"07/13", pb:"07/14", etd:"09/13"},
+        {n:"SAWASDEE ATLANTIC", loa:564, eta:"07/20", pb:"09/15", etd:"11/03"},
+        {n:"XIN MING ZHOU 102", loa:564, eta:"10/21", pb:"11/05", etd:"12/02"}]},
+      {id:"22A", gates:"", vessels:[
+        {n:"HE JIN", loa:552, eta:"07/19", pb:"08/16", etd:"09/02", shift:"20D"}]},
+      {id:"22B", gates:"", vessels:[]},
+      {id:"22C", gates:"", vessels:[]},
+      {id:"22D", gates:"", vessels:[]},
+    ]
+  },
+  "2026-10-09": {
+    label: "09/10/2026",
+    sheetNow: "09/0900",
+    berths: [
+      {id:"20AB", gates:"Gate 29, 30", vessels:[
+        {n:"GREEN PARK", loa:482, eta:"07/10", pb:"08/14", etd:"09/16"},
+        {n:"KANWAY FORTUNE", loa:564, eta:"08/16", pb:"09/14", etd:"10/15"},
+        {n:"CNC MARS", loa:564, eta:"09/22", pb:"10/15", etd:"11/15"},
+        {n:"SAMAL", loa:564, eta:"12/04", pb:"12/05", etd:"13/14"}]},
+      {id:"20B", gates:"Gate 27, 28", vessels:[
+        {n:"SITC HOCHIMINH", loa:470, eta:"07/15", pb:"08/14", etd:"09/17"},
+        {n:"INDURO", loa:565, eta:"09/06", pb:"09/16", etd:"11/14"},
+        {n:"JOSCO SHINE", loa:564, eta:"11/17", pb:"11/17", etd:"12/14"}]},
+      {id:"20C", gates:"Gate 21, 22", vessels:[
+        {n:"ZHONG GU DONG HAI", loa:564, eta:"07/14", pb:"08/14", etd:"09/14"},
+        {n:"YM INCEPTION", loa:564, eta:"08/13", pb:"09/13", etd:"10/16"},
+        {n:"STARSHIP AQUILA", loa:565, eta:"09/22", pb:"10/16", etd:"12/05"},
+        {n:"ALS SUMIRE", loa:537, eta:"12/18", pb:"12/18", etd:"14/05", shift:"1C"}]},
+      {id:"20D", gates:"Gate 23, 24", vessels:[
+        {n:"HE JIN", loa:552, eta:"08/24", pb:"08/24", etd:"10/13"},
+        {n:"CUL HAIPHONG", loa:458, eta:"09/20", pb:"10/16", etd:"11/06", shift:"4A"},
+        {n:"INCEDA", loa:564, eta:"10/17", pb:"11/05", etd:"12/14"},
+        {n:"KMTC TAIPEIS", loa:565, eta:"12/23", pb:"13/05", etd:"14/15"}],
+        restrict:[{kind:"closed", from:"04/00", to:"24/24", label:"Closed 4–24 Oct · electric channel renovation", text:"Berth closed 4–24 Oct 2026 to renovate electric channel (HE JIN has nevertheless shifted in to 20D on this sheet)"}]},
+      {id:"20E", gates:"Gate 25, 26", vessels:[],
+        restrict:[{kind:"partial", from:"05/00", to:"18/24", label:"G.25 stopped · trolley rail change (to 18 Oct)", text:"G.25 stops working 5–18 Oct 2026 to change trolley rail"}]},
+      {id:"20F", gates:"Gate 33, 34", vessels:[
+        {n:"XIN AN", loa:564, eta:"07/13", pb:"07/14", etd:"09/13"},
+        {n:"SAWASDEE ATLANTIC", loa:564, eta:"07/20", pb:"09/15", etd:"11/03"},
+        {n:"XIN MING ZHOU 102", loa:564, eta:"10/21", pb:"11/05", etd:"12/02"},
+        {n:"SAWASDEE SUNRISE", loa:564, eta:"12/05", pb:"12/05", etd:"13/15"}]},
+      {id:"22A", gates:"", vessels:[]},
+      {id:"22B", gates:"", vessels:[]},
+      {id:"22C", gates:"", vessels:[]},
+      {id:"22D", gates:"", vessels:[]},
+    ]
+  },
+  "2026-10-10": {
+    label: "10/10/2026",
+    sheetNow: "10/0900",
+    berths: [
+      {id:"20AB", gates:"Gate 29, 30", vessels:[
+        {n:"KANWAY FORTUNE", loa:564, eta:"08/16", pb:"09/14", etd:"10/15"},
+        {n:"CNC MARS", loa:564, eta:"09/22", pb:"10/15", etd:"11/15"},
+        {n:"JOSCO SHINE", loa:564, eta:"12/13", pb:"12/16", etd:"13/14"},
+        {n:"KHUNA BHUM", loa:564, eta:"13/07", pb:"13/13", etd:"14/07", shift:"7B"}]},
+      {id:"20B", gates:"Gate 27, 28", vessels:[
+        {n:"INDURO", loa:565, eta:"09/06", pb:"09/16", etd:"11/04"},
+        {n:"XIN MING ZHOU 102", loa:564, eta:"10/21", pb:"11/05", etd:"12/02", mark:true},
+        {n:"ALS SUMIRE", loa:537, eta:"12/22", pb:"13/06", etd:"14/06", shift:"1C", mark:true}]},
+      {id:"20C", gates:"Gate 21, 22", vessels:[
+        {n:"YM INCEPTION", loa:564, eta:"08/13", pb:"09/13", etd:"10/14", mark:true},
+        {n:"STARSHIP AQUILA", loa:565, eta:"09/22", pb:"10/14", etd:"12/02", mark:true},
+        {n:"KMTC TAIPEIS", loa:565, eta:"12/23", pb:"13/05", etd:"14/15"}]},
+      {id:"20D", gates:"Gate 23, 24", vessels:[
+        {n:"HE JIN", loa:552, eta:"08/24", pb:"08/24", etd:"10/13"},
+        {n:"CUL HAIPHONG", loa:458, eta:"09/20", pb:"10/16", etd:"11/06", shift:"4A"},
+        {n:"INCEDA", loa:564, eta:"10/17", pb:"11/05", etd:"12/14"},
+        {n:"SAWASDEE SUNRISE", loa:564, eta:"12/09", pb:"12/16", etd:"14/05"}],
+        restrict:[{kind:"closed", from:"04/00", to:"24/24", label:"Closed 4–24 Oct · electric channel renovation", text:"Berth closed 4–24 Oct 2026 to renovate electric channel (HE JIN is nevertheless alongside at 20D on this sheet)"}]},
+      {id:"20E", gates:"Gate 25, 26", vessels:[],
+        restrict:[{kind:"partial", from:"05/00", to:"18/24", label:"G.25 stopped · trolley rail change (to 18 Oct)", text:"G.25 stops working 5–18 Oct 2026 to change trolley rail"}]},
+      {id:"20F", gates:"Gate 33, 34", vessels:[
+        {n:"SAWASDEE ATLANTIC", loa:564, eta:"07/20", pb:"09/15", etd:"11/13"},
+        {n:"SAMAL", loa:564, eta:"12/01", pb:"12/06", etd:"13/14", mark:true},
+        {n:"WAN HAI 277", loa:564, eta:"13/04", pb:"13/16", etd:"15/05", mark:true}]},
+      {id:"22A", gates:"", vessels:[]},
+      {id:"22B", gates:"", vessels:[]},
+      {id:"22C", gates:"", vessels:[]},
+      {id:"22D", gates:"", vessels:[]},
+    ]
+  },
+  "2026-10-11": {
+    label: "11/10/2026",
+    sheetNow: "11/0900",
+    berths: [
+      {id:"20AB", gates:"Gate 29, 30", vessels:[
+        {n:"CNC MARS", loa:564, eta:"09/22", pb:"10/15", etd:"11/15"},
+        {n:"SAMAL", loa:564, eta:"12/09", pb:"12/16", etd:"14/05"},
+        {n:"CEBU", loa:564, eta:"12/24", pb:"14/06", etd:"15/16", mark:true}]},
+      {id:"20B", gates:"Gate 27, 28", vessels:[
+        {n:"XIN MING ZHOU 102", loa:564, eta:"10/21", pb:"11/05", etd:"12/02"},
+        {n:"WAN HAI 277", loa:564, eta:"12/23", pb:"13/06", etd:"14/15", mark:true}]},
+      {id:"20C", gates:"Gate 21, 22", vessels:[
+        {n:"STARSHIP AQUILA", loa:565, eta:"09/22", pb:"10/14", etd:"12/02"},
+        {n:"KMTC TAIPEIS", loa:565, eta:"13/01", pb:"13/05", etd:"14/15"}]},
+      {id:"20D", gates:"Gate 23, 24", vessels:[
+        {n:"INCEDA", loa:564, eta:"10/17", pb:"11/06", etd:"12/14"},
+        {n:"SAWASDEE SUNRISE", loa:564, eta:"12/09", pb:"12/16", etd:"14/05"},
+        {n:"KHUNA BHUM", loa:564, eta:"13/07", pb:"14/05", etd:"14/22", shift:"7B", mark:true}],
+        restrict:[{kind:"closed", from:"04/00", to:"24/24", label:"Closed 4–24 Oct · electric channel renovation", text:"Berth closed 4–24 Oct 2026 to renovate electric channel (INCEDA is nevertheless alongside at 20D on this sheet)"}]},
+      {id:"20E", gates:"Gate 25, 26", vessels:[],
+        restrict:[{kind:"partial", from:"05/00", to:"18/24", label:"G.25 stopped · trolley rail change (to 18 Oct)", text:"G.25 stops working 5–18 Oct 2026 to change trolley rail"}]},
+      {id:"20F", gates:"Gate 33, 34", vessels:[
+        {n:"SAWASDEE ATLANTIC", loa:564, eta:"07/20", pb:"09/15", etd:"11/12"},
+        {n:"JOSCO SHINE", loa:564, eta:"12/09", pb:"12/15", etd:"13/06", mark:true},
+        {n:"ALS SUMIRE", loa:537, eta:"12/22", pb:"13/06", etd:"14/06", shift:"1C"}]},
+      {id:"22A", gates:"", vessels:[]},
+      {id:"22B", gates:"", vessels:[]},
+      {id:"22D", gates:"", vessels:[]},
+      {id:"22E", gates:"", vessels:[]},
+    ]
+  },
+  "2026-10-12": {
+    label: "12/10/2026",
+    sheetNow: "12/0900",
+    berths: [
+      {id:"20AB", gates:"Gate 29, 30", vessels:[
+        {n:"SAMAL", loa:564, eta:"12/08", pb:"12/16", etd:"14/05"},
+        {n:"KMTC TAIPEIS", loa:565, eta:"13/01", pb:"14/05", etd:"15/15"}]},
+      {id:"20B", gates:"Gate 27, 28", vessels:[
+        {n:"CEBU", loa:564, eta:"12/22", pb:"13/06", etd:"14/16"},
+        {n:"WAN HAI 173", loa:565, eta:"14/08", pb:"14/16", etd:"15/07"}]},
+      {id:"20C", gates:"Gate 21, 22", vessels:[
+        {n:"WAN HAI 277", loa:564, eta:"12/21", pb:"13/06", etd:"14/15"},
+        {n:"M ODYSSEY", loa:449, eta:"14/03", pb:"14/14", etd:"15/05", shift:"4A"}]},
+      {id:"20D", gates:"Gate 23, 24", vessels:[
+        {n:"INCEDA", loa:564, eta:"10/17", pb:"11/06", etd:"12/14"},
+        {n:"SAWASDEE SUNRISE", loa:564, eta:"12/04", pb:"12/16", etd:"14/05"},
+        {n:"KHUNA BHUM", loa:564, eta:"13/07", pb:"14/05", etd:"14/22", shift:"7B"}],
+        restrict:[{kind:"closed", from:"04/00", to:"24/24", label:"Closed 4–24 Oct · electric channel renovation", text:"Berth closed 4–24 Oct 2026 to renovate electric channel (INCEDA is nevertheless alongside at 20D on this sheet)"}]},
+      {id:"20E", gates:"Gate 25, 26", vessels:[],
+        restrict:[{kind:"partial", from:"05/00", to:"18/24", label:"G.25 stopped · trolley rail change (to 18 Oct)", text:"G.25 stops working 5–18 Oct 2026 to change trolley rail"}]},
+      {id:"20F", gates:"Gate 33, 34", vessels:[
+        {n:"JOSCO SHINE", loa:564, eta:"12/11", pb:"12/15", etd:"13/06"},
+        {n:"ALS SUMIRE", loa:537, eta:"12/22", pb:"13/06", etd:"14/06", shift:"1C"},
+        {n:"SAWASDEE INCHEON", loa:564, eta:"13/15", pb:"14/06", etd:"15/15"}]},
+      {id:"22A", gates:"", vessels:[]},
+      {id:"22B", gates:"", vessels:[]},
+      {id:"22D", gates:"", vessels:[]},
+      {id:"22F", gates:"", vessels:[]},
+      {id:"22E", gates:"", vessels:[]},
+      {id:"20G", gates:"", vessels:[]},
+    ]
+  },
+};
+const DAY_ORDER = ["2026-09-28","2026-09-29","2026-09-30","2026-10-01","2026-10-02","2026-10-03","2026-10-04","2026-10-05","2026-10-06","2026-10-07","2026-10-08","2026-10-09","2026-10-10","2026-10-11","2026-10-12"]; // oldest -> latest
+const LATEST_KEY = DAY_ORDER[DAY_ORDER.length-1];
+
+const H = 3600e3, DAY_MS = 24*H;
+const DATA_START = Date.UTC(2026,8,27,-7);          // first day covered by the oldest sheet (27 Sep, UTC+7)
+let START = DATA_START, END = DATA_START + 3*DAY_MS, DAYS = 3;   // reset on every render: first ETA -> last ETD
+const DOW=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+
+// DD/HH -> ms. Days 27-31 = September, 01-26 = October 2026. Local UTC+7.
+function t(s){const [d,h]=s.split("/").map(Number);const m=d>=27?8:9;return Date.UTC(2026,m,d,h-7);}
+// DD/HHMM -> ms, for a sheet's fixed "now" fallback.
+function tFull(s){const [d,hm]=s.split("/");const h=Number(hm.slice(0,2)),mi=Number(hm.slice(2));const m=Number(d)>=27?8:9;return Date.UTC(2026,m,Number(d),h-7,mi);}
+const pct=ms=>((ms-START)/(END-START)*100);
+const fmt=ms=>{const d=new Date(ms+7*H);const dd=String(d.getUTCDate()).padStart(2,"0");const mo=d.getUTCMonth()===8?"Sep":"Oct";return `${dd} ${mo} ${String(d.getUTCHours()).padStart(2,"0")}:00`;};
+const dayFloor=ms=>Math.floor((ms+7*H)/DAY_MS)*DAY_MS-7*H;   // local midnight
+
+function statusFor(now){
+  return v=>{
+    const a=t(v.eta),p=t(v.pb),e=t(v.etd);
+    if(now>=e) return ["done","Sailed","p-done"];
+    if(now>=p) return ["along","Alongside","p-along"];
+    if(now>=a) return ["anch","At anchorage","p-anch"];
+    return ["exp","Expected","p-exp"];
+  };
+}
+
+const BERTH_ORDER=["20AB","20B","20C","20D","20E","20F","22A","22B","22C","22D","22E","22F","20G"];
+const berthIdx=id=>{const i=BERTH_ORDER.indexOf(id);return i<0?99:i;};
+
+// Combine one or more sheets: each vessel is shown as on the LAST sheet (in the range) that lists it.
+function merge(keys){
+  const lastSeen={};
+  keys.forEach((k,i)=>DATASETS[k].berths.forEach(b=>b.vessels.forEach(v=>{lastSeen[v.n]=i;})));
+  const berths={};
+  keys.forEach((k,i)=>DATASETS[k].berths.forEach(b=>{
+    const e=berths[b.id]||(berths[b.id]={id:b.id,gates:"",vessels:[],restrict:[],restrictFrom:-1});
+    if(b.gates) e.gates=b.gates;
+    if(i>=e.restrictFrom){e.restrictFrom=i;e.restrict=b.restrict||[];}
+    b.vessels.forEach(v=>{if(lastSeen[v.n]===i) e.vessels.push(v);});
+  }));
+  const inLast=new Set(DATASETS[keys[keys.length-1]].berths.map(b=>b.id));
+  return Object.values(berths)
+    .filter(b=>inLast.has(b.id)||b.vessels.length||b.restrict.length)
+    .sort((a,b)=>berthIdx(a.id)-berthIdx(b.id))
+    .map(b=>({...b,vessels:b.vessels.slice().sort((x,y)=>t(x.pb)-t(y.pb))}));
+}
+
+function render(keys){
+  const lastKey = keys[keys.length-1];
+  const ds = DATASETS[lastKey];
+  const isLatest = lastKey === LATEST_KEY;
+  const BERTHS = merge(keys);
+
+  // timeline spans the first ETA to the last ETD of the vessels shown, rounded out to whole days
+  const vs = BERTHS.flatMap(b=>b.vessels);
+  let minEta = Infinity, maxEtd = -Infinity;
+  vs.forEach(v=>{minEta=Math.min(minEta,t(v.eta));maxEtd=Math.max(maxEtd,t(v.etd));});
+  if(!vs.length){minEta=tFull(ds.sheetNow);maxEtd=minEta;}
+  START = dayFloor(minEta);
+  END = dayFloor(maxEtd) + DAY_MS;
+  if(END-START < 3*DAY_MS) END = START + 3*DAY_MS;
+  DAYS = Math.round((END-START)/DAY_MS);
+
+  let now = Date.now();
+  if(!isLatest || now<START || now>END) now = tFull(ds.sheetNow);
+  const status = statusFor(now);
+  const todayIdx=Math.floor((now-START)/(24*H));
+
+  document.getElementById("windowLabel").textContent = vs.length ? fmt(minEta)+" → "+fmt(maxEtd) : "no vessels";
+  document.getElementById("dayBadge").innerHTML = keys.length>1
+    ? '<span class="badge-range">'+keys.length+' sheets</span>'
+    : (isLatest ? '<span class="badge-latest">Latest</span>' : '<span class="badge-hist">Historical</span>');
+
+  // Gantt
+  const g=document.getElementById("gantt");
+  g.style.minWidth = Math.max(900, 150+DAYS*86)+"px";
+  let html=`<div class="g-row axis"><div class="g-label"><span class="gt">Berth / Gate</span></div><div class="g-track">`;
+  for(let i=0;i<DAYS;i++){
+    const ms=START+i*24*H, d=new Date(ms+7*H);
+    html+=`<div class="day${i%2?" alt":""}${i===todayIdx?" today":""}" style="left:${i/DAYS*100}%;width:${100/DAYS}%"><div class="dlab">${String(d.getUTCDate()).padStart(2,"0")} ${d.getUTCMonth()===8?"Sep":"Oct"}<small>${DOW[d.getUTCDay()]}</small></div></div>`;
+    [6,12,18].forEach(h=>html+=`<span class="hr" style="left:${(i*24+h)/(DAYS*24)*100}%">${String(h).padStart(2,"0")}</span>`);
+  }
+  html+=`</div></div>`;
+  const grid=()=>{let s="";for(let i=0;i<DAYS;i++){s+=`<div class="day${i%2?" alt":""}${i===todayIdx?" today":""}" style="left:${i/DAYS*100}%;width:${100/DAYS}%"></div>`;[6,12,18].forEach(h=>s+=`<div class="tick" style="left:${(i*24+h)/(DAYS*24)*100}%"></div>`);}return s;};
+  BERTHS.forEach(b=>{
+    const empty=!b.vessels.length;
+    html+=`<div class="g-row${empty?" empty":""}"><div class="g-label"><span class="bn">${b.id}</span>${b.gates?`<span class="gt">${b.gates}</span>`:""}</div><div class="g-track">${grid()}`;
+    (b.restrict||[]).forEach(r=>{
+      const l=Math.max(0,pct(t(r.from))), rr=Math.min(100,pct(t(r.to)));
+      if(rr<=l) return;
+      html+=`<div class="rs ${r.kind}" style="left:${l}%;width:${rr-l}%" title="${r.text}"><span>${r.label}</span></div>`;
+    });
+    if(empty) html+=`<div class="note">No vessel scheduled</div>`;
+    b.vessels.forEach(v=>{
+      const a=t(v.eta),p=t(v.pb),e=t(v.etd),[st]=status(v);
+      if(p>a) html+=`<div class="wait" style="left:${pct(a)}%;width:${pct(p)-pct(a)}%" title="${v.n} waiting ${(p-a)/H} h"></div>`;
+      const tip=`${v.n} · LOA ${v.loa} m\nETA ${fmt(a)}\nP.B ${fmt(p)}\nETD ${fmt(e)}${v.shift?"\nShift "+v.shift:""}`;
+      html+=`<div class="bar${st==="done"?" done":""}${v.mark?" marked":""}" tabindex="0" style="left:${pct(p)}%;width:calc(${pct(e)-pct(p)}% - 4px);margin-left:2px" title="${tip}"><span class="nm">${v.n}</span><span class="tm">${v.pb}→${v.etd}${v.shift?" · "+v.shift:""}</span></div>`;
+    });
+    html+=`</div></div>`;
+  });
+  g.innerHTML=html;
+  if(now>=START && now<=END){
+    const nl=document.createElement("div");
+    nl.className="nowline";
+    nl.style.left=`calc(150px + (100% - 150px) * ${pct(now)/100})`;
+    g.appendChild(nl);
+    const tag=document.createElement("div");
+    tag.className="nowtag";tag.style.left=nl.style.left;
+    const nd=new Date(now+7*H);
+    tag.textContent=`NOW ${String(nd.getUTCDate()).padStart(2,"0")}/${String(nd.getUTCHours()).padStart(2,"0")}:${String(nd.getUTCMinutes()).padStart(2,"0")}`;
+    g.appendChild(tag);
+  }
+
+  // Table
+  let tb="";
+  BERTHS.forEach(b=>{
+    if(!b.vessels.length) return;
+    tb+=`<tr class="grp"><td colspan="8">Berth ${b.id}<span>${b.gates}</span></td></tr>`;
+    b.vessels.forEach(v=>{
+      const [,lab,cls]=status(v);
+      const hrs=(t(v.etd)-t(v.pb))/H;
+      tb+=`<tr class="${v.mark?"marked":""}"><td class="vs">${v.n}${v.mark?'<span class="flag" title="Marked on sheet"></span>':""}</td><td class="num">${v.loa}</td><td class="num">${fmt(t(v.eta))}</td><td class="num">${fmt(t(v.pb))}</td><td class="num">${fmt(t(v.etd))}</td><td class="num">${hrs} h</td><td class="num">${v.shift||"–"}</td><td><span class="pill ${cls}">${lab}</span></td></tr>`;
+    });
+  });
+  document.getElementById("tbody").innerHTML=tb;
+
+  // Notices
+  const pd=s=>{const ms=t(s);return fmt(ms).slice(0,6)};
+  const cards=BERTHS.flatMap(b=>(b.restrict||[]).map(r=>{
+    const endMs=t(r.to)-1;
+    const untilFrom = t(r.from) <= DATA_START;
+    const per = r.when ? r.when : untilFrom ? "Until "+pd(r.to) : pd(r.from)+" – "+pd(fmt(endMs).slice(0,2)+"/00");
+    const closed = r.kind==="closed";
+    return `<div class="ncard${closed?" closed":""}"><div class="top"><span class="bn">${b.id}</span><span class="pill ${closed?"p-closed":"p-anch"}">${closed?"Berth closed":"Gate stopped"}</span></div><div class="per">${per}</div><div class="txt">${r.text}</div></div>`;
+  })).join("");
+  document.getElementById("notices").innerHTML = cards || `<div class="nempty">No berth or gate notices on this sheet</div>`;
+
+  // Summary
+  const all=BERTHS.flatMap(b=>b.vessels.map(v=>({...v,berth:b.id,st:status(v)[0]})));
+  const along=all.filter(v=>v.st==="along"), anch=all.filter(v=>v.st==="anch");
+  const nextSail=all.filter(v=>v.st!=="done").sort((x,y)=>t(x.etd)-t(y.etd))[0];
+  const nextIn=all.filter(v=>v.st==="exp"||v.st==="anch").sort((x,y)=>t(x.pb)-t(y.pb))[0];
+  const nNotices=BERTHS.reduce((a,b)=>a+(b.restrict||[]).length,0);
+  document.getElementById("summary").innerHTML=`
+    <div class="tile t-ok"><span class="k">Alongside now</span><span class="v">${along.length}</span><span class="s">${along.map(v=>v.berth).join(" · ")||"–"}</span></div>
+    <div class="tile t-warn"><span class="k">At anchorage</span><span class="v">${anch.length}</span><span class="s">${anch.map(v=>v.n).join(", ")||"None waiting"}</span></div>
+    <div class="tile"><span class="k">Next berthing</span><span class="v">${nextIn?nextIn.pb:"–"}</span><span class="s">${nextIn?`${nextIn.n} → ${nextIn.berth}`:""}</span></div>
+    <div class="tile t-mark"><span class="k">Berth notices</span><span class="v">${nNotices}</span><span class="s">${nNotices?"see notices above":"none on this sheet"}</span></div>
+    <div class="tile t-slate"><span class="k">Next sailing</span><span class="v">${nextSail?nextSail.etd:"–"}</span><span class="s">${nextSail?`${nextSail.n} · ${nextSail.berth}`:""}</span></div>`;
+}
+
+// ---- date range picker: a single day (From = To) or several sheets combined ----
+const fromSel = document.getElementById("fromSelect");
+const toSel = document.getElementById("toSelect");
+const prevBtn = document.getElementById("prevDay");
+const nextBtn = document.getElementById("nextDay");
+const allBtn = document.getElementById("allDays");
+const todayBtn = document.getElementById("todayBtn");
+function todayKeyNow(){const d=new Date(Date.now()+7*H);const k=d.getUTCFullYear()+"-"+String(d.getUTCMonth()+1).padStart(2,"0")+"-"+String(d.getUTCDate()).padStart(2,"0");return DATASETS[k]?k:LATEST_KEY;}
+
+[fromSel,toSel].forEach(sel=>DAY_ORDER.forEach(key=>{
+  const opt = document.createElement("option");
+  opt.value = key;
+  opt.textContent = DATASETS[key].label + (key===LATEST_KEY ? " (latest)" : "");
+  sel.appendChild(opt);
+}));
+
+function applyRange(from,to){
+  let i=DAY_ORDER.indexOf(from), j=DAY_ORDER.indexOf(to);
+  if(i<0) i=DAY_ORDER.length-1;
+  if(j<0) j=DAY_ORDER.length-1;
+  if(i>j){const x=i;i=j;j=x;}
+  const f=DAY_ORDER[i], tt=DAY_ORDER[j];
+  fromSel.value=f; toSel.value=tt;
+  prevBtn.disabled = i<=0;
+  nextBtn.disabled = j>=DAY_ORDER.length-1;
+  allBtn.classList.toggle("on", i===0 && j===DAY_ORDER.length-1);
+  todayBtn.classList.toggle("on", i===j && DAY_ORDER[i]===todayKeyNow());
+  render(DAY_ORDER.slice(i,j+1));
+  // keep the timeline scrolled to the far right (latest dates) whenever it is drawn
+  (function(){var sc=document.getElementById("gantt").parentElement;sc.scrollLeft=sc.scrollWidth;requestAnimationFrame(function(){sc.scrollLeft=sc.scrollWidth;});})();
+  try{ localStorage.setItem("patBerthRange", JSON.stringify([f,tt])); }catch(e){}
+}
+
+fromSel.addEventListener("change", ()=>{
+  const f=fromSel.value, cur=DAY_ORDER.indexOf(toSel.value);
+  applyRange(f, DAY_ORDER.indexOf(f)>cur ? f : toSel.value);
+});
+toSel.addEventListener("change", ()=>{
+  const tt=toSel.value, cur=DAY_ORDER.indexOf(fromSel.value);
+  applyRange(DAY_ORDER.indexOf(tt)<cur ? tt : fromSel.value, tt);
+});
+prevBtn.addEventListener("click", ()=>{
+  const i=DAY_ORDER.indexOf(fromSel.value), j=DAY_ORDER.indexOf(toSel.value);
+  if(i>0) applyRange(DAY_ORDER[i-1], DAY_ORDER[j-1]);
+});
+nextBtn.addEventListener("click", ()=>{
+  const i=DAY_ORDER.indexOf(fromSel.value), j=DAY_ORDER.indexOf(toSel.value);
+  if(j<DAY_ORDER.length-1) applyRange(DAY_ORDER[i+1], DAY_ORDER[j+1]);
+});
+allBtn.addEventListener("click", ()=>applyRange(DAY_ORDER[0], LATEST_KEY));
+todayBtn.addEventListener("click", ()=>{const k=todayKeyNow();applyRange(k,k);});
+
+let startFrom = LATEST_KEY, startTo = LATEST_KEY;
+try{
+  const saved = JSON.parse(localStorage.getItem("patBerthRange")||"null");
+  if(saved && DATASETS[saved[0]] && DATASETS[saved[1]]){startFrom=saved[0];startTo=saved[1];}
+}catch(e){}
+applyRange(startFrom, startTo);
+</script>
+
+<script>
+// Auto-refresh: GitHub Pages caches pages for up to 10 minutes. Ask the server directly
+// (cache bypassed) whether a newer version was published and reload when it was.
+(function(){
+  if(!/\.github\.io$/.test(location.hostname)) return;
+  var loaded = Date.parse(document.lastModified) || 0;
+  function check(){
+    fetch(location.pathname + "?v=" + Date.now(), {method:"HEAD", cache:"no-store"})
+      .then(function(r){
+        var lm = Date.parse(r.headers.get("last-modified") || "") || 0;
+        if(lm && loaded && lm > loaded + 1000) location.reload();
+      }).catch(function(){});
+  }
+  setInterval(check, 60000);
+  document.addEventListener("visibilitychange", function(){ if(!document.hidden) check(); });
+})();
+</script>
+</body>
+</html>
