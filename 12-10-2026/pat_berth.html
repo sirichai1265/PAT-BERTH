@@ -146,6 +146,17 @@
   .pc-col li .t{font-family:var(--mono);font-size:12px;color:var(--ink-2);min-width:44px}
   .pc-col li .b{font-family:var(--mono);font-size:11.5px;color:var(--ink-3)}
   .pc-col .none{font-size:13px;color:var(--ink-3);font-style:italic}
+  .pc-tip{position:fixed;z-index:80;pointer-events:none;min-width:208px;max-width:280px;padding:10px 12px;border-radius:10px;background:#10293F;color:#fff;box-shadow:0 14px 30px -10px rgba(0,0,0,.55);font-size:12.5px;line-height:1.35}
+  .pc-tip[hidden]{display:none}
+  .pc-tip .tn{font-family:var(--display);font-weight:700;font-size:16px;line-height:1.15}
+  .pc-tip .tb{font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.72);margin:2px 0 8px}
+  .pc-tip .tr{display:grid;grid-template-columns:42px 1fr;gap:2px 8px;font-family:var(--mono);font-size:12px;padding:2px 6px;border-radius:5px;color:rgba(255,255,255,.8)}
+  .pc-tip .tr.hot{background:rgba(255,255,255,.16);color:#fff;font-weight:500}
+  .pc-tip .tr span:first-child{color:rgba(255,255,255,.6)}
+  .pc-tip .tr.hot span:first-child{color:#FFC25A}
+  .pc-tip .tf{font-size:11px;color:rgba(255,255,255,.65);margin-top:6px;font-family:var(--mono)}
+  .pc-col li{flex-wrap:wrap}
+  .pc-col li .x{flex-basis:100%;padding-left:52px;font-family:var(--mono);font-size:11px;color:var(--ink-3)}
   .linkbtn{position:relative;display:inline-flex;align-items:center;gap:8px;font-family:var(--display);font-weight:700;font-size:13.5px;letter-spacing:.04em;color:#2A1600;background:linear-gradient(135deg,#FFC25A 0%,#F28C28 100%);border-radius:999px;padding:8px 16px 8px 10px;text-decoration:none;cursor:pointer;box-shadow:0 8px 22px -8px rgba(242,140,40,.75),0 0 0 3px rgba(255,255,255,.22);transition:transform .15s ease,box-shadow .15s ease;animation:btnpulse 2.6s ease-out infinite}
   .linkbtn .ico{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:rgba(42,22,0,.14)}
   .linkbtn .ico svg{width:14px;height:14px}
@@ -324,6 +335,8 @@
   </section>
 
   </div>
+
+  <div class="pc-tip" id="pcTip" role="tooltip" hidden></div>
 
   <section class="panel off" id="calView" aria-label="Port calendar">
     <div class="panel-head">
@@ -1104,15 +1117,18 @@ const pad2 = n => String(n).padStart(2,"0");
 const dayKeyOf = ms => {const d=new Date(ms+7*H);return d.getUTCFullYear()+"-"+pad2(d.getUTCMonth()+1)+"-"+pad2(d.getUTCDate());};
 const hhmm = ms => pad2(new Date(ms+7*H).getUTCHours())+":"+pad2(new Date(ms+7*H).getUTCMinutes());
 let pcY, pcM, pcSel = null;
+let pcIndex = {}, pcSeq = 0;
+const pcEv = (kind,ms,n,berth,v) => {const e={kind,ms,n,berth,v,id:++pcSeq};pcIndex[e.id]=e;return e;};
 
 function pcData(){
   const ev={}, notes={};
+  pcIndex={};
   const add=(o,k,e)=>{(o[k]||(o[k]=[])).push(e);};
   merge(DAY_ORDER).forEach(b=>{
     b.vessels.forEach(v=>{
       const pb=t(v.pb), etd=t(v.etd);
-      add(ev,dayKeyOf(pb),{kind:"in",ms:pb,n:v.n,berth:b.id});
-      add(ev,dayKeyOf(etd),{kind:"out",ms:etd,n:v.n,berth:b.id});
+      add(ev,dayKeyOf(pb),pcEv("in",pb,v.n,b.id,v));
+      add(ev,dayKeyOf(etd),pcEv("out",etd,v.n,b.id,v));
     });
     (b.restrict||[]).forEach(r=>{
       const a=t(r.from), z=t(r.to)-1;
@@ -1150,7 +1166,7 @@ function renderPageCal(){
     const shown=list.slice(0,4), more=list.length-shown.length;
     const tags=nn.slice(0,2).map(n=>'<span class="pc-tag '+n.kind+'" title="'+n.text+'">'+n.berth+(n.kind==="closed"?" closed":" gate stop")+'</span>').join("")
       +(nn.length>2?'<span class="pc-more">+'+(nn.length-2)+' notices</span>':"");
-    const chips=shown.map(e=>'<span class="pc-ev '+e.kind+(e.ms<nowMs?" past":"")+'" title="'+(e.kind==="in"?"Berthing":"Sailing")+" \u00b7 "+e.berth+'"><b>'+(e.kind==="in"?"\u25B2":"\u25BC")+'</b>'+hhmm(e.ms)+" "+e.n+'</span>').join("");
+    const chips=shown.map(e=>'<span class="pc-ev '+e.kind+(e.ms<nowMs?" past":"")+'" data-eid="'+e.id+'"><b>'+(e.kind==="in"?"\u25B2":"\u25BC")+'</b>'+hhmm(e.ms)+" "+e.n+'</span>').join("");
     html+='<div class="pc-cell'+(k===todayK?" today":"")+(k===pcSel?" sel":"")+'" data-key="'+k+'" tabindex="0" role="button" aria-label="'+d+' '+MONTH_NAMES[pcM]+' '+pcY+': '+list.length+' movements">'
       +'<div class="pc-top"><span class="pc-num">'+d+'</span>'+(DATASETS[k]?'<i class="pc-dot" title="Sheet received"></i>':"")+'</div>'
       +tags+chips+(more>0?'<span class="pc-more">+'+more+' more</span>':"")+'</div>';
@@ -1165,7 +1181,7 @@ function renderPcDetail(k,ev,notes){
   const [y,m,d]=k.split("-").map(Number);
   const dow=FULL_DOW[new Date(Date.UTC(y,m-1,d)).getUTCDay()];
   const list=ev[k]||[], ins=list.filter(e=>e.kind==="in"), outs=list.filter(e=>e.kind==="out"), nn=notes[k]||[];
-  const li=e=>'<li><span class="t">'+hhmm(e.ms)+'</span><b>'+e.n+'</b><span class="b">'+e.berth+'</span></li>';
+  const li=e=>'<li><span class="t">'+hhmm(e.ms)+'</span><b>'+e.n+'</b><span class="b">'+e.berth+'</span><span class="x">ETA '+fmt(t(e.v.eta))+' \u00b7 P.B '+fmt(t(e.v.pb))+' \u00b7 ETD '+fmt(t(e.v.etd))+'</span></li>';
   const col=(title,items,fn)=>'<div class="pc-col"><h4>'+title+' ('+items.length+')</h4>'+(items.length?'<ul>'+items.map(fn).join("")+'</ul>':'<div class="none">None</div>')+'</div>';
   document.getElementById("pcDetail").innerHTML=
     '<div class="pc-dhead"><h3>'+dow+' '+d+' '+MONTH_NAMES[m-1]+' '+y+'</h3>'
@@ -1185,6 +1201,35 @@ function setView(v){
   else requestAnimationFrame(function(){var sc=document.getElementById("gantt").parentElement;sc.scrollLeft=sc.scrollWidth;});
   try{ localStorage.setItem("patBerthView", v); }catch(e){}
 }
+
+// ---- hover tooltip on calendar chips: ETA / P.B / ETD ----
+const pcTip = document.getElementById("pcTip");
+function showPcTip(chip, x, y){
+  const e = pcIndex[chip.dataset.eid];
+  if(!e) return;
+  const v=e.v, a=t(v.eta), p=t(v.pb), d=t(v.etd), hrs=(d-p)/H;
+  pcTip.innerHTML =
+    '<div class="tn">'+v.n+'</div>'
+    +'<div class="tb">'+(e.kind==="in"?"Berthing":"Sailing")+' \u00b7 Berth '+e.berth+' \u00b7 LOA '+v.loa+' m'+(v.shift?' \u00b7 Shift '+v.shift:'')+'</div>'
+    +'<div class="tr"><span>ETA</span><span>'+fmt(a)+'</span></div>'
+    +'<div class="tr'+(e.kind==="in"?' hot':'')+'"><span>P.B</span><span>'+fmt(p)+'</span></div>'
+    +'<div class="tr'+(e.kind==="out"?' hot':'')+'"><span>ETD</span><span>'+fmt(d)+'</span></div>'
+    +'<div class="tf">Alongside '+hrs+' h</div>';
+  pcTip.hidden=false;
+  movePcTip(x,y);
+}
+function movePcTip(x,y){
+  const w=pcTip.offsetWidth, h=pcTip.offsetHeight, m=14;
+  let left=x+m, top=y+m;
+  if(left+w>window.innerWidth-8) left=x-w-m;
+  if(top+h>window.innerHeight-8) top=y-h-m;
+  pcTip.style.left=Math.max(8,left)+"px";
+  pcTip.style.top=Math.max(8,top)+"px";
+}
+calView.addEventListener("mouseover", e=>{const c=e.target.closest(".pc-ev[data-eid]");if(c)showPcTip(c,e.clientX,e.clientY);});
+calView.addEventListener("mousemove", e=>{if(!pcTip.hidden)movePcTip(e.clientX,e.clientY);});
+calView.addEventListener("mouseout", e=>{if(e.target.closest(".pc-ev[data-eid]"))pcTip.hidden=true;});
+calView.addEventListener("click", ()=>{pcTip.hidden=true;});
 viewDashBtn.addEventListener("click", ()=>setView("dash"));
 viewCalBtn.addEventListener("click", ()=>setView("cal"));
 document.getElementById("pcPrev").addEventListener("click", ()=>{pcM--;if(pcM<0){pcM=11;pcY--;}renderPageCal();});
