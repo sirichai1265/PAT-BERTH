@@ -157,6 +157,9 @@
   .pc-tip .tf{font-size:11px;color:rgba(255,255,255,.65);margin-top:6px;font-family:var(--mono)}
   .pc-col li{flex-wrap:wrap}
   .pc-col li .x{flex-basis:100%;padding-left:52px;font-family:var(--mono);font-size:11px;color:var(--ink-3)}
+  .tba-note{position:absolute;right:12px;top:4px;z-index:3;font-size:11.5px;font-weight:600;color:var(--warn);background:var(--warn-soft);border:1px dashed var(--warn);border-radius:6px;padding:2px 8px}
+  tr.tba td{background:var(--warn-soft)}
+  td.tbatxt{color:var(--warn);font-style:italic;white-space:normal}
   .linkbtn{position:relative;display:inline-flex;align-items:center;gap:8px;font-family:var(--display);font-weight:700;font-size:13.5px;letter-spacing:.04em;color:#2A1600;background:linear-gradient(135deg,#FFC25A 0%,#F28C28 100%);border-radius:999px;padding:8px 16px 8px 10px;text-decoration:none;cursor:pointer;box-shadow:0 8px 22px -8px rgba(242,140,40,.75),0 0 0 3px rgba(255,255,255,.22);transition:transform .15s ease,box-shadow .15s ease;animation:btnpulse 2.6s ease-out infinite}
   .linkbtn .ico{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:rgba(42,22,0,.14)}
   .linkbtn .ico svg{width:14px;height:14px}
@@ -877,8 +880,40 @@ const DATASETS = {
       {id:"22E", gates:"", vessels:[]},
     ]
   },
+  "2026-10-14": {
+    label: "14/10/2026",
+    sheetNow: "14/0900",
+    berths: [
+      {id:"20AB", gates:"Gate 29, 30", vessels:[
+        {n:"KMTC TAIPEIS", loa:565, eta:"13/02", pb:"14/05", etd:"15/08"},
+        {n:"WAN HAI 176", loa:564, eta:"15/11", pb:"15/11", etd:"16/16"}]},
+      {id:"20B", gates:"Gate 27, 28", vessels:[
+        {n:"CEBU", loa:564, eta:"12/22", pb:"13/06", etd:"14/13"},
+        {n:"M ODYSSEY", loa:449, eta:"14/01", pb:"14/15", etd:"15/05", shift:"4A"},
+        {n:"KHARIS HERITAGE", loa:482, eta:"15/01", pb:"15/07", etd:"16/07"}],
+        pending:[{n:"BANGKOK", loa:551}]},
+      {id:"20C", gates:"Gate 21, 22", vessels:[
+        {n:"WAN HAI 277", loa:564, eta:"12/21", pb:"13/06", etd:"14/16"},
+        {n:"WAN HAI 173", loa:565, eta:"14/01", pb:"14/16", etd:"15/07"},
+        {n:"WAN HAI 175", loa:565, eta:"14/23", pb:"15/07", etd:"16/15"}]},
+      {id:"20D", gates:"Gate 23, 24", vessels:[
+        {n:"KHUNA BHUM", loa:564, eta:"13/11", pb:"14/05", etd:"14/22", shift:"7B"},
+        {n:"SITC DALIAN", loa:470, eta:"14/08", pb:"15/05", etd:"16/06"},
+        {n:"WAN HAI 172", loa:565, eta:"16/01", pb:"16/07", etd:"17/15"}],
+        restrict:[{kind:"closed", from:"04/00", to:"24/24", label:"Closed 4–24 Oct · electric channel renovation", text:"Berth closed 4–24 Oct 2026 to renovate electric channel (KHUNA BHUM is nevertheless alongside at 20D on this sheet)"}]},
+      {id:"20E", gates:"Gate 25, 26", vessels:[],
+        restrict:[{kind:"partial", from:"05/00", to:"18/24", label:"G.25 stopped · trolley rail change (to 18 Oct)", text:"G.25 stops working 5–18 Oct 2026 to change trolley rail"}]},
+      {id:"20F", gates:"Gate 33, 34", vessels:[
+        {n:"SAWASDEE INCHEON", loa:564, eta:"13/15", pb:"14/06", etd:"16/06"}],
+        pending:[{n:"LITTLE DOLPHIN", loa:564}]},
+      {id:"22A", gates:"", vessels:[]},
+      {id:"22B", gates:"", vessels:[]},
+      {id:"22C", gates:"", vessels:[]},
+      {id:"22D", gates:"", vessels:[]},
+    ]
+  },
 };
-const DAY_ORDER = ["2026-09-28","2026-09-29","2026-09-30","2026-10-01","2026-10-02","2026-10-03","2026-10-04","2026-10-05","2026-10-06","2026-10-07","2026-10-08","2026-10-09","2026-10-10","2026-10-11","2026-10-12","2026-10-13"]; // oldest -> latest
+const DAY_ORDER = ["2026-09-28","2026-09-29","2026-09-30","2026-10-01","2026-10-02","2026-10-03","2026-10-04","2026-10-05","2026-10-06","2026-10-07","2026-10-08","2026-10-09","2026-10-10","2026-10-11","2026-10-12","2026-10-13","2026-10-14"]; // oldest -> latest
 const LATEST_KEY = DAY_ORDER[DAY_ORDER.length-1];
 
 const H = 3600e3, DAY_MS = 24*H;
@@ -913,14 +948,14 @@ function merge(keys){
   keys.forEach((k,i)=>DATASETS[k].berths.forEach(b=>b.vessels.forEach(v=>{lastSeen[v.n]=i;})));
   const berths={};
   keys.forEach((k,i)=>DATASETS[k].berths.forEach(b=>{
-    const e=berths[b.id]||(berths[b.id]={id:b.id,gates:"",vessels:[],restrict:[],restrictFrom:-1});
+    const e=berths[b.id]||(berths[b.id]={id:b.id,gates:"",vessels:[],restrict:[],pending:[],restrictFrom:-1});
     if(b.gates) e.gates=b.gates;
-    if(i>=e.restrictFrom){e.restrictFrom=i;e.restrict=b.restrict||[];}
+    if(i>=e.restrictFrom){e.restrictFrom=i;e.restrict=b.restrict||[];e.pending=b.pending||[];}
     b.vessels.forEach(v=>{if(lastSeen[v.n]===i) e.vessels.push(v);});
   }));
   const inLast=new Set(DATASETS[keys[keys.length-1]].berths.map(b=>b.id));
   return Object.values(berths)
-    .filter(b=>inLast.has(b.id)||b.vessels.length||b.restrict.length)
+    .filter(b=>inLast.has(b.id)||b.vessels.length||b.restrict.length||b.pending.length)
     .sort((a,b)=>berthIdx(a.id)-berthIdx(b.id))
     .map(b=>({...b,vessels:b.vessels.slice().sort((x,y)=>t(x.pb)-t(y.pb))}));
 }
@@ -963,7 +998,7 @@ function render(keys){
   html+=`</div></div>`;
   const grid=()=>{let s="";for(let i=0;i<DAYS;i++){s+=`<div class="day${i%2?" alt":""}${i===todayIdx?" today":""}" style="left:${i/DAYS*100}%;width:${100/DAYS}%"></div>`;[6,12,18].forEach(h=>s+=`<div class="tick" style="left:${(i*24+h)/(DAYS*24)*100}%"></div>`);}return s;};
   BERTHS.forEach(b=>{
-    const empty=!b.vessels.length;
+    const empty=!b.vessels.length && !(b.pending&&b.pending.length);
     html+=`<div class="g-row${empty?" empty":""}"><div class="g-label"><span class="bn">${b.id}</span>${b.gates?`<span class="gt">${b.gates}</span>`:""}</div><div class="g-track">${grid()}`;
     (b.restrict||[]).forEach(r=>{
       const l=Math.max(0,pct(t(r.from))), rr=Math.min(100,pct(t(r.to)));
@@ -971,6 +1006,7 @@ function render(keys){
       html+=`<div class="rs ${r.kind}" style="left:${l}%;width:${rr-l}%" title="${r.text}"><span>${r.label}</span></div>`;
     });
     if(empty) html+=`<div class="note">No vessel scheduled</div>`;
+    if(b.pending&&b.pending.length) html+=`<div class="tba-note" title="Listed on the sheet without ETA / P.B / ETD">Schedule TBA: ${b.pending.map(p=>p.n+" ("+p.loa+" m)").join(", ")}</div>`;
     b.vessels.forEach(v=>{
       const a=t(v.eta),p=t(v.pb),e=t(v.etd),[st]=status(v);
       if(p>a) html+=`<div class="wait" style="left:${pct(a)}%;width:${pct(p)-pct(a)}%" title="${v.n} waiting ${(p-a)/H} h"></div>`;
@@ -995,13 +1031,14 @@ function render(keys){
   // Table
   let tb="";
   BERTHS.forEach(b=>{
-    if(!b.vessels.length) return;
+    if(!b.vessels.length && !(b.pending&&b.pending.length)) return;
     tb+=`<tr class="grp"><td colspan="9">Berth ${b.id}<span>${b.gates}</span></td></tr>`;
     b.vessels.forEach(v=>{
       const [,lab,cls]=status(v);
       const hrs=(t(v.etd)-t(v.pb))/H, wait=(t(v.pb)-t(v.eta))/H;
       tb+=`<tr class="${v.mark?"marked":""}"><td class="vs">${v.n}${v.mark?'<span class="flag" title="Marked on sheet"></span>':""}</td><td class="num">${v.loa}</td><td class="num">${fmt(t(v.eta))}</td><td class="num">${fmt(t(v.pb))}</td><td class="num">${fmt(t(v.etd))}</td><td class="num">${wait} h</td><td class="num">${hrs} h</td><td class="num">${v.shift||"–"}</td><td><span class="pill ${cls}">${lab}</span></td></tr>`;
     });
+    (b.pending||[]).forEach(p=>{tb+=`<tr class="tba"><td class="vs">${p.n}</td><td class="num">${p.loa}</td><td colspan="6" class="tbatxt">Listed without ETA / P.B / ETD \u2013 schedule not yet announced</td><td><span class="pill p-exp">TBA</span></td></tr>`;});
   });
   document.getElementById("tbody").innerHTML=tb;
 
