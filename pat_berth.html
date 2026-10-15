@@ -912,8 +912,41 @@ const DATASETS = {
       {id:"22D", gates:"", vessels:[]},
     ]
   },
+  "2026-10-15": {
+    label: "15/10/2026",
+    sheetNow: "15/0900",
+    berths: [
+      {id:"20A", gates:"Gate 19, 20", vessels:[]},
+      {id:"20AB", gates:"Gate 29, 30", vessels:[
+        {n:"WAN HAI 176", loa:564, eta:"15/08", pb:"15/09", etd:"16/16"},
+        {n:"BANGKOK", loa:551, eta:"16/21", pb:"17/09", etd:"18/16"},
+        {n:"CAPE FAWLEY", loa:558, eta:"19/18", pb:"19/18", etd:"21/11"}]},
+      {id:"20B", gates:"Gate 27, 28", vessels:[
+        {n:"KHARIS HERITAGE", loa:482, eta:"15/01", pb:"15/06", etd:"16/07"},
+        {n:"LITTLE DOLPHIN", loa:564, eta:"16/17", pb:"16/17", etd:"18/07"},
+        {n:"XIN MING ZHOU 108", loa:564, eta:"17/22", pb:"18/08", etd:"19/07"}]},
+      {id:"20C", gates:"Gate 21, 22", vessels:[
+        {n:"WAN HAI 175", loa:565, eta:"14/21", pb:"15/07", etd:"16/15"},
+        {n:"TS CHIBA", loa:485, eta:"17/02", pb:"17/08", etd:"18/07"},
+        {n:"INFINITY", loa:565, eta:"18/06", pb:"18/07", etd:"19/10"}]},
+      {id:"20D", gates:"Gate 23, 24", vessels:[
+        {n:"SITC DALIAN", loa:470, eta:"14/08", pb:"15/05", etd:"16/06"},
+        {n:"WAN HAI 172", loa:565, eta:"16/01", pb:"16/07", etd:"17/15"},
+        {n:"JARU BHUM", loa:564, eta:"17/18", pb:"17/18", etd:"18/11", shift:"7B"},
+        {n:"MITRA BHUM", loa:485, eta:"19/23", pb:"20/09", etd:"21/08"}]},
+      {id:"20E", gates:"Gate 25, 26", vessels:[],
+        restrict:[{kind:"closed", from:"05/00", to:"20/24", label:"Closed 5–20 Oct", text:"20E closed 5–20 Oct 2026 (earlier sheets: G.25 stop 5–18 Oct to change trolley rail)"}]},
+      {id:"20F", gates:"Gate 33, 34", vessels:[
+        {n:"SAWASDEE INCHEON", loa:564, eta:"13/15", pb:"14/06", etd:"16/06"},
+        {n:"INGENUITY", loa:564, eta:"16/23", pb:"17/08", etd:"18/07"},
+        {n:"KMTC JAKARTA", loa:564, eta:"18/20", pb:"18/20", etd:"20/08"}]},
+      {id:"22A", gates:"", vessels:[]},
+      {id:"22B", gates:"", vessels:[]},
+      {id:"22D", gates:"", vessels:[]},
+    ]
+  },
 };
-const DAY_ORDER = ["2026-09-28","2026-09-29","2026-09-30","2026-10-01","2026-10-02","2026-10-03","2026-10-04","2026-10-05","2026-10-06","2026-10-07","2026-10-08","2026-10-09","2026-10-10","2026-10-11","2026-10-12","2026-10-13","2026-10-14"]; // oldest -> latest
+const DAY_ORDER = ["2026-09-28","2026-09-29","2026-09-30","2026-10-01","2026-10-02","2026-10-03","2026-10-04","2026-10-05","2026-10-06","2026-10-07","2026-10-08","2026-10-09","2026-10-10","2026-10-11","2026-10-12","2026-10-13","2026-10-14","2026-10-15"]; // oldest -> latest
 const LATEST_KEY = DAY_ORDER[DAY_ORDER.length-1];
 
 const H = 3600e3, DAY_MS = 24*H;
@@ -939,7 +972,7 @@ function statusFor(now){
   };
 }
 
-const BERTH_ORDER=["20AB","20B","20C","20D","20E","20F","22A","22B","22C","22D","22E","22F","20G"];
+const BERTH_ORDER=["20A","20AB","20B","20C","20D","20E","20F","22A","22B","22C","22D","22E","22F","20G"];
 const berthIdx=id=>{const i=BERTH_ORDER.indexOf(id);return i<0?99:i;};
 
 // Combine one or more sheets: each vessel is shown as on the LAST sheet (in the range) that lists it.
