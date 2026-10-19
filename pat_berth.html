@@ -1028,8 +1028,35 @@ const DATASETS = {
       {id:"22D", gates:"", vessels:[]},
     ]
   },
+  "2026-10-19": {
+    label: "19/10/2026",
+    sheetNow: "19/0900",
+    berths: [
+      {id:"20AB", gates:"Gate 29, 30", vessels:[
+        {n:"HOPE C", loa:481, eta:"20/24", pb:"21/09", etd:"21/22", shift:"4A"}],
+        pending:[{n:"SKY ORION", loa:565}]},
+      {id:"20B", gates:"Gate 27, 28", vessels:[
+        {n:"KMTC JAKARTA", loa:564, eta:"19/10", pb:"19/10", etd:"20/17"},
+        {n:"MITRA BHUM", loa:485, eta:"21/13", pb:"21/13", etd:"22/05"}],
+        pending:[{n:"SAWASDEE MIMOSA", loa:564}]},
+      {id:"20C", gates:"Gate 21, 22", vessels:[
+        {n:"MILLENNIUM BRIGHT", loa:564, eta:"19/14", pb:"19/14", etd:"20/12"},
+        {n:"CAPE FAWLEY", loa:558, eta:"21/11", pb:"21/12", etd:"23/12"}]},
+      {id:"20D", gates:"Gate 23, 24", vessels:[]},
+      {id:"20E", gates:"Gate 25, 26", vessels:[
+        {n:"MTT BANGKOK", loa:564, eta:"20/15", pb:"20/15", etd:"21/13"},
+        {n:"ALS SUMIRE", loa:537, eta:"21/17", pb:"21/17", etd:"22/17", shift:"1C"}]},
+      {id:"20F", gates:"Gate 33, 34", vessels:[
+        {n:"XIN MING ZHOU 108", loa:564, eta:"17/10", pb:"18/08", etd:"19/12"},
+        {n:"GREEN PARK", loa:482, eta:"21/17", pb:"22/14", etd:"23/13"}]},
+      {id:"22A", gates:"", vessels:[]},
+      {id:"22B", gates:"", vessels:[]},
+      {id:"22D", gates:"", vessels:[]},
+      {id:"22F", gates:"", vessels:[]},
+    ]
+  },
 };
-const DAY_ORDER = ["2026-09-28","2026-09-29","2026-09-30","2026-10-01","2026-10-02","2026-10-03","2026-10-04","2026-10-05","2026-10-06","2026-10-07","2026-10-08","2026-10-09","2026-10-10","2026-10-11","2026-10-12","2026-10-13","2026-10-14","2026-10-15","2026-10-16","2026-10-17","2026-10-18"]; // oldest -> latest
+const DAY_ORDER = ["2026-09-28","2026-09-29","2026-09-30","2026-10-01","2026-10-02","2026-10-03","2026-10-04","2026-10-05","2026-10-06","2026-10-07","2026-10-08","2026-10-09","2026-10-10","2026-10-11","2026-10-12","2026-10-13","2026-10-14","2026-10-15","2026-10-16","2026-10-17","2026-10-18","2026-10-19"]; // oldest -> latest
 const LATEST_KEY = DAY_ORDER[DAY_ORDER.length-1];
 
 const H = 3600e3, DAY_MS = 24*H;
