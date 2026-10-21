@@ -1085,8 +1085,39 @@ const DATASETS = {
       {id:"22D", gates:"", vessels:[]},
     ]
   },
+  "2026-10-21": {
+    label: "21/10/2026",
+    sheetNow: "21/0900",
+    berths: [
+      {id:"20AB", gates:"Gate 29, 30", vessels:[
+        {n:"HOPE C", loa:481, eta:"21/02", pb:"21/09", etd:"21/22", shift:"4A", mark:true},
+        {n:"ALS SUMIRE", loa:537, eta:"21/22", pb:"22/13", etd:"23/16", shift:"1C"},
+        {n:"KMTC GWANGYANG", loa:564, eta:"22/14", pb:"23/14", etd:"25/02"}]},
+      {id:"20B", gates:"Gate 27, 28", vessels:[
+        {n:"MITRA BHUM", loa:485, eta:"21/13", pb:"21/13", etd:"22/05"},
+        {n:"GREEN PARK", loa:482, eta:"21/14", pb:"22/14", etd:"23/13"},
+        {n:"CA MANILA", loa:548, eta:"22/17", pb:"23/13", etd:"24/24"}]},
+      {id:"20C", gates:"Gate 21, 22", vessels:[
+        {n:"CAPE FAWLEY", loa:558, eta:"21/11", pb:"21/12", etd:"23/12"},
+        {n:"HORAI BRIDGE", loa:564, eta:"23/01", pb:"23/12", etd:"24/15"}],
+        pending:[{n:"YM IMAGE", loa:565}]},
+      {id:"20D", gates:"Gate 23, 24", vessels:[]},
+      {id:"20E", gates:"Gate 25, 26", vessels:[
+        {n:"MTT BANGKOK", loa:564, eta:"20/15", pb:"20/18", etd:"21/20", mark:true},
+        {n:"SKY ORION", loa:565, eta:"21/22", pb:"22/13", etd:"24/01"}],
+        pending:[{n:"SAWASDEE MIMOSA", loa:564, eta:"23/22"}]},
+      {id:"20F", gates:"Gate 33, 34", vessels:[
+        {n:"RENOWN", loa:458, eta:"20/18", pb:"22/10", etd:"23/10"},
+        {n:"WAN HAI 272", loa:565, eta:"23/10", pb:"23/10", etd:"24/14"}]},
+      {id:"22A", gates:"", vessels:[
+        {n:"WAN HAI 272", loa:565, eta:"22/07", pb:"22/16", etd:"23/10", shift:"20F"}]},
+      {id:"22B", gates:"", vessels:[]},
+      {id:"22C", gates:"", vessels:[]},
+      {id:"22D", gates:"", vessels:[]},
+    ]
+  },
 };
-const DAY_ORDER = ["2026-09-28","2026-09-29","2026-09-30","2026-10-01","2026-10-02","2026-10-03","2026-10-04","2026-10-05","2026-10-06","2026-10-07","2026-10-08","2026-10-09","2026-10-10","2026-10-11","2026-10-12","2026-10-13","2026-10-14","2026-10-15","2026-10-16","2026-10-17","2026-10-18","2026-10-19","2026-10-20"]; // oldest -> latest
+const DAY_ORDER = ["2026-09-28","2026-09-29","2026-09-30","2026-10-01","2026-10-02","2026-10-03","2026-10-04","2026-10-05","2026-10-06","2026-10-07","2026-10-08","2026-10-09","2026-10-10","2026-10-11","2026-10-12","2026-10-13","2026-10-14","2026-10-15","2026-10-16","2026-10-17","2026-10-18","2026-10-19","2026-10-20","2026-10-21"]; // oldest -> latest
 const LATEST_KEY = DAY_ORDER[DAY_ORDER.length-1];
 
 const H = 3600e3, DAY_MS = 24*H;
@@ -1179,7 +1210,7 @@ function render(keys){
       html+=`<div class="rs ${r.kind}" style="left:${l}%;width:${rr-l}%" title="${r.text}"><span>${r.label}</span></div>`;
     });
     if(empty) html+=`<div class="note">No vessel scheduled</div>`;
-    if(b.pending&&b.pending.length) html+=`<div class="tba-note" title="Listed on the sheet without ETA / P.B / ETD">Schedule TBA: ${b.pending.map(p=>p.n+" ("+p.loa+" m)").join(", ")}</div>`;
+    if(b.pending&&b.pending.length) html+=`<div class="tba-note" title="Listed on the sheet without ETA / P.B / ETD">Schedule TBA: ${b.pending.map(p=>p.n+" ("+p.loa+" m"+(p.eta?", ETA "+fmt(t(p.eta)):"")+")").join(", ")}</div>`;
     b.vessels.forEach(v=>{
       const a=t(v.eta),p=t(v.pb),e=t(v.etd),[st]=status(v);
       if(p>a) html+=`<div class="wait" style="left:${pct(a)}%;width:${pct(p)-pct(a)}%" title="${v.n} waiting ${(p-a)/H} h"></div>`;
@@ -1211,7 +1242,7 @@ function render(keys){
       const hrs=(t(v.etd)-t(v.pb))/H, wait=(t(v.pb)-t(v.eta))/H;
       tb+=`<tr class="${v.mark?"marked":""}"><td class="vs">${v.n}${v.mark?'<span class="flag" title="Marked on sheet"></span>':""}</td><td class="num">${v.loa}</td><td class="num">${fmt(t(v.eta))}</td><td class="num">${fmt(t(v.pb))}</td><td class="num">${fmt(t(v.etd))}</td><td class="num">${wait} h</td><td class="num">${hrs} h</td><td class="num">${v.shift||"–"}</td><td><span class="pill ${cls}">${lab}</span></td></tr>`;
     });
-    (b.pending||[]).forEach(p=>{tb+=`<tr class="tba"><td class="vs">${p.n}</td><td class="num">${p.loa}</td><td colspan="6" class="tbatxt">Listed without ETA / P.B / ETD \u2013 schedule not yet announced</td><td><span class="pill p-exp">TBA</span></td></tr>`;});
+    (b.pending||[]).forEach(p=>{tb+=`<tr class="tba"><td class="vs">${p.n}</td><td class="num">${p.loa}</td><td colspan="6" class="tbatxt">${p.eta?("Only ETA "+fmt(t(p.eta))+" listed \u2013 P.B / ETD not yet announced"):"Listed without ETA / P.B / ETD \u2013 schedule not yet announced"}</td><td><span class="pill p-exp">TBA</span></td></tr>`;});
   });
   document.getElementById("tbody").innerHTML=tb;
 
