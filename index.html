@@ -363,7 +363,7 @@
   </section>
 
   <div class="foot">
-    <span>P.B = pilot boarding / berthing time. Times on the sheet are written DD/HH; dates 27–30 are September, 01–15 are October 2026.</span>
+    <span>P.B = pilot boarding / berthing time. Times on the sheet are written DD/HH; the month is taken from the sheet date (Sep–Oct 2026).</span>
     <span>Gate stoppages (G.29, G.25) reduce crane/gate capacity at the berth but do not close it. A historical sheet freezes "Now" to that day's snapshot time.</span>
   </div>
 </div>
@@ -1116,9 +1116,61 @@ const DATASETS = {
       {id:"22D", gates:"", vessels:[]},
     ]
   },
+  "2026-10-22": {
+    label: "22/10/2026",
+    sheetNow: "22/0900",
+    berths: [
+      {id:"20AB", gates:"Gate 29, 30", vessels:[
+        {n:"ALS SUMIRE", loa:537, eta:"21/20", pb:"22/13", etd:"23/16", shift:"1C"},
+        {n:"KMTC GWANGYANG", loa:564, eta:"22/13", pb:"23/14", etd:"25/02"},
+        {n:"KANWAY FORTUNE", loa:564, eta:"25/05", pb:"25/15", etd:"27/03"}]},
+      {id:"20B", gates:"Gate 27, 28", vessels:[
+        {n:"GREEN PARK", loa:482, eta:"21/16", pb:"22/14", etd:"23/13"},
+        {n:"CA MANILA", loa:548, eta:"22/16", pb:"23/13", etd:"24/24"},
+        {n:"ASL TAIPEIS", loa:564, eta:"24/24", pb:"25/04", etd:"26/03"},
+        {n:"ZHONG GU BEI HAI", loa:561, eta:"26/14", pb:"26/14", etd:"28/03"}]},
+      {id:"20C", gates:"Gate 21, 22", vessels:[
+        {n:"CAPE FAWLEY", loa:558, eta:"21/11", pb:"21/12", etd:"23/12"},
+        {n:"HORAI BRIDGE", loa:564, eta:"23/01", pb:"23/12", etd:"24/15"},
+        {n:"SAWASDEE MIMOSA", loa:564, eta:"23/22", pb:"24/15", etd:"26/03"}]},
+      {id:"20D", gates:"Gate 23, 24", vessels:[
+        {n:"KMTC BANGKOK", loa:565, eta:"25/02", pb:"25/04", etd:"26/12"}]},
+      {id:"20E", gates:"Gate 25, 26", vessels:[
+        {n:"SKY ORION", loa:565, eta:"22/01", pb:"22/13", etd:"24/01"},
+        {n:"YM IMAGE", loa:565, eta:"23/06", pb:"24/03", etd:"25/01"},
+        {n:"HEUNG A HOCHIMINH", loa:565, eta:"25/22", pb:"26/06", etd:"27/14"}]},
+      {id:"20F", gates:"Gate 33, 34", vessels:[
+        {n:"RENOWN", loa:458, eta:"20/18", pb:"22/10", etd:"23/09"},
+        {n:"WAN HAI 272", loa:565, eta:"23/09", pb:"23/09", etd:"24/14"},
+        {n:"XIN MING ZHOU 106", loa:564, eta:"25/10", pb:"25/13", etd:"26/12"}]},
+      {id:"22A", gates:"", vessels:[
+        {n:"WAN HAI 272", loa:565, eta:"22/07", pb:"22/16", etd:"23/09", shift:"20F"}]},
+      {id:"22B", gates:"", vessels:[]},
+      {id:"22C", gates:"", vessels:[]},
+      {id:"22D", gates:"", vessels:[]},
+    ]
+  },
 };
-const DAY_ORDER = ["2026-09-28","2026-09-29","2026-09-30","2026-10-01","2026-10-02","2026-10-03","2026-10-04","2026-10-05","2026-10-06","2026-10-07","2026-10-08","2026-10-09","2026-10-10","2026-10-11","2026-10-12","2026-10-13","2026-10-14","2026-10-15","2026-10-16","2026-10-17","2026-10-18","2026-10-19","2026-10-20","2026-10-21"]; // oldest -> latest
+const DAY_ORDER = ["2026-09-28","2026-09-29","2026-09-30","2026-10-01","2026-10-02","2026-10-03","2026-10-04","2026-10-05","2026-10-06","2026-10-07","2026-10-08","2026-10-09","2026-10-10","2026-10-11","2026-10-12","2026-10-13","2026-10-14","2026-10-15","2026-10-16","2026-10-17","2026-10-18","2026-10-19","2026-10-20","2026-10-21","2026-10-22"]; // oldest -> latest
 const LATEST_KEY = DAY_ORDER[DAY_ORDER.length-1];
+// "DD/HH" has no month: tag each time with the month (0-based) that falls within ~15 days of its sheet date.
+(function tagMonths(){
+  const fix=(str,sd)=>{
+    if(typeof str!=="string"||str.indexOf("@")>=0||str.indexOf("/")<0) return str;
+    const d=Number(str.split("/")[0]); let best=9,bd=1e18;
+    [8,9,10].forEach(m=>{const df=Math.abs(Date.UTC(2026,m,d)-sd); if(df<bd){bd=df;best=m;}});
+    return str+"@"+best;
+  };
+  Object.keys(DATASETS).forEach(k=>{
+    const [y,mo,dd]=k.split("-").map(Number), sd=Date.UTC(y,mo-1,dd), ds=DATASETS[k];
+    if(ds.sheetNow) ds.sheetNow=fix(ds.sheetNow,sd);
+    ds.berths.forEach(b=>{
+      (b.vessels||[]).forEach(v=>{["eta","pb","etd"].forEach(f=>{if(v[f]) v[f]=fix(v[f],sd);});});
+      (b.pending||[]).forEach(v=>{if(v.eta) v.eta=fix(v.eta,sd);});
+      (b.restrict||[]).forEach(r=>{["from","to"].forEach(f=>{if(r[f]) r[f]=fix(r[f],sd);});});
+    });
+  });
+})();
 
 const H = 3600e3, DAY_MS = 24*H;
 const DATA_START = Date.UTC(2026,8,27,-7);          // first day covered by the oldest sheet (27 Sep, UTC+7)
@@ -1126,9 +1178,9 @@ let START = DATA_START, END = DATA_START + 3*DAY_MS, DAYS = 3;   // reset on eve
 const DOW=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 
 // DD/HH -> ms. Days 27-31 = September, 01-26 = October 2026. Local UTC+7.
-function t(s){const [d,h]=s.split("/").map(Number);const m=d>=27?8:9;return Date.UTC(2026,m,d,h-7);}
+function t(s){const [dh,mo]=s.split("@");const [d,h]=dh.split("/").map(Number);const m=mo!==undefined?Number(mo):(d>=27?8:9);return Date.UTC(2026,m,d,h-7);}
 // DD/HHMM -> ms, for a sheet's fixed "now" fallback.
-function tFull(s){const [d,hm]=s.split("/");const h=Number(hm.slice(0,2)),mi=Number(hm.slice(2));const m=Number(d)>=27?8:9;return Date.UTC(2026,m,Number(d),h-7,mi);}
+function tFull(s){const [dh,mo]=s.split("@");const [d,hm]=dh.split("/");const h=Number(hm.slice(0,2)),mi=Number(hm.slice(2));const m=mo!==undefined?Number(mo):(Number(d)>=27?8:9);return Date.UTC(2026,m,Number(d),h-7,mi);}
 const pct=ms=>((ms-START)/(END-START)*100);
 const fmt=ms=>{const d=new Date(ms+7*H);const dd=String(d.getUTCDate()).padStart(2,"0");const mo=d.getUTCMonth()===8?"Sep":"Oct";return `${dd} ${mo} ${String(d.getUTCHours()).padStart(2,"0")}:00`;};
 const dayFloor=ms=>Math.floor((ms+7*H)/DAY_MS)*DAY_MS-7*H;   // local midnight
@@ -1215,7 +1267,7 @@ function render(keys){
       const a=t(v.eta),p=t(v.pb),e=t(v.etd),[st]=status(v);
       if(p>a) html+=`<div class="wait" style="left:${pct(a)}%;width:${pct(p)-pct(a)}%" title="${v.n} waiting ${(p-a)/H} h"></div>`;
       const tip=`${v.n} · LOA ${v.loa} m\nETA ${fmt(a)}\nP.B ${fmt(p)}\nETD ${fmt(e)}${v.shift?"\nShift "+v.shift:""}`;
-      html+=`<div class="bar${st==="done"?" done":""}${v.mark?" marked":""}" tabindex="0" style="left:${pct(p)}%;width:calc(${pct(e)-pct(p)}% - 4px);margin-left:2px" title="${tip}"><span class="nm">${v.n}</span><span class="tm">${v.pb}→${v.etd}${v.shift?" · "+v.shift:""}</span></div>`;
+      html+=`<div class="bar${st==="done"?" done":""}${v.mark?" marked":""}" tabindex="0" style="left:${pct(p)}%;width:calc(${pct(e)-pct(p)}% - 4px);margin-left:2px" title="${tip}"><span class="nm">${v.n}</span><span class="tm">${v.pb.split("@")[0]}→${v.etd.split("@")[0]}${v.shift?" · "+v.shift:""}</span></div>`;
     });
     html+=`</div></div>`;
   });
@@ -1266,9 +1318,9 @@ function render(keys){
   document.getElementById("summary").innerHTML=`
     <div class="tile t-ok"><span class="k">Alongside now</span><span class="v">${along.length}</span><span class="s">${along.map(v=>v.berth).join(" · ")||"–"}</span></div>
     <div class="tile t-warn"><span class="k">At anchorage</span><span class="v">${anch.length}</span><span class="s">${anch.map(v=>v.n).join(", ")||"None waiting"}</span></div>
-    <div class="tile"><span class="k">Next berthing</span><span class="v">${nextIn?nextIn.pb:"–"}</span><span class="s">${nextIn?`${nextIn.n} → ${nextIn.berth}`:""}</span></div>
+    <div class="tile"><span class="k">Next berthing</span><span class="v">${nextIn?nextIn.pb.split("@")[0]:"–"}</span><span class="s">${nextIn?`${nextIn.n} → ${nextIn.berth}`:""}</span></div>
     <div class="tile t-mark"><span class="k">Berth notices</span><span class="v">${nNotices}</span><span class="s">${nNotices?"see notices above":"none on this sheet"}</span></div>
-    <div class="tile t-slate"><span class="k">Next sailing</span><span class="v">${nextSail?nextSail.etd:"–"}</span><span class="s">${nextSail?`${nextSail.n} · ${nextSail.berth}`:""}</span></div>`;
+    <div class="tile t-slate"><span class="k">Next sailing</span><span class="v">${nextSail?nextSail.etd.split("@")[0]:"–"}</span><span class="s">${nextSail?`${nextSail.n} · ${nextSail.berth}`:""}</span></div>`;
 }
 
 // ---- date range picker: a single day (From = To) or several sheets combined ----
