@@ -1150,8 +1150,40 @@ const DATASETS = {
       {id:"22D", gates:"", vessels:[]},
     ]
   },
+  "2026-10-23": {
+    label: "23/10/2026",
+    sheetNow: "23/0900",
+    berths: [
+      {id:"20AB", gates:"Gate 29, 30", vessels:[
+        {n:"ALS SUMIRE", loa:537, eta:"21/20", pb:"22/13", etd:"23/16", shift:"1C"},
+        {n:"KMTC GWANGYANG", loa:564, eta:"22/13", pb:"23/14", etd:"25/02"},
+        {n:"KANWAY FORTUNE", loa:564, eta:"25/05", pb:"25/15", etd:"27/03"}]},
+      {id:"20B", gates:"Gate 27, 28", vessels:[
+        {n:"GREEN PARK", loa:482, eta:"21/16", pb:"22/14", etd:"23/13"},
+        {n:"CA MANILA", loa:548, eta:"22/18", pb:"23/13", etd:"24/24"},
+        {n:"ASL TAIPEIS", loa:564, eta:"24/24", pb:"25/04", etd:"26/03"},
+        {n:"ZHONG GU BEI HAI", loa:561, eta:"26/14", pb:"26/14", etd:"28/03"}]},
+      {id:"20C", gates:"Gate 21, 22", vessels:[
+        {n:"CAPE FAWLEY", loa:558, eta:"21/11", pb:"21/12", etd:"23/12"},
+        {n:"HORAI BRIDGE", loa:564, eta:"23/01", pb:"23/12", etd:"24/15"},
+        {n:"SAWASDEE MIMOSA", loa:564, eta:"23/17", pb:"24/15", etd:"26/03"}]},
+      {id:"20D", gates:"Gate 23, 24", vessels:[
+        {n:"KMTC BANGKOK", loa:565, eta:"25/06", pb:"25/06", etd:"26/12"}]},
+      {id:"20E", gates:"Gate 25, 26", vessels:[
+        {n:"SKY ORION", loa:565, eta:"22/01", pb:"22/13", etd:"24/01"},
+        {n:"YM IMAGE", loa:565, eta:"23/10", pb:"24/03", etd:"25/01"},
+        {n:"HEUNG A HOCHIMINH", loa:565, eta:"25/22", pb:"26/06", etd:"27/14"}]},
+      {id:"20F", gates:"Gate 33, 34", vessels:[
+        {n:"WAN HAI 272", loa:565, eta:"23/09", pb:"23/09", etd:"24/14"},
+        {n:"XIN MING ZHOU 106", loa:564, eta:"25/10", pb:"25/13", etd:"26/12"}]},
+      {id:"22A", gates:"", vessels:[]},
+      {id:"22B", gates:"", vessels:[]},
+      {id:"22D", gates:"", vessels:[]},
+      {id:"22E", gates:"", vessels:[]},
+    ]
+  },
 };
-const DAY_ORDER = ["2026-09-28","2026-09-29","2026-09-30","2026-10-01","2026-10-02","2026-10-03","2026-10-04","2026-10-05","2026-10-06","2026-10-07","2026-10-08","2026-10-09","2026-10-10","2026-10-11","2026-10-12","2026-10-13","2026-10-14","2026-10-15","2026-10-16","2026-10-17","2026-10-18","2026-10-19","2026-10-20","2026-10-21","2026-10-22"]; // oldest -> latest
+const DAY_ORDER = ["2026-09-28","2026-09-29","2026-09-30","2026-10-01","2026-10-02","2026-10-03","2026-10-04","2026-10-05","2026-10-06","2026-10-07","2026-10-08","2026-10-09","2026-10-10","2026-10-11","2026-10-12","2026-10-13","2026-10-14","2026-10-15","2026-10-16","2026-10-17","2026-10-18","2026-10-19","2026-10-20","2026-10-21","2026-10-22","2026-10-23"]; // oldest -> latest
 const LATEST_KEY = DAY_ORDER[DAY_ORDER.length-1];
 // "DD/HH" has no month: tag each time with the month (0-based) that falls within ~15 days of its sheet date.
 (function tagMonths(){
