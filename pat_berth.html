@@ -1182,8 +1182,39 @@ const DATASETS = {
       {id:"22E", gates:"", vessels:[]},
     ]
   },
+  "2026-10-24": {
+    label: "24/10/2026",
+    sheetNow: "24/0900",
+    berths: [
+      {id:"20AB", gates:"Gate 29, 30", vessels:[
+        {n:"KMTC GWANGYANG", loa:564, eta:"22/13", pb:"23/14", etd:"25/01"},
+        {n:"KANWAY FORTUNE", loa:564, eta:"25/05", pb:"25/15", etd:"26/16"}]},
+      {id:"20B", gates:"Gate 27, 28", vessels:[
+        {n:"CA MANILA", loa:548, eta:"22/18", pb:"23/13", etd:"24/24"},
+        {n:"ASL TAIPEIS", loa:564, eta:"24/24", pb:"25/04", etd:"26/03"},
+        {n:"ZHONG GU BEI HAI", loa:561, eta:"26/20", pb:"27/05", etd:"28/14"}]},
+      {id:"20C", gates:"Gate 21, 22", vessels:[
+        {n:"HORAI BRIDGE", loa:564, eta:"23/01", pb:"23/12", etd:"24/15"},
+        {n:"SAWASDEE MIMOSA", loa:564, eta:"23/17", pb:"24/15", etd:"26/03"},
+        {n:"XIN AN", loa:564, eta:"26/18", pb:"27/04", etd:"28/05"}]},
+      {id:"20D", gates:"Gate 23, 24", vessels:[
+        {n:"PUNNYA NAVEE (barge)", loa:304, eta:"24/12", pb:"24/12", etd:"24/23"},
+        {n:"HARI BHUM (barge)", loa:259, eta:"24/22", pb:"24/22", etd:"25/07"},
+        {n:"KMTC BANGKOK", loa:565, eta:"25/06", pb:"25/06", etd:"26/12"}]},
+      {id:"20E", gates:"Gate 25, 26", vessels:[
+        {n:"YM IMAGE", loa:565, eta:"23/06", pb:"24/03", etd:"25/01"},
+        {n:"XIN MING ZHOU 106", loa:564, eta:"25/10", pb:"25/13", etd:"26/12"}]},
+      {id:"20F", gates:"Gate 33, 34", vessels:[
+        {n:"WAN HAI 272", loa:565, eta:"23/09", pb:"23/09", etd:"24/14"},
+        {n:"HEUNG A HOCHIMINH", loa:565, eta:"25/14", pb:"25/15", etd:"27/04"}]},
+      {id:"22A", gates:"", vessels:[]},
+      {id:"22B", gates:"", vessels:[]},
+      {id:"22C", gates:"", vessels:[]},
+      {id:"22D", gates:"", vessels:[]},
+    ]
+  },
 };
-const DAY_ORDER = ["2026-09-28","2026-09-29","2026-09-30","2026-10-01","2026-10-02","2026-10-03","2026-10-04","2026-10-05","2026-10-06","2026-10-07","2026-10-08","2026-10-09","2026-10-10","2026-10-11","2026-10-12","2026-10-13","2026-10-14","2026-10-15","2026-10-16","2026-10-17","2026-10-18","2026-10-19","2026-10-20","2026-10-21","2026-10-22","2026-10-23"]; // oldest -> latest
+const DAY_ORDER = ["2026-09-28","2026-09-29","2026-09-30","2026-10-01","2026-10-02","2026-10-03","2026-10-04","2026-10-05","2026-10-06","2026-10-07","2026-10-08","2026-10-09","2026-10-10","2026-10-11","2026-10-12","2026-10-13","2026-10-14","2026-10-15","2026-10-16","2026-10-17","2026-10-18","2026-10-19","2026-10-20","2026-10-21","2026-10-22","2026-10-23","2026-10-24"]; // oldest -> latest
 const LATEST_KEY = DAY_ORDER[DAY_ORDER.length-1];
 // "DD/HH" has no month: tag each time with the month (0-based) that falls within ~15 days of its sheet date.
 (function tagMonths(){
