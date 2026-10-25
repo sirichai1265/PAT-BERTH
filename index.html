@@ -198,6 +198,7 @@
   .notices{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px;padding:16px 20px 20px}
   .chg-sub{font-family:var(--mono);font-size:12.5px;color:var(--muted,#6b7a8c)}
   .bgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px;padding:16px 20px 20px}
+  .bgrid .brk{grid-column:1/-1;height:0;margin:-14px 0 0}
   .bcard{border:1px solid var(--line);border-radius:12px;background:var(--panel);overflow:hidden;display:flex;flex-direction:column}
   .bhead{display:flex;align-items:baseline;justify-content:space-between;gap:8px;padding:10px 14px;background:var(--line-2);border-bottom:1px solid var(--line)}
   .bhead .bid{font-family:var(--display);font-weight:700;font-size:22px;line-height:1}
@@ -1423,7 +1424,7 @@ function render(keys){
     const cur=fmt(t(v[f]));
     return (e&&e.old&&e.old[f]) ? `<span class="fr">${e.old[f].split("@")[0]}</span> \u2192 <span class="to">${v[f].split("@")[0]}</span>` : cur;
   };
-  let tb="";
+  let tb="", brk22=false;
   BERTHS.forEach(b=>{
     const live=b.vessels.filter(v=>status(v)[0]!=="done");
     const along=live.filter(v=>status(v)[0]==="along");
@@ -1441,6 +1442,7 @@ function render(keys){
         <div class="vmeta">Waiting ${wait} h \u00b7 Alongside ${hrs} h</div>${chg}</div>`;
     });
     if(!body) body='<div class="vnone">No vessel scheduled</div>';
+    if(/^22/.test(b.id)&&!brk22){brk22=true;tb+='<div class="brk"></div>';}
     tb+=`<div class="bcard"><div class="bhead"><span class="bid">${b.id}</span><span class="bg">${b.gates||""}</span></div>${body}</div>`;
   });
   document.getElementById("bgrid").innerHTML=tb;
