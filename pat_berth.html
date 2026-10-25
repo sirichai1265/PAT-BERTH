@@ -1292,7 +1292,7 @@ function statusFor(now){
     if(now>=e) return ["done","Sailed","p-done"];
     if(now>=p) return ["along","Alongside","p-along"];
     if(now>=a) return ["anch","At anchorage","p-anch"];
-    return ["exp","Upcoming","p-exp"];
+    return ["exp","Coming soon","p-exp"];
   };
 }
 
@@ -1494,7 +1494,7 @@ function render(keys){
   document.getElementById("summary").innerHTML=`
     <div class="tile t-mark"><span class="k">Berth notices</span><span class="v">${nNotices}</span><span class="s">${nNotices?"see notices above":"none on this sheet"}</span></div>
     <div class="tile t-ok"><span class="k">Alongside now</span><span class="v">${along.length}</span><span class="s">${along.map(v=>v.berth).join(" · ")||"–"}</span></div>
-    <div class="tile"><span class="k">Upcoming</span><span class="v">${upc.length}</span><span class="s">${upc.length?upc.map(v=>v.n).slice(0,3).join(", ")+(upc.length>3?" +"+(upc.length-3)+" more":""):"None upcoming"}</span></div>
+    <div class="tile"><span class="k">Coming soon</span><span class="v">${upc.length}</span><span class="s">${upc.length?upc.map(v=>v.n).slice(0,3).join(", ")+(upc.length>3?" +"+(upc.length-3)+" more":""):"None coming soon"}</span></div>
     <div class="tile t-warn"><span class="k">At anchorage</span><span class="v">${anch.length}</span><span class="s">${anch.map(v=>v.n).join(", ")||"None waiting"}</span></div>`;
 }
 
