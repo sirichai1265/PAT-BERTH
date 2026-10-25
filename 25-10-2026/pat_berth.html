@@ -181,13 +181,13 @@
   .badge-hist{font-family:var(--display);font-weight:700;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:#6E4308;background:#F9E3B8;padding:3px 9px;border-radius:999px}
 
   /* summary tiles */
-  .summary{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+  .summary{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
   .tile{--accent:var(--berth);background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:12px;padding:14px 16px 15px;display:flex;flex-direction:column;gap:5px;box-shadow:var(--shadow)}
   .tile.t-ok{--accent:var(--ok)} .tile.t-warn{--accent:#E0A030} .tile.t-mark{--accent:var(--mark)} .tile.t-slate{--accent:var(--ink-3)}
   .tile .k{font-family:var(--display);font-weight:600;font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3)}
   .tile .v{font-family:var(--display);font-weight:700;font-size:38px;line-height:1;letter-spacing:-.01em}
   .tile .s{font-size:13px;color:var(--ink-2);min-height:1.4em}
-  @media (max-width:980px){.summary{grid-template-columns:repeat(3,1fr)}}@media (max-width:560px){.summary{grid-template-columns:repeat(2,1fr)}}
+  @media (max-width:980px){.summary{grid-template-columns:repeat(2,1fr)}}@media (max-width:560px){.summary{grid-template-columns:repeat(2,1fr)}}
 
   /* panels */
   .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);overflow:hidden}
@@ -1292,7 +1292,7 @@ function statusFor(now){
     if(now>=e) return ["done","Sailed","p-done"];
     if(now>=p) return ["along","Alongside","p-along"];
     if(now>=a) return ["anch","At anchorage","p-anch"];
-    return ["exp","Expected","p-exp"];
+    return ["exp","Upcoming","p-exp"];
   };
 }
 
@@ -1489,15 +1489,13 @@ function render(keys){
   // Summary
   const all=BERTHS.flatMap(b=>b.vessels.map(v=>({...v,berth:b.id,st:status(v)[0]})));
   const along=all.filter(v=>v.st==="along"), anch=all.filter(v=>v.st==="anch");
-  const nextSail=all.filter(v=>v.st!=="done").sort((x,y)=>t(x.etd)-t(y.etd))[0];
-  const nextIn=all.filter(v=>v.st==="exp"||v.st==="anch").sort((x,y)=>t(x.pb)-t(y.pb))[0];
+  const upc=all.filter(v=>v.st==="exp");
   const nNotices=BERTHS.reduce((a,b)=>a+(b.restrict||[]).length,0);
   document.getElementById("summary").innerHTML=`
     <div class="tile t-mark"><span class="k">Berth notices</span><span class="v">${nNotices}</span><span class="s">${nNotices?"see notices above":"none on this sheet"}</span></div>
     <div class="tile t-ok"><span class="k">Alongside now</span><span class="v">${along.length}</span><span class="s">${along.map(v=>v.berth).join(" · ")||"–"}</span></div>
-    <div class="tile"><span class="k">Next berthing</span><span class="v vname">${nextIn?nextIn.n:"No vessel scheduled"}</span><span class="s">${nextIn?`Berth ${nextIn.berth} · P.B ${fmt(t(nextIn.pb))}`:""}</span></div>
-    <div class="tile t-warn"><span class="k">At anchorage</span><span class="v">${anch.length}</span><span class="s">${anch.map(v=>v.n).join(", ")||"None waiting"}</span></div>
-    <div class="tile t-slate"><span class="k">Next sailing</span><span class="v">${nextSail?nextSail.etd.split("@")[0]:"–"}</span><span class="s">${nextSail?`${nextSail.n} · ${nextSail.berth}`:""}</span></div>`;
+    <div class="tile"><span class="k">Upcoming</span><span class="v">${upc.length}</span><span class="s">${upc.length?upc.map(v=>v.n).slice(0,3).join(", ")+(upc.length>3?" +"+(upc.length-3)+" more":""):"None upcoming"}</span></div>
+    <div class="tile t-warn"><span class="k">At anchorage</span><span class="v">${anch.length}</span><span class="s">${anch.map(v=>v.n).join(", ")||"None waiting"}</span></div>`;
 }
 
 // ---- date range picker: a single day (From = To) or several sheets combined ----

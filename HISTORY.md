@@ -449,6 +449,7 @@ Bold ETAs on this sheet (BANGKOK, LITTLE DOLPHIN, INGENUITY) are actual arrival 
 - Dashboard: day berthing cards show ETB and ETD; a berth (20A-20F) with no vessel berthing on the sheet date shows its latest vessel that already berthed, tagged "last vessel in" (20A shows Awaiting handover)
 - Dashboard: vessels that have already sailed (ETD passed) are not shown in the day berthing cards
 - Dashboard: berth 20A (not in use yet) is not shown in the day berthing cards; its standing Awaiting handover box stays in Vessel list by berth
+- Dashboard: summary cards are now Berth notices, Alongside now, Upcoming (count of vessels not yet at anchorage) and At anchorage; Next berthing and Next sailing removed; the status word "Expected" is now "Upcoming"
 - Folder: [`25-10-2026/`](25-10-2026)
 
 ---
