@@ -197,18 +197,16 @@
   /* notices as cards */
   .notices{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px;padding:16px 20px 20px}
   .chg-sub{font-family:var(--mono);font-size:12.5px;color:var(--muted,#6b7a8c)}
-  .chg{padding:14px 20px 18px;display:flex;flex-direction:column;gap:14px}
-  .chg .grp h3{margin:0 0 6px;font-family:var(--display);font-size:15px;font-weight:700;letter-spacing:.01em}
-  .chg .grp h3 .n{display:inline-block;min-width:20px;padding:0 6px;margin-left:6px;border-radius:999px;background:var(--line);font-size:12px;text-align:center}
-  .chg ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:5px}
-  .chg li{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline;padding:7px 12px;border:1px solid var(--line);border-left:4px solid var(--c,#2f7fb0);border-radius:8px;font-size:14px}
-  .chg li b{font-family:var(--display);font-size:15px}
-  .chg li .bn{font-family:var(--mono);font-size:12px;padding:1px 7px;border-radius:6px;background:var(--line)}
-  .chg li .fld{font-family:var(--mono);font-size:12.5px;color:var(--muted,#6b7a8c)}
-  .chg li .fr{font-family:var(--mono);font-size:13px;text-decoration:line-through;opacity:.65}
-  .chg li .to{font-family:var(--mono);font-size:13px;font-weight:700}
-  .chg li.mv{--c:#e08a1e}.chg li.tm{--c:#2f7fb0}.chg li.nw{--c:#2e9e6b}.chg li.lf{--c:#8a97a6}.chg li.nt{--c:#d64545}
-  .chg .none{padding:6px 2px;font-style:italic;color:var(--muted,#6b7a8c)}
+  #changes .none{padding:18px 20px;font-style:italic;color:var(--muted,#6b7a8c)}
+  #changes table td.num,#changes table th.num{white-space:nowrap}
+  #changes .tag{display:inline-block;padding:2px 9px;border-radius:999px;font-size:11.5px;font-weight:700;white-space:nowrap}
+  #changes .tag.mv{background:#fdebd0;color:#9a5a05}
+  #changes .tag.tm{background:#dcebf6;color:#1f5f8b}
+  #changes .tag.nw{background:#d9f1e5;color:#17724a}
+  #changes .tag.lf{background:#e6eaef;color:#566273}
+  #changes .tag.nt{background:#f9dcdc;color:#a02a2a}
+  #changes .fr{text-decoration:line-through;opacity:.65}
+  #changes .to{font-weight:700}
   .ncard{--c:var(--warn);position:relative;border:1px solid var(--line);border-left:5px solid var(--c);border-radius:10px;padding:12px 14px 13px;display:flex;flex-direction:column;gap:7px;background:var(--panel)}
   .ncard.closed{--c:var(--now);background:linear-gradient(0deg,rgba(214,69,69,.04),rgba(214,69,69,.04)),var(--panel)}
   .ncard .top{display:flex;align-items:center;justify-content:space-between;gap:8px}
@@ -326,11 +324,6 @@
   </section>
 
   <section class="panel">
-    <div class="panel-head"><h2>Changes since previous sheet</h2><span class="chg-sub" id="chgSub"></span></div>
-    <div class="chg" id="changes"></div>
-  </section>
-
-  <section class="panel">
     <div class="panel-head">
       <h2>Berth timeline</h2>
       <div class="legend">
@@ -353,6 +346,11 @@
         <tbody id="tbody"></tbody>
       </table>
     </div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head"><h2>Changes notices</h2><span class="chg-sub" id="chgSub"></span></div>
+    <div class="scroll" id="changes"></div>
   </section>
 
   </div>
@@ -1354,35 +1352,37 @@ function renderChanges(key){
   const sd=k=>DATASETS[k].label;
   const F={eta:"ETA",pb:"P.B",etd:"ETD"};
   const show=x=>x?fmt(t(x)):"\u2013";
-  const mv=[],tm=[],nw=[],lf=[],nt=[];
+  const rows=[];
+  const row=(cls,tag,n,berth,item,fr,to)=>rows.push(`<tr><td><span class="tag ${cls}">${tag}</span></td><td class="vs">${n}</td><td class="num">${berth}</td><td>${item}</td><td class="num${fr&&fr!=="\u2013"?" fr":""}">${fr||"\u2013"}</td><td class="num to">${to||"\u2013"}</td></tr>`);
+  const order={mv:0,tm:1,nw:2,lf:3,nt:4}; const keyed=[];
+  const push=(cls,tag,n,berth,item,fr,to)=>keyed.push({o:order[cls],html:null,args:[cls,tag,n,berth,item,fr,to]});
   Object.keys(B).forEach(n=>{
     const c=B[n],o=A[n];
-    if(!o){nw.push(`<li class="nw"><b>${n}</b><span class="bn">${c.berth}</span><span class="fld">${c.tba?"listed without full schedule":"ETA "+show(c.eta)+" \u00b7 P.B "+show(c.pb)+" \u00b7 ETD "+show(c.etd)}</span></li>`);return;}
-    if(o.berth!==c.berth) mv.push(`<li class="mv"><b>${n}</b><span class="fld">Berth</span><span class="fr">${o.berth}</span><span class="to">\u2192 ${c.berth}</span></li>`);
+    if(!o){push("nw","New",n,c.berth,c.tba?"Listed without full schedule":"ETA / P.B / ETD","\u2013",c.tba?("ETA "+show(c.eta)):(show(c.eta)+" / "+show(c.pb)+" / "+show(c.etd)));return;}
+    if(o.berth!==c.berth) push("mv","Berth moved",n,c.berth,"Berth",o.berth,c.berth);
     ["eta","pb","etd"].forEach(f=>{
       if(o[f]!==c[f] && (o[f]||c[f])){
         const a=o[f]?t(o[f]):null,b=c[f]?t(c[f]):null;
-        if(a!==b) tm.push(`<li class="tm"><b>${n}</b><span class="bn">${c.berth}</span><span class="fld">${F[f]}</span><span class="fr">${show(o[f])}</span><span class="to">\u2192 ${show(c[f])}</span></li>`);
+        if(a!==b) push("tm","Time changed",n,c.berth,F[f],show(o[f]),show(c[f]));
       }
     });
-    if(o.shift!==c.shift) tm.push(`<li class="tm"><b>${n}</b><span class="bn">${c.berth}</span><span class="fld">Shift</span><span class="fr">${o.shift||"\u2013"}</span><span class="to">\u2192 ${c.shift||"\u2013"}</span></li>`);
+    if(o.shift!==c.shift) push("tm","Time changed",n,c.berth,"Shift",o.shift||"\u2013",c.shift||"\u2013");
   });
   Object.keys(A).forEach(n=>{
     if(B[n]) return;
     const o=A[n];
-    lf.push(`<li class="lf"><b>${n}</b><span class="bn">${o.berth}</span><span class="fld">${o.etd?"was ETD "+show(o.etd)+" \u2013 sailed or removed":"no longer listed"}</span></li>`);
+    push("lf","Not listed",n,o.berth,o.etd?"Was ETD (sailed or removed)":"No longer listed",o.etd?show(o.etd):"\u2013","\u2013");
   });
   const NA=noticeSet(pk),NB=noticeSet(key);
   Object.keys(NB).forEach(k=>{
-    if(!NA[k]) nt.push(`<li class="nt"><b>${NB[k].id}</b><span class="fld">New notice</span><span class="to">${NB[k].label}</span></li>`);
-    else if(NA[k].label!==NB[k].label) nt.push(`<li class="nt"><b>${NB[k].id}</b><span class="fld">Notice</span><span class="fr">${NA[k].label}</span><span class="to">\u2192 ${NB[k].label}</span></li>`);
+    if(!NA[k]) push("nt","Notice added","\u2013",NB[k].id,"Notice","\u2013",NB[k].label);
+    else if(NA[k].label!==NB[k].label) push("nt","Notice changed","\u2013",NB[k].id,"Notice",NA[k].label,NB[k].label);
   });
-  Object.keys(NA).forEach(k=>{if(!NB[k]) nt.push(`<li class="nt"><b>${NA[k].id}</b><span class="fld">Notice removed</span><span class="fr">${NA[k].label}</span></li>`);});
-  const total=mv.length+tm.length+nw.length+lf.length+nt.length;
-  sub.textContent="vs sheet of "+sd(pk);
-  const grp=(title,arr)=>arr.length?`<div class="grp"><h3>${title}<span class="n">${arr.length}</span></h3><ul>${arr.join("")}</ul></div>`:"";
-  box.innerHTML = total
-    ? grp("Berth changes",mv)+grp("Time changes (from \u2192 to)",tm)+grp("New on this sheet",nw)+grp("No longer on this sheet",lf)+grp("Notice changes",nt)
+  Object.keys(NA).forEach(k=>{if(!NB[k]) push("nt","Notice removed","\u2013",NA[k].id,"Notice",NA[k].label,"\u2013");});
+  keyed.sort((x,y)=>x.o-y.o).forEach(k=>row(...k.args));
+  sub.textContent="vs sheet of "+sd(pk)+" \u00b7 "+rows.length+(rows.length===1?" change":" changes");
+  box.innerHTML = rows.length
+    ? '<table><thead><tr><th>Change</th><th>Vessel</th><th>Berth</th><th>Item</th><th>From</th><th>To</th></tr></thead><tbody>'+rows.join("")+'</tbody></table>'
     : '<div class="none">No changes since the previous sheet ('+sd(pk)+').</div>';
 }
 
