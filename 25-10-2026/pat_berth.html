@@ -197,17 +197,32 @@
   /* notices as cards */
   .notices{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px;padding:16px 20px 20px}
   .chg-sub{font-family:var(--mono);font-size:12.5px;color:var(--muted,#6b7a8c)}
-  td.chgc{min-width:160px;line-height:1.5;padding-top:7px;padding-bottom:7px}
-  td.chgc .tag{display:block;width:max-content;margin:2px 0}
+  .bgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px;padding:16px 20px 20px}
+  .bcard{border:1px solid var(--line);border-radius:12px;background:var(--panel);overflow:hidden;display:flex;flex-direction:column}
+  .bhead{display:flex;align-items:baseline;justify-content:space-between;gap:8px;padding:10px 14px;background:var(--line-2);border-bottom:1px solid var(--line)}
+  .bhead .bid{font-family:var(--display);font-weight:700;font-size:22px;line-height:1}
+  .bhead .bg{font-family:var(--mono);font-size:11.5px;color:var(--ink-3)}
+  .vbox{padding:11px 14px;border-bottom:1px solid var(--line-2);display:flex;flex-direction:column;gap:5px}
+  .vbox:last-child{border-bottom:0}
+  .vbox.marked{background:var(--warn-soft)}
+  .vtop{display:flex;align-items:center;justify-content:space-between;gap:8px}
+  .vtop b{font-family:var(--display);font-weight:700;font-size:16px}
+  .vmeta{font-family:var(--mono);font-size:12px;color:var(--ink-3)}
+  .vtimes{display:grid;grid-template-columns:34px 1fr;gap:2px 8px;font-family:var(--mono);font-size:13px}
+  .vtimes span:nth-child(odd){color:var(--ink-3);font-size:11.5px}
+  .vtags{display:flex;flex-wrap:wrap;gap:2px 8px;margin-top:2px}
+  .vtags .tag{margin:0}
+  .vnone{padding:16px 14px;font-style:italic;color:var(--ink-3);font-size:14px}
+  .tile .v.vname{font-size:22px;line-height:1.15;padding-top:6px}
   table td.num,table th{padding-left:10px;padding-right:10px}
-  td .tag{display:inline-block;margin:0 8px 2px 0;font-size:11.5px;font-weight:700;white-space:nowrap}
-  td .tag.mv{padding:2px 9px;border-radius:999px;background:#fdebd0;color:#9a5a05}
-  td .tag.tm{padding:2px 9px;border-radius:999px;background:#dcebf6;color:#1f5f8b}
-  td .tag.nw{padding:2px 9px;border-radius:999px;background:#d9f1e5;color:#17724a}
-  td .tag.adv{color:#1f5f8b}
-  td .tag.dly{color:#d64545}
-  td .fr{text-decoration:line-through;opacity:.65}
-  td .to{font-weight:700}
+  .tag{display:inline-block;margin:0 8px 2px 0;font-size:11.5px;font-weight:700;white-space:nowrap}
+  .tag.mv{padding:2px 9px;border-radius:999px;background:#fdebd0;color:#9a5a05}
+  .tag.tm{padding:2px 9px;border-radius:999px;background:#dcebf6;color:#1f5f8b}
+  .tag.nw{padding:2px 9px;border-radius:999px;background:#d9f1e5;color:#17724a}
+  .tag.adv{color:#1f5f8b}
+  .tag.dly{color:#d64545}
+  .fr{text-decoration:line-through;opacity:.65}
+  .to{font-weight:700}
   .ncard{--c:var(--warn);position:relative;border:1px solid var(--line);border-left:5px solid var(--c);border-radius:10px;padding:12px 14px 13px;display:flex;flex-direction:column;gap:7px;background:var(--panel)}
   .ncard.closed{--c:var(--now);background:linear-gradient(0deg,rgba(214,69,69,.04),rgba(214,69,69,.04)),var(--panel)}
   .ncard .top{display:flex;align-items:center;justify-content:space-between;gap:8px}
@@ -311,11 +326,6 @@
     </div>
   </header>
 
-  <div class="viewbar" role="tablist" aria-label="View">
-    <button type="button" class="vb on" id="viewDash" role="tab" aria-selected="true">Dashboard</button>
-    <button type="button" class="vb" id="viewCal" role="tab" aria-selected="false">Calendar</button>
-  </div>
-
   <div id="dashView">
   <section class="summary" id="summary"></section>
 
@@ -323,6 +333,8 @@
     <div class="panel-head"><h2>Berth notices</h2></div>
     <div class="notices" id="notices"></div>
   </section>
+
+  <section class="panel" id="dayPanel"><div class="pc-detail" id="pcDetail"></div></section>
 
   <section class="panel">
     <div class="panel-head">
@@ -341,38 +353,10 @@
 
   <section class="panel">
     <div class="panel-head"><h2>Vessel list by berth</h2><span class="chg-sub" id="chgSub"></span></div>
-    <div class="scroll">
-      <table>
-        <thead><tr><th>Vessel</th><th>LOA (m)</th><th>ETA</th><th>P.B</th><th>ETD</th><th>Waiting for berth</th><th>Hours alongside</th><th>Shift</th><th>Status</th><th>Change vs previous sheet</th></tr></thead>
-        <tbody id="tbody"></tbody>
-      </table>
-    </div>
+    <div class="bgrid" id="bgrid"></div>
   </section>
 
   </div>
-
-  <div class="pc-tip" id="pcTip" role="tooltip" hidden></div>
-
-  <section class="panel off" id="calView" aria-label="Port calendar">
-    <div class="panel-head">
-      <h2>Port calendar</h2>
-      <div class="legend">
-        <span><b class="lg in">▲</b>Berthing (P.B)</span>
-        <span><b class="lg out">▼</b>Sailing (ETD)</span>
-        <span><i class="sw x"></i>Berth closed</span>
-        <span><i class="sw g"></i>Gate stopped</span>
-        <span><i class="pc-dot"></i>Sheet received</span>
-      </div>
-    </div>
-    <div class="pc-bar">
-      <button type="button" class="cal-nav" id="pcPrev" aria-label="Previous month">‹</button>
-      <span class="pc-title" id="pcTitle"></span>
-      <button type="button" class="cal-nav" id="pcNext" aria-label="Next month">›</button>
-      <button type="button" class="pc-today" id="pcToday">Today</button>
-    </div>
-    <div class="scroll"><div class="pc-wrap"><div class="pc-grid" id="pcGrid"></div></div></div>
-    <div class="pc-detail" id="pcDetail"></div>
-  </section>
 
   <div class="foot">
     <span>P.B = pilot boarding / berthing time. Times on the sheet are written DD/HH; the month is taken from the sheet date (Sep–Oct 2026).</span>
@@ -1432,10 +1416,10 @@ function render(keys){
     g.appendChild(tag);
   }
 
-  // Table: vessels alongside now plus the next one to berth, per berth, compared with the previous sheet
+  // Vessel list: one box per berth - the vessel(s) alongside now plus the next one to berth, compared with the previous sheet
   const CH=computeChanges(lastKey);
   document.getElementById("chgSub").textContent = CH ? ("Alongside now \u00b7 next to berth \u00b7 changes vs sheet of "+CH.label) : "Alongside now \u00b7 next to berth";
-  const tcell=(v,f,e)=>{
+  const tval=(v,f,e)=>{
     const cur=fmt(t(v[f]));
     return (e&&e.old&&e.old[f]) ? `<span class="fr">${e.old[f].split("@")[0]}</span> \u2192 <span class="to">${v[f].split("@")[0]}</span>` : cur;
   };
@@ -1445,17 +1429,21 @@ function render(keys){
     const along=live.filter(v=>status(v)[0]==="along");
     const next=live.filter(v=>status(v)[0]!=="along").sort((x,y)=>t(x.pb)-t(y.pb))[0];
     const shown=along.concat(next?[next]:[]);
-    if(!shown.length) return;
-    tb+=`<tr class="grp"><td colspan="10">Berth ${b.id}<span>${b.gates}</span></td></tr>`;
+    let body="";
     shown.forEach(v=>{
       const [,lab,cls]=status(v);
       const hrs=(t(v.etd)-t(v.pb))/H, wait=(t(v.pb)-t(v.eta))/H;
       const e=CH?CH.map[v.n]:null;
-      const chg=!CH?"\u2013":(e?(e.tags.length?e.tags.join(" "):"\u2013"):"\u2013");
-      tb+=`<tr class="${v.mark?"marked":""}"><td class="vs">${v.n}${v.mark?'<span class="flag" title="Marked on sheet"></span>':""}</td><td class="num">${v.loa}</td><td class="num">${tcell(v,"eta",e)}</td><td class="num">${tcell(v,"pb",e)}</td><td class="num">${tcell(v,"etd",e)}</td><td class="num">${wait} h</td><td class="num">${hrs} h</td><td class="num">${v.shift||"\u2013"}</td><td><span class="pill ${cls}">${lab}</span></td><td class="chgc">${chg}</td></tr>`;
+      const chg=(CH&&e&&e.tags.length)?`<div class="vtags">${e.tags.join("")}</div>`:"";
+      body+=`<div class="vbox${v.mark?" marked":""}"><div class="vtop"><b>${v.n}</b><span class="pill ${cls}">${lab}</span></div>
+        <div class="vmeta">LOA ${v.loa} m${v.shift?" \u00b7 Shift "+v.shift:""}</div>
+        <div class="vtimes"><span>ETA</span><span class="num">${tval(v,"eta",e)}</span><span>P.B</span><span class="num">${tval(v,"pb",e)}</span><span>ETD</span><span class="num">${tval(v,"etd",e)}</span></div>
+        <div class="vmeta">Waiting ${wait} h \u00b7 Alongside ${hrs} h</div>${chg}</div>`;
     });
+    if(!body) body='<div class="vnone">No vessel scheduled</div>';
+    tb+=`<div class="bcard"><div class="bhead"><span class="bid">${b.id}</span><span class="bg">${b.gates||""}</span></div>${body}</div>`;
   });
-  document.getElementById("tbody").innerHTML=tb;
+  document.getElementById("bgrid").innerHTML=tb;
 
   // Notices
   const pd=s=>{const ms=t(s);return fmt(ms).slice(0,6)};
@@ -1466,6 +1454,7 @@ function render(keys){
     const closed = r.kind==="closed";
     return `<div class="ncard${closed?" closed":""}"><div class="top"><span class="bn">${b.id}</span><span class="pill ${closed?"p-closed":"p-anch"}">${closed?"Berth closed":"Gate stopped"}</span></div><div class="per">${per}</div><div class="txt">${r.text}</div></div>`;
   })).join("");
+  renderDayPanel(lastKey);
   document.getElementById("notices").innerHTML = cards || `<div class="nempty">No berth notices on this sheet</div>`;
 
   // Summary
@@ -1477,7 +1466,7 @@ function render(keys){
   document.getElementById("summary").innerHTML=`
     <div class="tile t-ok"><span class="k">Alongside now</span><span class="v">${along.length}</span><span class="s">${along.map(v=>v.berth).join(" · ")||"–"}</span></div>
     <div class="tile t-warn"><span class="k">At anchorage</span><span class="v">${anch.length}</span><span class="s">${anch.map(v=>v.n).join(", ")||"None waiting"}</span></div>
-    <div class="tile"><span class="k">Next berthing</span><span class="v">${nextIn?nextIn.pb.split("@")[0]:"–"}</span><span class="s">${nextIn?`${nextIn.n} → ${nextIn.berth}`:""}</span></div>
+    <div class="tile"><span class="k">Next berthing</span><span class="v vname">${nextIn?nextIn.n:"No vessel scheduled"}</span><span class="s">${nextIn?`Berth ${nextIn.berth} · P.B ${fmt(t(nextIn.pb))}`:""}</span></div>
     <div class="tile t-mark"><span class="k">Berth notices</span><span class="v">${nNotices}</span><span class="s">${nNotices?"see notices above":"none on this sheet"}</span></div>
     <div class="tile t-slate"><span class="k">Next sailing</span><span class="v">${nextSail?nextSail.etd.split("@")[0]:"–"}</span><span class="s">${nextSail?`${nextSail.n} · ${nextSail.berth}`:""}</span></div>`;
 }
@@ -1591,15 +1580,10 @@ document.addEventListener("keydown", e=>{ if(e.key==="Escape" && !calPop.hidden)
 
 
 // ---- port calendar page: a month grid of berthings (P.B) and sailings (ETD) from every sheet ----
-const dashView = document.getElementById("dashView");
-const calView = document.getElementById("calView");
-const viewDashBtn = document.getElementById("viewDash");
-const viewCalBtn = document.getElementById("viewCal");
 const FULL_DOW = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 const pad2 = n => String(n).padStart(2,"0");
 const dayKeyOf = ms => {const d=new Date(ms+7*H);return d.getUTCFullYear()+"-"+pad2(d.getUTCMonth()+1)+"-"+pad2(d.getUTCDate());};
 const hhmm = ms => pad2(new Date(ms+7*H).getUTCHours())+":"+pad2(new Date(ms+7*H).getUTCMinutes());
-let pcY, pcM, pcSel = null;
 let pcIndex = {}, pcSeq = 0;
 const pcEv = (kind,ms,n,berth,v) => {const e={kind,ms,n,berth,v,id:++pcSeq};pcIndex[e.id]=e;return e;};
 
@@ -1624,109 +1608,18 @@ function pcData(){
   return {ev,notes};
 }
 
-function renderPageCal(){
+function renderDayPanel(k){
   const {ev,notes}=pcData();
-  const keys=Object.keys(ev).sort();
-  const lo=ymOf(keys[0]), hi=ymOf(keys[keys.length-1]);
-  const todayK=realTodayKey();
-  if(pcY===undefined){
-    const o=ymOf(todayK);
-    const inRange=(o.y*12+o.m)>=(lo.y*12+lo.m) && (o.y*12+o.m)<=(hi.y*12+hi.m);
-    const pick=inRange?o:hi; pcY=pick.y; pcM=pick.m;
-  }
-  if(pcSel===null) pcSel = (ev[todayK]||DATASETS[todayK]) ? todayK : LATEST_KEY;
-  document.getElementById("pcTitle").textContent=MONTH_NAMES[pcM]+" "+pcY;
-  document.getElementById("pcPrev").disabled=(pcY*12+pcM)<=(lo.y*12+lo.m);
-  document.getElementById("pcNext").disabled=(pcY*12+pcM)>=(hi.y*12+hi.m);
-  const nowMs=Date.now();
-  const startDow=new Date(Date.UTC(pcY,pcM,1)).getUTCDay();
-  const dim=new Date(Date.UTC(pcY,pcM+1,0)).getUTCDate();
-  let html=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].map(d=>'<div class="pc-dow">'+d+'</div>').join("");
-  for(let i=0;i<startDow;i++) html+='<div class="pc-cell pc-empty"></div>';
-  for(let d=1; d<=dim; d++){
-    const k=pcY+"-"+pad2(pcM+1)+"-"+pad2(d);
-    const list=ev[k]||[], nn=notes[k]||[];
-    const shown=list.slice(0,4), more=list.length-shown.length;
-    const tags=nn.slice(0,2).map(n=>'<span class="pc-tag '+n.kind+'" title="'+n.text+'">'+n.berth+(n.kind==="closed"?" closed":" gate stop")+'</span>').join("")
-      +(nn.length>2?'<span class="pc-more">+'+(nn.length-2)+' notices</span>':"");
-    const chips=shown.map(e=>'<span class="pc-ev '+e.kind+(e.ms<nowMs?" past":"")+'" data-eid="'+e.id+'"><b>'+(e.kind==="in"?"\u25B2":"\u25BC")+'</b>'+hhmm(e.ms)+" "+e.n+'</span>').join("");
-    html+='<div class="pc-cell'+(k===todayK?" today":"")+(k===pcSel?" sel":"")+'" data-key="'+k+'" tabindex="0" role="button" aria-label="'+d+' '+MONTH_NAMES[pcM]+' '+pcY+': '+list.length+' movements">'
-      +'<div class="pc-top"><span class="pc-num">'+d+'</span>'+(DATASETS[k]?'<i class="pc-dot" title="Sheet received"></i>':"")+'</div>'
-      +tags+chips+(more>0?'<span class="pc-more">+'+more+' more</span>':"")+'</div>';
-  }
-  const tail=(7-((startDow+dim)%7))%7;
-  for(let i=0;i<tail;i++) html+='<div class="pc-cell pc-empty"></div>';
-  document.getElementById("pcGrid").innerHTML=html;
-  renderPcDetail(pcSel,ev,notes);
-}
-
-function renderPcDetail(k,ev,notes){
   const [y,m,d]=k.split("-").map(Number);
   const dow=FULL_DOW[new Date(Date.UTC(y,m-1,d)).getUTCDay()];
   const list=ev[k]||[], ins=list.filter(e=>e.kind==="in"), outs=list.filter(e=>e.kind==="out"), nn=notes[k]||[];
   const li=e=>'<li><span class="t">'+hhmm(e.ms)+'</span><b>'+e.n+'</b><span class="b">'+e.berth+'</span><span class="x">ETA '+fmt(t(e.v.eta))+' \u00b7 P.B '+fmt(t(e.v.pb))+' \u00b7 ETD '+fmt(t(e.v.etd))+'</span></li>';
   const col=(title,items,fn)=>'<div class="pc-col"><h4>'+title+' ('+items.length+')</h4>'+(items.length?'<ul>'+items.map(fn).join("")+'</ul>':'<div class="none">None</div>')+'</div>';
   document.getElementById("pcDetail").innerHTML=
-    '<div class="pc-dhead"><h3>'+dow+' '+d+' '+MONTH_NAMES[m-1]+' '+y+'</h3>'
-    +(DATASETS[k]?'<button type="button" class="pc-open" data-open="'+k+'">Open this day\'s sheet</button>':'<span class="pc-nosheet">No sheet for this day</span>')+'</div>'
+    '<div class="pc-dhead"><h3>'+dow+' '+d+' '+MONTH_NAMES[m-1]+' '+y+'</h3></div>'
     +'<div class="pc-cols">'+col("Berthing (P.B)",ins,li)+col("Sailing (ETD)",outs,li)
     +col("Notices",nn,n=>'<li><b>'+n.berth+'</b><span class="b">'+n.text+'</span></li>')+'</div>';
 }
-
-function setView(v){
-  const cal = v==="cal";
-  dashView.classList.toggle("off",cal);
-  calView.classList.toggle("off",!cal);
-  document.body.classList.toggle("view-cal",cal);
-  viewDashBtn.classList.toggle("on",!cal); viewDashBtn.setAttribute("aria-selected",String(!cal));
-  viewCalBtn.classList.toggle("on",cal); viewCalBtn.setAttribute("aria-selected",String(cal));
-  if(cal) renderPageCal();
-  else requestAnimationFrame(function(){var sc=document.getElementById("gantt").parentElement;sc.scrollLeft=sc.scrollWidth;});
-  try{ localStorage.setItem("patBerthView", v); }catch(e){}
-}
-
-// ---- hover tooltip on calendar chips: ETA / P.B / ETD ----
-const pcTip = document.getElementById("pcTip");
-function showPcTip(chip, x, y){
-  const e = pcIndex[chip.dataset.eid];
-  if(!e) return;
-  const v=e.v, a=t(v.eta), p=t(v.pb), d=t(v.etd), hrs=(d-p)/H;
-  pcTip.innerHTML =
-    '<div class="tn">'+v.n+'</div>'
-    +'<div class="tb">'+(e.kind==="in"?"Berthing":"Sailing")+' \u00b7 Berth '+e.berth+' \u00b7 LOA '+v.loa+' m'+(v.shift?' \u00b7 Shift '+v.shift:'')+'</div>'
-    +'<div class="tr"><span>ETA</span><span>'+fmt(a)+'</span></div>'
-    +'<div class="tr'+(e.kind==="in"?' hot':'')+'"><span>P.B</span><span>'+fmt(p)+'</span></div>'
-    +'<div class="tr'+(e.kind==="out"?' hot':'')+'"><span>ETD</span><span>'+fmt(d)+'</span></div>'
-    +'<div class="tf">Alongside '+hrs+' h</div>';
-  pcTip.hidden=false;
-  movePcTip(x,y);
-}
-function movePcTip(x,y){
-  const w=pcTip.offsetWidth, h=pcTip.offsetHeight, m=14;
-  let left=x+m, top=y+m;
-  if(left+w>window.innerWidth-8) left=x-w-m;
-  if(top+h>window.innerHeight-8) top=y-h-m;
-  pcTip.style.left=Math.max(8,left)+"px";
-  pcTip.style.top=Math.max(8,top)+"px";
-}
-calView.addEventListener("mouseover", e=>{const c=e.target.closest(".pc-ev[data-eid]");if(c)showPcTip(c,e.clientX,e.clientY);});
-calView.addEventListener("mousemove", e=>{if(!pcTip.hidden)movePcTip(e.clientX,e.clientY);});
-calView.addEventListener("mouseout", e=>{if(e.target.closest(".pc-ev[data-eid]"))pcTip.hidden=true;});
-calView.addEventListener("click", ()=>{pcTip.hidden=true;});
-viewDashBtn.addEventListener("click", ()=>setView("dash"));
-viewCalBtn.addEventListener("click", ()=>setView("cal"));
-document.getElementById("pcPrev").addEventListener("click", ()=>{pcM--;if(pcM<0){pcM=11;pcY--;}renderPageCal();});
-document.getElementById("pcNext").addEventListener("click", ()=>{pcM++;if(pcM>11){pcM=0;pcY++;}renderPageCal();});
-document.getElementById("pcToday").addEventListener("click", ()=>{const o=ymOf(realTodayKey());pcY=o.y;pcM=o.m;pcSel=realTodayKey();renderPageCal();});
-calView.addEventListener("click", e=>{
-  const open=e.target.closest("button[data-open]");
-  if(open){applyRange(open.dataset.open,open.dataset.open);setView("dash");return;}
-  const cell=e.target.closest(".pc-cell[data-key]");
-  if(cell){pcSel=cell.dataset.key;renderPageCal();}
-});
-calView.addEventListener("keydown", e=>{
-  if((e.key==="Enter"||e.key===" ") && e.target.matches(".pc-cell[data-key]")){e.preventDefault();pcSel=e.target.dataset.key;renderPageCal();}
-});
 
 let startFrom = LATEST_KEY, startTo = LATEST_KEY;
 try{
@@ -1734,7 +1627,6 @@ try{
   if(saved && DATASETS[saved[0]] && DATASETS[saved[1]]){startFrom=saved[0];startTo=saved[1];}
 }catch(e){}
 applyRange(startFrom, startTo);
-try{ if(localStorage.getItem("patBerthView")==="cal") setView("cal"); }catch(e){}
 </script>
 
 <script>
