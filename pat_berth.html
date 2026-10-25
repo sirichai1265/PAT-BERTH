@@ -1650,7 +1650,7 @@ function renderDayPanel(k){
   const today=(ev[k]||[]).filter(e=>e.kind==="bth"&&t(e.v.etd)>nowRef);
   const rows=today.map(e=>({berth:e.berth,n:e.n,etb:e.ms,etd:t(e.v.etd),last:false}));
   const all=merge(DAY_ORDER);
-  ["20A","20AB","20B","20C","20D","20E","20F"].forEach(id=>{
+  ["20AB","20B","20C","20D","20E","20F"].forEach(id=>{   // 20A is not in use yet: not shown here
     if(rows.some(r=>r.berth===id)) return;
     const b=all.find(x=>x.id===id);
     const done=b?b.vessels.map(v=>({v,etb:t(v.pb)+3*H})).filter(x=>x.etb<dayEnd&&t(x.v.etd)>nowRef).sort((p,q)=>q.etb-p.etb)[0]:null;
