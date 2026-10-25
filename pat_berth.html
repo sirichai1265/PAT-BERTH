@@ -1493,9 +1493,9 @@ function render(keys){
   const nNotices=BERTHS.reduce((a,b)=>a+(b.restrict||[]).length,0);
   document.getElementById("summary").innerHTML=`
     <div class="tile t-mark"><span class="k">Berth notices</span><span class="v">${nNotices}</span><span class="s">${nNotices?"see notices above":"none on this sheet"}</span></div>
+    <div class="tile t-warn"><span class="k">At anchorage</span><span class="v">${anch.length}</span><span class="s">${anch.map(v=>v.n).join(", ")||"None waiting"}</span></div>
     <div class="tile t-ok"><span class="k">Alongside now</span><span class="v">${along.length}</span><span class="s">${along.map(v=>v.berth).join(" · ")||"–"}</span></div>
-    <div class="tile"><span class="k">Coming soon</span><span class="v">${upc.length}</span><span class="s">${upc.length?upc.map(v=>v.n).slice(0,3).join(", ")+(upc.length>3?" +"+(upc.length-3)+" more":""):"None coming soon"}</span></div>
-    <div class="tile t-warn"><span class="k">At anchorage</span><span class="v">${anch.length}</span><span class="s">${anch.map(v=>v.n).join(", ")||"None waiting"}</span></div>`;
+    <div class="tile"><span class="k">Coming soon</span><span class="v">${upc.length}</span><span class="s">${upc.length?upc.map(v=>v.n).slice(0,3).join(", ")+(upc.length>3?" +"+(upc.length-3)+" more":""):"None coming soon"}</span></div>`;
 }
 
 // ---- date range picker: a single day (From = To) or several sheets combined ----
