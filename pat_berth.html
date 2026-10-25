@@ -198,7 +198,9 @@
   .notices{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px;padding:16px 20px 20px}
   .chg-sub{font-family:var(--mono);font-size:12.5px;color:var(--muted,#6b7a8c)}
   .bgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px;padding:16px 20px 20px}
-  .bgrid .brk{grid-column:1/-1;height:0;margin:-14px 0 0}
+  .bgrid .ghead{grid-column:1/-1;display:flex;align-items:baseline;gap:12px;padding:6px 2px 0;border-bottom:2px solid var(--berth,#2f7fb0)}
+  .bgrid .ghead b{font-family:var(--display);font-weight:700;font-size:17px;letter-spacing:.05em}
+  .bgrid .ghead span{font-family:var(--mono);font-size:12.5px;color:var(--ink-3)}
   .bcard{border:1px solid var(--line);border-radius:12px;background:var(--panel);overflow:hidden;display:flex;flex-direction:column}
   .bhead{display:flex;align-items:baseline;justify-content:space-between;gap:8px;padding:10px 14px;background:var(--line-2);border-bottom:1px solid var(--line)}
   .bhead .bid{font-family:var(--display);font-weight:700;font-size:22px;line-height:1}
@@ -1426,11 +1428,11 @@ function render(keys){
     const cur=fmt(t(v[f]));
     return (e&&e.old&&e.old[f]) ? `<span class="fr">${e.old[f].split("@")[0]}</span> \u2192 <span class="to">${v[f].split("@")[0]}</span>` : cur;
   };
-  let tb="", brk22=false;
+  const cardList=[];
   // berths held with a standing note until told otherwise (kept on every sheet)
   const HOLD={"20A":"=== Awaiting handover ==="};
   Object.keys(HOLD).forEach(id=>{
-    if(!BERTHS.some(b=>b.id===id)) tb+=`<div class="bcard hold"><div class="bhead"><span class="bid">${id}</span><span class="bg"></span></div><div class="vhold">${HOLD[id]}</div></div>`;
+    if(!BERTHS.some(b=>b.id===id)) cardList.push({id,html:`<div class="bcard hold"><div class="bhead"><span class="bid">${id}</span><span class="bg"></span></div><div class="vhold">${HOLD[id]}</div></div>`});
   });
   BERTHS.forEach(b=>{
     const live=b.vessels.filter(v=>status(v)[0]!=="done");
@@ -1450,8 +1452,17 @@ function render(keys){
     });
     if(HOLD[b.id]) body=`<div class="vhold">${HOLD[b.id]}</div>`+body.replace('<div class="vnone">No vessel scheduled</div>',"");
     if(!body) body='<div class="vnone">No vessel scheduled</div>';
-    if(/^22/.test(b.id)&&!brk22){brk22=true;tb+='<div class="brk"></div>';}
-    tb+=`<div class="bcard"><div class="bhead"><span class="bid">${b.id}</span><span class="bg">${b.gates||""}</span></div>${body}</div>`;
+    cardList.push({id:b.id,html:`<div class="bcard"><div class="bhead"><span class="bid">${b.id}</span><span class="bg">${b.gates||""}</span></div>${body}</div>`});
+  });
+  // grouped by terminal
+  const T1=["20A","20AB","20B","20C"], T2=["20D","20E","20F"];
+  const groupOf=id=>/^22/.test(id)?"BARGE BERTH":(T1.includes(id)?"PAT TERMINAL 1":"PAT TERMINAL 2");
+  const GROUP_BERTHS={"PAT TERMINAL 1":"20A · 20AB · 20B · 20C","PAT TERMINAL 2":"20D · 20E · 20F","BARGE BERTH":"22A · 22B · 22D · 22E"};
+  let tb="";
+  ["PAT TERMINAL 1","PAT TERMINAL 2","BARGE BERTH"].forEach(g=>{
+    const mine=cardList.filter(c=>groupOf(c.id)===g);
+    if(!mine.length) return;
+    tb+=`<div class="ghead"><b>${g}</b><span>${GROUP_BERTHS[g]}</span></div>`+mine.map(c=>c.html).join("");
   });
   document.getElementById("bgrid").innerHTML=tb;
 

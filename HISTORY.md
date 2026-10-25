@@ -444,6 +444,7 @@ Bold ETAs on this sheet (BANGKOK, LITTLE DOLPHIN, INGENUITY) are actual arrival 
 - Dashboard: standing box "20A === Awaiting handover ===" added to Vessel list by berth; it stays on every sheet until told otherwise (HOLD constant in the dashboard script)
 - Dashboard: Vessel list by berth now sits before Berth timeline; the daily email no longer pastes the Berth timeline (header, summary, notices, day summary and vessel list only)
 - Dashboard: vessel status for the sheet date ("today"): ETA = ARRIVAL, P.B = PILOT ON BOARD, ETB = P.B + 3 HOURS = BERTH, ETD = DEPARTURE. The day summary has one column per status and each vessel box has a BERTH (ETB) row (the per-vessel TODAY tags were removed on request)
+- Dashboard: Vessel list by berth grouped under headings PAT TERMINAL 1 (20A, 20AB, 20B, 20C), PAT TERMINAL 2 (20D, 20E, 20F) and BARGE BERTH (22A, 22B, 22D, 22E)
 - Folder: [`25-10-2026/`](25-10-2026)
 
 ---
