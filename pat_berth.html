@@ -196,6 +196,19 @@
 
   /* notices as cards */
   .notices{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px;padding:16px 20px 20px}
+  .chg-sub{font-family:var(--mono);font-size:12.5px;color:var(--muted,#6b7a8c)}
+  .chg{padding:14px 20px 18px;display:flex;flex-direction:column;gap:14px}
+  .chg .grp h3{margin:0 0 6px;font-family:var(--display);font-size:15px;font-weight:700;letter-spacing:.01em}
+  .chg .grp h3 .n{display:inline-block;min-width:20px;padding:0 6px;margin-left:6px;border-radius:999px;background:var(--line);font-size:12px;text-align:center}
+  .chg ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:5px}
+  .chg li{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline;padding:7px 12px;border:1px solid var(--line);border-left:4px solid var(--c,#2f7fb0);border-radius:8px;font-size:14px}
+  .chg li b{font-family:var(--display);font-size:15px}
+  .chg li .bn{font-family:var(--mono);font-size:12px;padding:1px 7px;border-radius:6px;background:var(--line)}
+  .chg li .fld{font-family:var(--mono);font-size:12.5px;color:var(--muted,#6b7a8c)}
+  .chg li .fr{font-family:var(--mono);font-size:13px;text-decoration:line-through;opacity:.65}
+  .chg li .to{font-family:var(--mono);font-size:13px;font-weight:700}
+  .chg li.mv{--c:#e08a1e}.chg li.tm{--c:#2f7fb0}.chg li.nw{--c:#2e9e6b}.chg li.lf{--c:#8a97a6}.chg li.nt{--c:#d64545}
+  .chg .none{padding:6px 2px;font-style:italic;color:var(--muted,#6b7a8c)}
   .ncard{--c:var(--warn);position:relative;border:1px solid var(--line);border-left:5px solid var(--c);border-radius:10px;padding:12px 14px 13px;display:flex;flex-direction:column;gap:7px;background:var(--panel)}
   .ncard.closed{--c:var(--now);background:linear-gradient(0deg,rgba(214,69,69,.04),rgba(214,69,69,.04)),var(--panel)}
   .ncard .top{display:flex;align-items:center;justify-content:space-between;gap:8px}
@@ -310,6 +323,11 @@
   <section class="panel">
     <div class="panel-head"><h2>Berth &amp; gate notices</h2></div>
     <div class="notices" id="notices"></div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head"><h2>Changes since previous sheet</h2><span class="chg-sub" id="chgSub"></span></div>
+    <div class="chg" id="changes"></div>
   </section>
 
   <section class="panel">
@@ -1308,6 +1326,66 @@ function merge(keys){
     .map(b=>({...b,vessels:b.vessels.slice().sort((x,y)=>t(x.pb)-t(y.pb))}));
 }
 
+// ---- what changed versus the previous sheet (vessel by vessel, from -> to)
+function sheetMap(key){
+  const m={};
+  DATASETS[key].berths.forEach(b=>{
+    const add=(v,tba)=>{
+      const e={n:v.n,loa:v.loa,berth:b.id,eta:v.eta||null,pb:tba?null:v.pb,etd:tba?null:v.etd,tba:!!tba,shift:v.shift||""};
+      const old=m[v.n];
+      // a vessel can also be printed under a 22x shifting block: keep the main berth row
+      if(!old || (/^22/.test(old.berth) && !/^22/.test(b.id))) m[v.n]=e;
+    };
+    b.vessels.forEach(v=>add(v,false));
+    (b.pending||[]).forEach(v=>add(v,true));
+  });
+  return m;
+}
+function noticeSet(key){
+  const m={};
+  DATASETS[key].berths.forEach(b=>(b.restrict||[]).forEach(r=>{m[b.id+"|"+r.kind]={id:b.id,kind:r.kind,label:r.label,text:r.text};}));
+  return m;
+}
+function renderChanges(key){
+  const box=document.getElementById("changes"), sub=document.getElementById("chgSub");
+  const idx=DAY_ORDER.indexOf(key);
+  if(idx<=0){sub.textContent="";box.innerHTML='<div class="none">First sheet in the log \u2013 nothing to compare with.</div>';return;}
+  const pk=DAY_ORDER[idx-1], A=sheetMap(pk), B=sheetMap(key);
+  const sd=k=>DATASETS[k].label;
+  const F={eta:"ETA",pb:"P.B",etd:"ETD"};
+  const show=x=>x?fmt(t(x)):"\u2013";
+  const mv=[],tm=[],nw=[],lf=[],nt=[];
+  Object.keys(B).forEach(n=>{
+    const c=B[n],o=A[n];
+    if(!o){nw.push(`<li class="nw"><b>${n}</b><span class="bn">${c.berth}</span><span class="fld">${c.tba?"listed without full schedule":"ETA "+show(c.eta)+" \u00b7 P.B "+show(c.pb)+" \u00b7 ETD "+show(c.etd)}</span></li>`);return;}
+    if(o.berth!==c.berth) mv.push(`<li class="mv"><b>${n}</b><span class="fld">Berth</span><span class="fr">${o.berth}</span><span class="to">\u2192 ${c.berth}</span></li>`);
+    ["eta","pb","etd"].forEach(f=>{
+      if(o[f]!==c[f] && (o[f]||c[f])){
+        const a=o[f]?t(o[f]):null,b=c[f]?t(c[f]):null;
+        if(a!==b) tm.push(`<li class="tm"><b>${n}</b><span class="bn">${c.berth}</span><span class="fld">${F[f]}</span><span class="fr">${show(o[f])}</span><span class="to">\u2192 ${show(c[f])}</span></li>`);
+      }
+    });
+    if(o.shift!==c.shift) tm.push(`<li class="tm"><b>${n}</b><span class="bn">${c.berth}</span><span class="fld">Shift</span><span class="fr">${o.shift||"\u2013"}</span><span class="to">\u2192 ${c.shift||"\u2013"}</span></li>`);
+  });
+  Object.keys(A).forEach(n=>{
+    if(B[n]) return;
+    const o=A[n];
+    lf.push(`<li class="lf"><b>${n}</b><span class="bn">${o.berth}</span><span class="fld">${o.etd?"was ETD "+show(o.etd)+" \u2013 sailed or removed":"no longer listed"}</span></li>`);
+  });
+  const NA=noticeSet(pk),NB=noticeSet(key);
+  Object.keys(NB).forEach(k=>{
+    if(!NA[k]) nt.push(`<li class="nt"><b>${NB[k].id}</b><span class="fld">New notice</span><span class="to">${NB[k].label}</span></li>`);
+    else if(NA[k].label!==NB[k].label) nt.push(`<li class="nt"><b>${NB[k].id}</b><span class="fld">Notice</span><span class="fr">${NA[k].label}</span><span class="to">\u2192 ${NB[k].label}</span></li>`);
+  });
+  Object.keys(NA).forEach(k=>{if(!NB[k]) nt.push(`<li class="nt"><b>${NA[k].id}</b><span class="fld">Notice removed</span><span class="fr">${NA[k].label}</span></li>`);});
+  const total=mv.length+tm.length+nw.length+lf.length+nt.length;
+  sub.textContent="vs sheet of "+sd(pk);
+  const grp=(title,arr)=>arr.length?`<div class="grp"><h3>${title}<span class="n">${arr.length}</span></h3><ul>${arr.join("")}</ul></div>`:"";
+  box.innerHTML = total
+    ? grp("Berth changes",mv)+grp("Time changes (from \u2192 to)",tm)+grp("New on this sheet",nw)+grp("No longer on this sheet",lf)+grp("Notice changes",nt)
+    : '<div class="none">No changes since the previous sheet ('+sd(pk)+').</div>';
+}
+
 function render(keys){
   const lastKey = keys[keys.length-1];
   const ds = DATASETS[lastKey];
@@ -1399,6 +1477,7 @@ function render(keys){
     const closed = r.kind==="closed";
     return `<div class="ncard${closed?" closed":""}"><div class="top"><span class="bn">${b.id}</span><span class="pill ${closed?"p-closed":"p-anch"}">${closed?"Berth closed":"Gate stopped"}</span></div><div class="per">${per}</div><div class="txt">${r.text}</div></div>`;
   })).join("");
+  renderChanges(lastKey);
   document.getElementById("notices").innerHTML = cards || `<div class="nempty">No berth or gate notices on this sheet</div>`;
 
   // Summary
