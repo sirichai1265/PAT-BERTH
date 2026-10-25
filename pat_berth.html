@@ -140,6 +140,12 @@
   .pc-open:hover{filter:brightness(1.1)}
   .pc-nosheet{font-size:13px;color:var(--ink-3);font-style:italic}
   .pc-cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px}
+  .bthlist{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(380px,1fr));gap:8px 16px}
+  .bthlist li{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;padding:8px 12px;border:1px solid var(--line);border-left:4px solid var(--berth,#2f7fb0);border-radius:8px;font-size:14px}
+  .bthlist .bn{font-family:var(--display);font-weight:700;font-size:16px;min-width:46px}
+  .bthlist .t{font-family:var(--mono);font-size:13px;color:var(--ink-2)}
+  .bthlist .x{flex-basis:100%;padding-left:56px;font-family:var(--mono);font-size:11px;color:var(--ink-3)}
+  .pc-detail .none{font-size:13px;color:var(--ink-3);font-style:italic}
   .pc-col h4{margin:0 0 6px;font-family:var(--display);font-weight:600;font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3)}
   .pc-col ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:5px}
   .pc-col li{display:flex;align-items:baseline;gap:8px;font-size:14px}
@@ -1452,14 +1458,14 @@ function render(keys){
     });
     if(HOLD[b.id]) body=`<div class="vhold">${HOLD[b.id]}</div>`+body.replace('<div class="vnone">No vessel scheduled</div>',"");
     if(!body) body='<div class="vnone">No vessel scheduled</div>';
-    cardList.push({id:b.id,html:`<div class="bcard"><div class="bhead"><span class="bid">${b.id}</span><span class="bg">${b.gates||""}</span></div>${body}</div>`});
+    cardList.push({id:b.id,html:`<div class="bcard"><div class="bhead"><span class="bid">${b.id}${b.id==="22A"?" (OB)":""}</span><span class="bg">${b.gates||""}</span></div>${body}</div>`});
   });
   // grouped by terminal
   const T1=["20A","20AB","20B","20C"], T2=["20D","20E","20F"];
-  const groupOf=id=>/^22/.test(id)?"BARGE BERTH":(T1.includes(id)?"PAT TERMINAL 1":"PAT TERMINAL 2");
-  const GROUP_BERTHS={"PAT TERMINAL 1":"20A · 20AB · 20B · 20C","PAT TERMINAL 2":"20D · 20E · 20F","BARGE BERTH":"22A · 22B · 22D · 22E"};
+  const groupOf=id=>/^22/.test(id)?"BULK BERTH":(T1.includes(id)?"PAT TERMINAL 1":"PAT TERMINAL 2");
+  const GROUP_BERTHS={"PAT TERMINAL 1":"20A · 20AB · 20B · 20C","PAT TERMINAL 2":"20D · 20E · 20F","BULK BERTH":"22A (OB) · 22B · 22D · 22E"};
   let tb="";
-  ["PAT TERMINAL 1","PAT TERMINAL 2","BARGE BERTH"].forEach(g=>{
+  ["PAT TERMINAL 1","PAT TERMINAL 2","BULK BERTH"].forEach(g=>{
     const mine=cardList.filter(c=>groupOf(c.id)===g);
     if(!mine.length) return;
     tb+=`<div class="ghead"><b>${g}</b><span>${GROUP_BERTHS[g]}</span></div>`+mine.map(c=>c.html).join("");
@@ -1632,17 +1638,15 @@ function pcData(){
 }
 
 function renderDayPanel(k){
-  const {ev,notes}=pcData();
+  const {ev}=pcData();
   const [y,m,d]=k.split("-").map(Number);
-  const dow=FULL_DOW[new Date(Date.UTC(y,m-1,d)).getUTCDay()];
-  const list=ev[k]||[], nn=notes[k]||[];
-  const of=kind=>list.filter(e=>e.kind===kind);
-  const li=e=>'<li><span class="t">'+hhmm(e.ms)+'</span><b>'+e.n+'</b><span class="b">'+e.berth+'</span><span class="x">ETA '+fmt(t(e.v.eta))+' \u00b7 P.B '+fmt(t(e.v.pb))+' \u00b7 ETD '+fmt(t(e.v.etd))+'</span></li>';
-  const col=(title,items,fn)=>'<div class="pc-col"><h4>'+title+' ('+items.length+')</h4>'+(items.length?'<ul>'+items.map(fn).join("")+'</ul>':'<div class="none">None</div>')+'</div>';
+  const dow=FULL_DOW[new Date(Date.UTC(Number(y),m-1,d)).getUTCDay()];
+  // only vessels that BERTH (ETB = P.B + 3 h) on the sheet date, in berth order 20A, 20AB ... 20F
+  const list=(ev[k]||[]).filter(e=>e.kind==="bth").sort((a,b)=>berthIdx(a.berth)-berthIdx(b.berth)||a.ms-b.ms);
+  const li=e=>'<li><span class="bn">'+e.berth+'</span><span class="t">'+hhmm(e.ms)+'</span><b>'+e.n+'</b><span class="x">ETA '+fmt(t(e.v.eta))+' \u00b7 P.B '+fmt(t(e.v.pb))+' \u00b7 ETB '+fmt(e.ms)+' \u00b7 ETD '+fmt(t(e.v.etd))+'</span></li>';
   document.getElementById("pcDetail").innerHTML=
-    '<div class="pc-dhead"><h3>'+dow+' '+d+' '+MONTH_NAMES[m-1]+' '+y+'</h3></div>'
-    +'<div class="pc-cols">'+col("Arrival (ETA)",of("arr"),li)+col("Pilot on board (P.B)",of("pob"),li)+col("Berth (ETB = P.B + 3 h)",of("bth"),li)+col("Departure (ETD)",of("dep"),li)
-    +col("Notices",nn,n=>'<li><b>'+n.berth+'</b><span class="b">'+n.text+'</span></li>')+'</div>';
+    '<div class="pc-dhead"><h3>'+dow+' '+d+' '+MONTH_NAMES[m-1]+' '+y+' \u00b7 Berthing (ETB = P.B + 3 h) ('+list.length+')</h3></div>'
+    +(list.length?'<ul class="bthlist">'+list.map(li).join("")+'</ul>':'<div class="none">No vessel scheduled to berth on this date</div>');
 }
 
 let startFrom = LATEST_KEY, startTo = LATEST_KEY;
