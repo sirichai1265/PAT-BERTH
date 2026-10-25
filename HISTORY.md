@@ -441,6 +441,7 @@ Bold ETAs on this sheet (BANGKOK, LITTLE DOLPHIN, INGENUITY) are actual arrival 
 - Original sheet saved as JPG + PDF
 - Dashboard: "Berth & gate notices" renamed "Berth notices". The separate changes table was removed; the comparison with the previous sheet now sits in "Vessel list by berth": old time struck through → new in ETA / P.B / ETD, plus a "Change vs previous sheet" column (BERTH MOVED, ETA|P.B|ETD ADVANCED -Nh / DELAYED +Nh, NEW). The list shows only the vessel(s) alongside and the next vessel to berth for each berth, as at the sheet date (the timeline still shows every vessel)
 - Dashboard: Calendar tab removed; the sheet date's day summary (Berthing P.B / Sailing ETD / Notices, as the old calendar day detail) now sits above the Berth timeline; "Next berthing" tile shows the vessel name, berth and P.B (or "No vessel scheduled"); "Vessel list by berth" is one box per berth
+- Dashboard: standing box "20A === Awaiting handover ===" added to Vessel list by berth; it stays on every sheet until told otherwise (HOLD constant in the dashboard script)
 - Folder: [`25-10-2026/`](25-10-2026)
 
 ---

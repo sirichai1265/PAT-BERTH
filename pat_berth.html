@@ -213,6 +213,7 @@
   .vtimes span:nth-child(odd){color:var(--ink-3);font-size:11.5px}
   .vtags{display:flex;flex-wrap:wrap;gap:2px 8px;margin-top:2px}
   .vtags .tag{margin:0}
+  .vhold{padding:14px;margin:10px 14px;border:1.5px dashed var(--warn,#e08a1e);border-radius:8px;background:var(--warn-soft);color:var(--warn,#9a5a05);font-family:var(--mono);font-size:13px;font-weight:700;text-align:center;letter-spacing:.02em}
   .vnone{padding:16px 14px;font-style:italic;color:var(--ink-3);font-size:14px}
   .tile .v.vname{font-size:22px;line-height:1.15;padding-top:6px}
   table td.num,table th{padding-left:10px;padding-right:10px}
@@ -1425,6 +1426,11 @@ function render(keys){
     return (e&&e.old&&e.old[f]) ? `<span class="fr">${e.old[f].split("@")[0]}</span> \u2192 <span class="to">${v[f].split("@")[0]}</span>` : cur;
   };
   let tb="", brk22=false;
+  // berths held with a standing note until told otherwise (kept on every sheet)
+  const HOLD={"20A":"=== Awaiting handover ==="};
+  Object.keys(HOLD).forEach(id=>{
+    if(!BERTHS.some(b=>b.id===id)) tb+=`<div class="bcard hold"><div class="bhead"><span class="bid">${id}</span><span class="bg"></span></div><div class="vhold">${HOLD[id]}</div></div>`;
+  });
   BERTHS.forEach(b=>{
     const live=b.vessels.filter(v=>status(v)[0]!=="done");
     const along=live.filter(v=>status(v)[0]==="along");
@@ -1441,6 +1447,7 @@ function render(keys){
         <div class="vtimes"><span>ETA</span><span class="num">${tval(v,"eta",e)}</span><span>P.B</span><span class="num">${tval(v,"pb",e)}</span><span>ETD</span><span class="num">${tval(v,"etd",e)}</span></div>
         <div class="vmeta">Waiting ${wait} h \u00b7 Alongside ${hrs} h</div>${chg}</div>`;
     });
+    if(HOLD[b.id]) body=`<div class="vhold">${HOLD[b.id]}</div>`+body.replace('<div class="vnone">No vessel scheduled</div>',"");
     if(!body) body='<div class="vnone">No vessel scheduled</div>';
     if(/^22/.test(b.id)&&!brk22){brk22=true;tb+='<div class="brk"></div>';}
     tb+=`<div class="bcard"><div class="bhead"><span class="bid">${b.id}</span><span class="bg">${b.gates||""}</span></div>${body}</div>`;
