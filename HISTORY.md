@@ -439,7 +439,7 @@ Bold ETAs on this sheet (BANGKOK, LITTLE DOLPHIN, INGENUITY) are actual arrival 
 - Sailed since previous sheet: KMTC GWANGYANG (25/01), YM IMAGE (25/01), CA MANILA (24/24), HORAI BRIDGE (24/15), WAN HAI 272 (24/14), PUNNYA NAVEE barge (24/23), HARI BHUM barge (25/07)
 - No berth notices and no highlights; three new vessels plus two returning (KMTC TOKYO, M ODYSSEY)
 - Original sheet saved as JPG + PDF
-- Dashboard: new "Changes notices" table at the end of the page (English): change type, vessel, berth, item, from → to; berth moves, time changes, new vessels, vessels no longer listed and notice changes, computed automatically against the previous day's sheet
+- Dashboard: "Changes notices" table at the end of the page (English), one row per vessel: Berth, Vessel, Change (BERTH MOVED / ETA|P.B|ETD ADVANCED -Nh / DELAYED +Nh / NEW / NOT LISTED / notice changes) and ETA, P.B, ETD with old struck through → new; computed automatically against the previous day's sheet
 - Folder: [`25-10-2026/`](25-10-2026)
 
 ---

@@ -206,6 +206,10 @@
   #changes .tag.lf{background:#e6eaef;color:#566273}
   #changes .tag.nt{background:#f9dcdc;color:#a02a2a}
   #changes .fr{text-decoration:line-through;opacity:.65}
+  #changes .tag.adv{background:none;color:#1f5f8b;padding:2px 0;margin-right:10px}
+  #changes .tag.dly{background:none;color:#d64545;padding:2px 0;margin-right:10px}
+  #changes td.tags .tag{display:block;margin:0 0 2px 0}
+  #changes td.tags .tag.mv,#changes td.tags .tag.tm{display:inline-block}
   #changes .to{font-weight:700}
   .ncard{--c:var(--warn);position:relative;border:1px solid var(--line);border-left:5px solid var(--c);border-radius:10px;padding:12px 14px 13px;display:flex;flex-direction:column;gap:7px;background:var(--panel)}
   .ncard.closed{--c:var(--now);background:linear-gradient(0deg,rgba(214,69,69,.04),rgba(214,69,69,.04)),var(--panel)}
@@ -1351,38 +1355,47 @@ function renderChanges(key){
   const pk=DAY_ORDER[idx-1], A=sheetMap(pk), B=sheetMap(key);
   const sd=k=>DATASETS[k].label;
   const F={eta:"ETA",pb:"P.B",etd:"ETD"};
-  const show=x=>x?fmt(t(x)):"\u2013";
-  const rows=[];
-  const row=(cls,tag,n,berth,item,fr,to)=>rows.push(`<tr><td><span class="tag ${cls}">${tag}</span></td><td class="vs">${n}</td><td class="num">${berth}</td><td>${item}</td><td class="num${fr&&fr!=="\u2013"?" fr":""}">${fr||"\u2013"}</td><td class="num to">${to||"\u2013"}</td></tr>`);
-  const order={mv:0,tm:1,nw:2,lf:3,nt:4}; const keyed=[];
-  const push=(cls,tag,n,berth,item,fr,to)=>keyed.push({o:order[cls],html:null,args:[cls,tag,n,berth,item,fr,to]});
+  const show=x=>x?x.split("@")[0]:"\u2013";  // sheet style DD/HH
+  const hrs=h=>(h>0?"+":"\u2212")+Math.abs(h)+"h";
+  const items=[];
+  const tcell=(o,c,f)=>{
+    if(!c&&!o) return "\u2013";
+    if(!o) return `<span class="to">${show(c)}</span>`;
+    if(!c) return `<span class="fr">${show(o)}</span>`;
+    if(t(o)===t(c)) return show(c);
+    return `<span class="fr">${show(o)}</span> \u2192 <span class="to">${show(c)}</span>`;
+  };
   Object.keys(B).forEach(n=>{
     const c=B[n],o=A[n];
-    if(!o){push("nw","New",n,c.berth,c.tba?"Listed without full schedule":"ETA / P.B / ETD","\u2013",c.tba?("ETA "+show(c.eta)):(show(c.eta)+" / "+show(c.pb)+" / "+show(c.etd)));return;}
-    if(o.berth!==c.berth) push("mv","Berth moved",n,c.berth,"Berth",o.berth,c.berth);
+    if(!o){items.push({r:2,html:`<tr><td class="num"><b>${c.berth}</b></td><td class="vs">${n}</td><td><span class="tag nw">NEW${c.tba?" \u00b7 schedule TBA":""}</span></td><td class="num">${c.eta?`<span class="to">${show(c.eta)}</span>`:"\u2013"}</td><td class="num">${c.pb?`<span class="to">${show(c.pb)}</span>`:"\u2013"}</td><td class="num">${c.etd?`<span class="to">${show(c.etd)}</span>`:"\u2013"}</td></tr>`});return;}
+    const tags=[];
+    let r=1;
+    if(o.berth!==c.berth){tags.push(`<span class="tag mv">BERTH MOVED</span>`);r=0;}
     ["eta","pb","etd"].forEach(f=>{
-      if(o[f]!==c[f] && (o[f]||c[f])){
-        const a=o[f]?t(o[f]):null,b=c[f]?t(c[f]):null;
-        if(a!==b) push("tm","Time changed",n,c.berth,F[f],show(o[f]),show(c[f]));
-      }
+      if(o[f]&&c[f]){const d=Math.round((t(c[f])-t(o[f]))/H); if(d!==0) tags.push(`<span class="tag ${d<0?"adv":"dly"}">${F[f]} ${d<0?"ADVANCED":"DELAYED"} ${hrs(d)}</span>`);}
+      else if(!!o[f]!==!!c[f]) tags.push(`<span class="tag tm">${F[f]} ${c[f]?"ADDED":"REMOVED"}</span>`);
     });
-    if(o.shift!==c.shift) push("tm","Time changed",n,c.berth,"Shift",o.shift||"\u2013",c.shift||"\u2013");
+    if(o.shift!==c.shift) tags.push(`<span class="tag tm">SHIFT ${o.shift||"\u2013"} \u2192 ${c.shift||"\u2013"}</span>`);
+    if(!tags.length) return;
+    const berth=o.berth!==c.berth?`<span class="fr">${o.berth}</span> \u2192 <span class="to">${c.berth}</span>`:`<b>${c.berth}</b>`;
+    items.push({r,html:`<tr><td class="num">${berth}</td><td class="vs">${n}</td><td class="tags">${tags.join(" ")}</td><td class="num">${tcell(o.eta,c.eta)}</td><td class="num">${tcell(o.pb,c.pb)}</td><td class="num">${tcell(o.etd,c.etd)}</td></tr>`});
   });
   Object.keys(A).forEach(n=>{
     if(B[n]) return;
     const o=A[n];
-    push("lf","Not listed",n,o.berth,o.etd?"Was ETD (sailed or removed)":"No longer listed",o.etd?show(o.etd):"\u2013","\u2013");
+    items.push({r:3,html:`<tr><td class="num"><b>${o.berth}</b></td><td class="vs">${n}</td><td><span class="tag lf">NOT LISTED \u00b7 sailed or removed</span></td><td class="num">${o.eta?`<span class="fr">${show(o.eta)}</span>`:"\u2013"}</td><td class="num">${o.pb?`<span class="fr">${show(o.pb)}</span>`:"\u2013"}</td><td class="num">${o.etd?`<span class="fr">${show(o.etd)}</span>`:"\u2013"}</td></tr>`});
   });
   const NA=noticeSet(pk),NB=noticeSet(key);
+  const nrow=(id,tag,txt)=>items.push({r:4,html:`<tr><td class="num"><b>${id}</b></td><td class="vs">${txt}</td><td><span class="tag nt">${tag}</span></td><td class="num">\u2013</td><td class="num">\u2013</td><td class="num">\u2013</td></tr>`});
   Object.keys(NB).forEach(k=>{
-    if(!NA[k]) push("nt","Notice added","\u2013",NB[k].id,"Notice","\u2013",NB[k].label);
-    else if(NA[k].label!==NB[k].label) push("nt","Notice changed","\u2013",NB[k].id,"Notice",NA[k].label,NB[k].label);
+    if(!NA[k]) nrow(NB[k].id,"NOTICE ADDED",NB[k].label);
+    else if(NA[k].label!==NB[k].label) nrow(NB[k].id,"NOTICE CHANGED",`<span class="fr">${NA[k].label}</span> \u2192 <span class="to">${NB[k].label}</span>`);
   });
-  Object.keys(NA).forEach(k=>{if(!NB[k]) push("nt","Notice removed","\u2013",NA[k].id,"Notice",NA[k].label,"\u2013");});
-  keyed.sort((x,y)=>x.o-y.o).forEach(k=>row(...k.args));
-  sub.textContent="vs sheet of "+sd(pk)+" \u00b7 "+rows.length+(rows.length===1?" change":" changes");
-  box.innerHTML = rows.length
-    ? '<table><thead><tr><th>Change</th><th>Vessel</th><th>Berth</th><th>Item</th><th>From</th><th>To</th></tr></thead><tbody>'+rows.join("")+'</tbody></table>'
+  Object.keys(NA).forEach(k=>{if(!NB[k]) nrow(NA[k].id,"NOTICE REMOVED",`<span class="fr">${NA[k].label}</span>`);});
+  items.sort((x,y)=>x.r-y.r);
+  sub.textContent="vs sheet of "+sd(pk)+" \u00b7 "+items.length+(items.length===1?" item":" items");
+  box.innerHTML = items.length
+    ? '<table><thead><tr><th>Berth</th><th>Vessel</th><th>Change</th><th>ETA</th><th>P.B</th><th>ETD</th></tr></thead><tbody>'+items.map(i=>i.html).join("")+'</tbody></table>'
     : '<div class="none">No changes since the previous sheet ('+sd(pk)+').</div>';
 }
 
