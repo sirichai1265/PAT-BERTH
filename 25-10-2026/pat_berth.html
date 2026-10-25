@@ -1367,7 +1367,7 @@ function renderChanges(key){
   };
   Object.keys(B).forEach(n=>{
     const c=B[n],o=A[n];
-    if(!o){items.push({r:2,html:`<tr><td class="num"><b>${c.berth}</b></td><td class="vs">${n}</td><td><span class="tag nw">NEW${c.tba?" \u00b7 schedule TBA":""}</span></td><td class="num">${c.eta?`<span class="to">${show(c.eta)}</span>`:"\u2013"}</td><td class="num">${c.pb?`<span class="to">${show(c.pb)}</span>`:"\u2013"}</td><td class="num">${c.etd?`<span class="to">${show(c.etd)}</span>`:"\u2013"}</td></tr>`});return;}
+    if(!o) return;
     const tags=[];
     let r=1;
     if(o.berth!==c.berth){tags.push(`<span class="tag mv">BERTH MOVED</span>`);r=0;}
@@ -1379,11 +1379,6 @@ function renderChanges(key){
     if(!tags.length) return;
     const berth=o.berth!==c.berth?`<span class="fr">${o.berth}</span> \u2192 <span class="to">${c.berth}</span>`:`<b>${c.berth}</b>`;
     items.push({r,html:`<tr><td class="num">${berth}</td><td class="vs">${n}</td><td class="tags">${tags.join(" ")}</td><td class="num">${tcell(o.eta,c.eta)}</td><td class="num">${tcell(o.pb,c.pb)}</td><td class="num">${tcell(o.etd,c.etd)}</td></tr>`});
-  });
-  Object.keys(A).forEach(n=>{
-    if(B[n]) return;
-    const o=A[n];
-    items.push({r:3,html:`<tr><td class="num"><b>${o.berth}</b></td><td class="vs">${n}</td><td><span class="tag lf">NOT LISTED \u00b7 sailed or removed</span></td><td class="num">${o.eta?`<span class="fr">${show(o.eta)}</span>`:"\u2013"}</td><td class="num">${o.pb?`<span class="fr">${show(o.pb)}</span>`:"\u2013"}</td><td class="num">${o.etd?`<span class="fr">${show(o.etd)}</span>`:"\u2013"}</td></tr>`});
   });
   const NA=noticeSet(pk),NB=noticeSet(key);
   const nrow=(id,tag,txt)=>items.push({r:4,html:`<tr><td class="num"><b>${id}</b></td><td class="vs">${txt}</td><td><span class="tag nt">${tag}</span></td><td class="num">\u2013</td><td class="num">\u2013</td><td class="num">\u2013</td></tr>`});
