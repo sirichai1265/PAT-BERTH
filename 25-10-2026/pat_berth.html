@@ -1645,13 +1645,15 @@ function renderDayPanel(k){
   const dow=FULL_DOW[new Date(Date.UTC(Number(y),m-1,d)).getUTCDay()];
   const dayEnd=Date.UTC(y,m-1,d+1)-7*H;
   // vessels that BERTH (ETB = P.B + 3 h) on the sheet date; a berth with none shows its latest vessel that has already berthed
-  const today=(ev[k]||[]).filter(e=>e.kind==="bth");
+  // vessels that have already sailed (ETD passed) are not shown
+  const nowRef=(k===LATEST_KEY)?Date.now():tFull(DATASETS[k].sheetNow);
+  const today=(ev[k]||[]).filter(e=>e.kind==="bth"&&t(e.v.etd)>nowRef);
   const rows=today.map(e=>({berth:e.berth,n:e.n,etb:e.ms,etd:t(e.v.etd),last:false}));
   const all=merge(DAY_ORDER);
   ["20A","20AB","20B","20C","20D","20E","20F"].forEach(id=>{
     if(rows.some(r=>r.berth===id)) return;
     const b=all.find(x=>x.id===id);
-    const done=b?b.vessels.map(v=>({v,etb:t(v.pb)+3*H})).filter(x=>x.etb<dayEnd).sort((p,q)=>q.etb-p.etb)[0]:null;
+    const done=b?b.vessels.map(v=>({v,etb:t(v.pb)+3*H})).filter(x=>x.etb<dayEnd&&t(x.v.etd)>nowRef).sort((p,q)=>q.etb-p.etb)[0]:null;
     if(done) rows.push({berth:id,n:done.v.n,etb:done.etb,etd:t(done.v.etd),last:true});
     else rows.push({berth:id,n:null,last:true});
   });

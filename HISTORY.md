@@ -447,6 +447,7 @@ Bold ETAs on this sheet (BANGKOK, LITTLE DOLPHIN, INGENUITY) are actual arrival 
 - Dashboard: Vessel list by berth grouped under headings PAT TERMINAL 1 (20A, 20AB, 20B, 20C), PAT TERMINAL 2 (20D, 20E, 20F) and BULK BERTH (22A (OB), 22B, 22D, 22E)
 - Dashboard: the day summary above Vessel list by berth now shows only the vessels that BERTH (ETB = P.B + 3 h) on the sheet date, sorted by berth 20A, 20AB, 20B, 20C, 20D, 20E, 20F
 - Dashboard: day berthing cards show ETB and ETD; a berth (20A-20F) with no vessel berthing on the sheet date shows its latest vessel that already berthed, tagged "last vessel in" (20A shows Awaiting handover)
+- Dashboard: vessels that have already sailed (ETD passed) are not shown in the day berthing cards
 - Folder: [`25-10-2026/`](25-10-2026)
 
 ---
