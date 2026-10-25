@@ -439,7 +439,7 @@ Bold ETAs on this sheet (BANGKOK, LITTLE DOLPHIN, INGENUITY) are actual arrival 
 - Sailed since previous sheet: KMTC GWANGYANG (25/01), YM IMAGE (25/01), CA MANILA (24/24), HORAI BRIDGE (24/15), WAN HAI 272 (24/14), PUNNYA NAVEE barge (24/23), HARI BHUM barge (25/07)
 - No berth notices and no highlights; three new vessels plus two returning (KMTC TOKYO, M ODYSSEY)
 - Original sheet saved as JPG + PDF
-- Dashboard: "Berth & gate notices" renamed "Berth notices"; it now also holds the "Changes since previous sheet" table (English): one row per vessel that is still listed with Berth, Vessel, Change (BERTH MOVED / ETA|P.B|ETD ADVANCED -Nh or DELAYED +Nh / notice changes) and ETA, P.B, ETD with old struck through → new; new and no-longer-listed vessels are not shown there; computed automatically against the previous day's sheet
+- Dashboard: "Berth & gate notices" renamed "Berth notices". The separate changes table was removed; the comparison with the previous sheet now sits in "Vessel list by berth": old time struck through → new in ETA / P.B / ETD, plus a "Change vs previous sheet" column (BERTH MOVED, ETA|P.B|ETD ADVANCED -Nh / DELAYED +Nh, NEW). The list shows only the vessel(s) alongside and the next vessel to berth for each berth, as at the sheet date (the timeline still shows every vessel)
 - Folder: [`25-10-2026/`](25-10-2026)
 
 ---
