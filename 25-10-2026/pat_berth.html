@@ -140,11 +140,13 @@
   .pc-open:hover{filter:brightness(1.1)}
   .pc-nosheet{font-size:13px;color:var(--ink-3);font-style:italic}
   .pc-cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px}
-  .bthlist{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:8px 16px}
+  .bthlist{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:8px 16px}
   .bthlist li{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;padding:10px 14px;border:1px solid var(--line);border-left:4px solid var(--berth,#2f7fb0);border-radius:8px;font-size:15px}
   .bthlist .bn{font-family:var(--display);font-weight:700;font-size:16px;min-width:46px}
   .bthlist .t{font-family:var(--mono);font-size:13px;color:var(--ink-2)}
   .bthlist .x{flex-basis:100%;padding-left:56px;font-family:var(--mono);font-size:11px;color:var(--ink-3)}
+  .bthlist li.prev{background:var(--line-2);border-left-color:var(--ink-3,#8a97a6)}
+  .bthlist .lb{margin-left:auto;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-3)}
   .pc-detail .none{font-size:13px;color:var(--ink-3);font-style:italic}
   .pc-col h4{margin:0 0 6px;font-family:var(--display);font-weight:600;font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3)}
   .pc-col ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:5px}
@@ -1641,12 +1643,25 @@ function renderDayPanel(k){
   const {ev}=pcData();
   const [y,m,d]=k.split("-").map(Number);
   const dow=FULL_DOW[new Date(Date.UTC(Number(y),m-1,d)).getUTCDay()];
-  // only vessels that BERTH (ETB = P.B + 3 h) on the sheet date, in berth order 20A, 20AB ... 20F
-  const list=(ev[k]||[]).filter(e=>e.kind==="bth").sort((a,b)=>berthIdx(a.berth)-berthIdx(b.berth)||a.ms-b.ms);
-  const li=e=>'<li><span class="bn">'+e.berth+'</span><b>'+e.n+'</b><span class="t">ETB '+fmt(e.ms)+'</span></li>';
+  const dayEnd=Date.UTC(y,m-1,d+1)-7*H;
+  // vessels that BERTH (ETB = P.B + 3 h) on the sheet date; a berth with none shows its latest vessel that has already berthed
+  const today=(ev[k]||[]).filter(e=>e.kind==="bth");
+  const rows=today.map(e=>({berth:e.berth,n:e.n,etb:e.ms,etd:t(e.v.etd),last:false}));
+  const all=merge(DAY_ORDER);
+  ["20A","20AB","20B","20C","20D","20E","20F"].forEach(id=>{
+    if(rows.some(r=>r.berth===id)) return;
+    const b=all.find(x=>x.id===id);
+    const done=b?b.vessels.map(v=>({v,etb:t(v.pb)+3*H})).filter(x=>x.etb<dayEnd).sort((p,q)=>q.etb-p.etb)[0]:null;
+    if(done) rows.push({berth:id,n:done.v.n,etb:done.etb,etd:t(done.v.etd),last:true});
+    else rows.push({berth:id,n:null,last:true});
+  });
+  rows.sort((a,b)=>berthIdx(a.berth)-berthIdx(b.berth)||(a.etb||0)-(b.etb||0));
+  const li=r=>r.n
+    ? '<li class="'+(r.last?"prev":"")+'"><span class="bn">'+r.berth+'</span><b>'+r.n+'</b><span class="t">ETB '+fmt(r.etb)+' \u00b7 ETD '+fmt(r.etd)+'</span>'+(r.last?'<span class="lb">last vessel in</span>':'')+'</li>'
+    : '<li class="prev"><span class="bn">'+r.berth+'</span><span class="t">'+(r.berth==="20A"?"=== Awaiting handover ===":"No vessel scheduled")+'</span></li>';
   document.getElementById("pcDetail").innerHTML=
     '<div class="pc-dhead"><h3>'+dow+' '+d+' '+MONTH_NAMES[m-1]+' '+y+' \u00b7 Berthing</h3></div>'
-    +(list.length?'<ul class="bthlist">'+list.map(li).join("")+'</ul>':'<div class="none">No vessel scheduled to berth on this date</div>');
+    +'<ul class="bthlist">'+rows.map(li).join("")+'</ul>';
 }
 
 let startFrom = LATEST_KEY, startTo = LATEST_KEY;
