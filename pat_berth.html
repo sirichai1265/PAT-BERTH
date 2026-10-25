@@ -196,6 +196,8 @@
 
   /* notices as cards */
   .notices{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px;padding:16px 20px 20px}
+  .chg-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:6px 20px;padding:14px 20px;border-top:1px solid var(--line)}
+  .chg-head h3{margin:0;font-family:var(--display);font-weight:700;font-size:17px}
   .chg-sub{font-family:var(--mono);font-size:12.5px;color:var(--muted,#6b7a8c)}
   #changes .none{padding:18px 20px;font-style:italic;color:var(--muted,#6b7a8c)}
   #changes table td.num,#changes table th.num{white-space:nowrap}
@@ -323,8 +325,10 @@
   <section class="summary" id="summary"></section>
 
   <section class="panel">
-    <div class="panel-head"><h2>Berth &amp; gate notices</h2></div>
+    <div class="panel-head"><h2>Berth notices</h2></div>
     <div class="notices" id="notices"></div>
+    <div class="chg-head"><h3>Changes since previous sheet</h3><span class="chg-sub" id="chgSub"></span></div>
+    <div class="scroll" id="changes"></div>
   </section>
 
   <section class="panel">
@@ -350,11 +354,6 @@
         <tbody id="tbody"></tbody>
       </table>
     </div>
-  </section>
-
-  <section class="panel">
-    <div class="panel-head"><h2>Changes notices</h2><span class="chg-sub" id="chgSub"></span></div>
-    <div class="scroll" id="changes"></div>
   </section>
 
   </div>
@@ -1486,7 +1485,7 @@ function render(keys){
     return `<div class="ncard${closed?" closed":""}"><div class="top"><span class="bn">${b.id}</span><span class="pill ${closed?"p-closed":"p-anch"}">${closed?"Berth closed":"Gate stopped"}</span></div><div class="per">${per}</div><div class="txt">${r.text}</div></div>`;
   })).join("");
   renderChanges(lastKey);
-  document.getElementById("notices").innerHTML = cards || `<div class="nempty">No berth or gate notices on this sheet</div>`;
+  document.getElementById("notices").innerHTML = cards || `<div class="nempty">No berth notices on this sheet</div>`;
 
   // Summary
   const all=BERTHS.flatMap(b=>b.vessels.map(v=>({...v,berth:b.id,st:status(v)[0]})));
