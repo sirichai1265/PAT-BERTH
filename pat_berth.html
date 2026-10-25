@@ -1645,7 +1645,7 @@ function renderDayPanel(k){
   const list=(ev[k]||[]).filter(e=>e.kind==="bth").sort((a,b)=>berthIdx(a.berth)-berthIdx(b.berth)||a.ms-b.ms);
   const li=e=>'<li><span class="bn">'+e.berth+'</span><b>'+e.n+'</b><span class="t">ETB '+fmt(e.ms)+'</span></li>';
   document.getElementById("pcDetail").innerHTML=
-    '<div class="pc-dhead"><h3>'+dow+' '+d+' '+MONTH_NAMES[m-1]+' '+y+' \u00b7 Berthing (ETB = P.B + 3 h) ('+list.length+')</h3></div>'
+    '<div class="pc-dhead"><h3>'+dow+' '+d+' '+MONTH_NAMES[m-1]+' '+y+' \u00b7 Berthing</h3></div>'
     +(list.length?'<ul class="bthlist">'+list.map(li).join("")+'</ul>':'<div class="none">No vessel scheduled to berth on this date</div>');
 }
 
