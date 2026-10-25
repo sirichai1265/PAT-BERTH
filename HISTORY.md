@@ -443,7 +443,7 @@ Bold ETAs on this sheet (BANGKOK, LITTLE DOLPHIN, INGENUITY) are actual arrival 
 - Dashboard: Calendar tab removed; the sheet date's day summary (Berthing P.B / Sailing ETD / Notices, as the old calendar day detail) now sits above the Berth timeline; "Next berthing" tile shows the vessel name, berth and P.B (or "No vessel scheduled"); "Vessel list by berth" is one box per berth
 - Dashboard: standing box "20A === Awaiting handover ===" added to Vessel list by berth; it stays on every sheet until told otherwise (HOLD constant in the dashboard script)
 - Dashboard: Vessel list by berth now sits before Berth timeline; the daily email no longer pastes the Berth timeline (header, summary, notices, day summary and vessel list only)
-- Dashboard: vessel status for the sheet date ("today"): ETA = ARRIVAL, P.B = PILOT ON BOARD, ETB = P.B + 3 HOURS = BERTH, ETD = DEPARTURE. The day summary has one column per status, and each vessel box carries TODAY tags (e.g. TODAY · ARRIVAL 06:00) and a BERTH (ETB) row
+- Dashboard: vessel status for the sheet date ("today"): ETA = ARRIVAL, P.B = PILOT ON BOARD, ETB = P.B + 3 HOURS = BERTH, ETD = DEPARTURE. The day summary has one column per status and each vessel box has a BERTH (ETB) row (the per-vessel TODAY tags were removed on request)
 - Folder: [`25-10-2026/`](25-10-2026)
 
 ---

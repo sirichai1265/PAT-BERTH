@@ -219,7 +219,6 @@
   .tile .v.vname{font-size:22px;line-height:1.15;padding-top:6px}
   table td.num,table th{padding-left:10px;padding-right:10px}
   .tag{display:inline-block;margin:0 8px 2px 0;font-size:11.5px;font-weight:700;white-space:nowrap}
-  .tag.td{padding:2px 9px;border-radius:999px;background:#1f5f8b;color:#fff}
   .tag.mv{padding:2px 9px;border-radius:999px;background:#fdebd0;color:#9a5a05}
   .tag.tm{padding:2px 9px;border-radius:999px;background:#dcebf6;color:#1f5f8b}
   .tag.nw{padding:2px 9px;border-radius:999px;background:#d9f1e5;color:#17724a}
@@ -1443,12 +1442,9 @@ function render(keys){
       const [,lab,cls]=status(v);
       const hrs=(t(v.etd)-t(v.pb))/H, wait=(t(v.pb)-t(v.eta))/H;
       const e=CH?CH.map[v.n]:null;
-      // today's vessel status: ARRIVAL (ETA), PILOT ON BOARD (P.B), BERTH (ETB = P.B + 3 h), DEPARTURE (ETD) falling on the sheet date
-      const todayEv=[["ARRIVAL",t(v.eta)],["PILOT ON BOARD",t(v.pb)],["BERTH",t(v.pb)+3*H],["DEPARTURE",t(v.etd)]]
-        .filter(x=>dayKeyOf(x[1])===lastKey).map(x=>`<span class="tag td">TODAY \u00b7 ${x[0]} ${hhmm(x[1])}</span>`).join("");
       const chg=(CH&&e&&e.tags.length)?`<div class="vtags">${e.tags.join("")}</div>`:"";
       body+=`<div class="vbox${v.mark?" marked":""}"><div class="vtop"><b>${v.n}</b><span class="pill ${cls}">${lab}</span></div>
-        <div class="vmeta">LOA ${v.loa} m${v.shift?" \u00b7 Shift "+v.shift:""}</div>${todayEv?`<div class="vtags">${todayEv}</div>`:""}
+        <div class="vmeta">LOA ${v.loa} m${v.shift?" \u00b7 Shift "+v.shift:""}</div>
         <div class="vtimes"><span>ARRIVAL <i>ETA</i></span><span class="num">${tval(v,"eta",e)}</span><span>PILOT ON BOARD <i>P.B</i></span><span class="num">${tval(v,"pb",e)}</span><span>BERTH <i>ETB = P.B + 3 h</i></span><span class="num">${fmt(t(v.pb)+3*H)}</span><span>DEPARTURE <i>ETD</i></span><span class="num">${tval(v,"etd",e)}</span></div>
         <div class="vmeta">Waiting ${wait} h \u00b7 Alongside ${hrs} h</div>${chg}</div>`;
     });
